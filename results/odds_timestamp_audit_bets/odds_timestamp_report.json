@@ -1,0 +1,17 @@
+{
+  "status": "pass",
+  "issues": [],
+  "summary": {
+    "rows": 82,
+    "labels": [
+      "final odds"
+    ],
+    "missing_available_at": 0,
+    "missing_bet_time": 0,
+    "missing_race_start_at": 82,
+    "available_before_race_start": 82
+  },
+  "available_at_bet_time": 82,
+  "final_market_rows": 82,
+  "post_market_rows": 0
+}

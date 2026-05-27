@@ -1,0 +1,6 @@
+﻿variant,odds_regime,bets,hit_rate_pct,roi_pct,avg_pred_prob,avg_market_prob,calibration_gap,edge_mae
+full,LONGSHOT,1,100.0,1300.0,0.248657,0.076923,0.171734,9.767459
+full,DEEP_LONGSHOT,1,0.0,0.0,0.254545,0.027397,0.227148,9.290892
+no_odds,LONGSHOT,1,100.0,1300.0,0.256372,0.076923,0.179449,9.667164
+no_odds,DEEP_LONGSHOT,1,0.0,0.0,0.259589,0.027397,0.232192,9.474998
+market_only,BALANCED,2,0.0,0.0,0.214583,0.186702,0.07294,1.261043

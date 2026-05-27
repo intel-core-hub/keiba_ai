@@ -1,0 +1,13 @@
+import importlib
+
+mods = [
+    'core.low_latency_execution',
+    'core.predictor',
+]
+
+for m in mods:
+    try:
+        importlib.import_module(m)
+        print(m + ' OK')
+    except Exception as e:
+        print(m + ' ERROR', e)

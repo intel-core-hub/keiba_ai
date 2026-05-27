@@ -1,0 +1,15 @@
+{
+  "odds_table": "results/roi_report\\bucket_odds.csv",
+  "confidence_table": "results/roi_report\\bucket_confidence.csv",
+  "edge_table": "results/roi_report\\bucket_edge.csv",
+  "uncertainty_table_error": "Uncertainty column not found",
+  "ev_table": "results/roi_report\\ev_vs_realized.csv",
+  "calibration": "results/roi_report\\calibration.csv",
+  "cumulative_plot": "cumulative_pnl.png",
+  "metrics": {
+    "mean": -0.2737916219119227,
+    "std": 3.6045482218270086,
+    "sharpe": -0.07595726428460654,
+    "scaled_sharpe": -3.277624165082707
+  }
+}

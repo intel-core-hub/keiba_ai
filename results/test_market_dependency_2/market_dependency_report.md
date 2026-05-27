@@ -1,0 +1,34 @@
+# Market Dependency Report
+
+## Variant Summary
+| variant | available | reason | brier | calibrated | calibration_gap | ece | edge_mae | expected_profit_mean | feature_count | log_loss | market_corr | market_mae | market_rmse | realized_profit_mean | roi_top1 | rows | top1_bets | top1_hit_rate | top1_pnl | uncertainty_high_rate | uncertainty_mean | valid_rows | prediction_rows | distinct_races | features | market_copy_score | corr_component | gap_component | roi_dependence_component | brier_dependence_component |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| full | True |  | 0.085127 | 1.0 | 0.104881 | 0.151448 | 3.74461 | 2.150527 | 11.0 | 0.319288 | -0.003023 | 0.098592 | 0.114962 | 0.181818 | 650.0 | 11.0 | 2.0 | 50.0 | 11.0 | 0.0 | 0.479277 | 11.0 | 11.0 | 2.0 | odds,favorite_rank,weight_carried,age,horse_weight,horse_weight_diff,avg_finish_last5,avg_speed_index_last5,recent_form_score,last_finish,rest_days | 28.26 | 0.498489 | 0.50704 | 0.0 | 0.124909 |
+| no_odds | True |  | 0.086153 | 1.0 | 0.110833 | 0.153761 | 3.791645 | 2.215797 | 10.0 | 0.323062 | 0.047717 | 0.097832 | 0.11643 | 0.181818 | 650.0 | 11.0 | 2.0 | 50.0 | 11.0 | 0.0 | 0.485169 | 11.0 | 11.0 | 2.0 | favorite_rank,weight_carried,age,horse_weight,horse_weight_diff,avg_finish_last5,avg_speed_index_last5,recent_form_score,last_finish,rest_days |  |  |  |  |  |
+| market_only | True |  | 0.094367 | 1.0 | 0.094571 | 0.094571 | 3.686298 | 1.91155 | 2.0 | 0.348167 | 0.349856 | 0.093366 | 0.101217 | 0.181818 | 0.0 | 11.0 | 2.0 | 0.0 | -2.0 | 0.0 | 0.470121 | 11.0 | 11.0 | 2.0 | odds,favorite_rank |  |  |  |  |  |
+| early_odds_only | 0.0 | no matching features |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| closing_odds | 0.0 | no matching features |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+
+## Odds Regime Dependence
+| variant | odds_regime | bets | hit_rate_pct | roi_pct | avg_pred_prob | avg_market_prob | calibration_gap | edge_mae |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| full | LONGSHOT | 1 | 100.0 | 1300.0 | 0.248657 | 0.076923 | 0.171734 | 9.767459 |
+| full | DEEP_LONGSHOT | 1 | 0.0 | 0.0 | 0.254545 | 0.027397 | 0.227148 | 9.290892 |
+| no_odds | LONGSHOT | 1 | 100.0 | 1300.0 | 0.256372 | 0.076923 | 0.179449 | 9.667164 |
+| no_odds | DEEP_LONGSHOT | 1 | 0.0 | 0.0 | 0.259589 | 0.027397 | 0.232192 | 9.474998 |
+| market_only | BALANCED | 2 | 0.0 | 0.0 | 0.214583 | 0.186702 | 0.07294 | 1.261043 |
+
+## Race Class Dependence
+| variant | race_class | bets | hit_rate_pct | roi_pct | avg_pred_prob | avg_market_prob | calibration_gap | edge_mae |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| full | OPEN_AGE | 1 | 0.0 | 0.0 | 0.254545 | 0.027397 | 0.227148 | 9.290892 |
+| full | OTHER | 1 | 100.0 | 1300.0 | 0.248657 | 0.076923 | 0.171734 | 9.767459 |
+| no_odds | OPEN_AGE | 1 | 0.0 | 0.0 | 0.259589 | 0.027397 | 0.232192 | 9.474998 |
+| no_odds | OTHER | 1 | 100.0 | 1300.0 | 0.256372 | 0.076923 | 0.179449 | 9.667164 |
+| market_only | OPEN_AGE | 1 | 0.0 | 0.0 | 0.1875 | 0.232558 | 0.045058 | 0.80625 |
+| market_only | OTHER | 1 | 0.0 | 0.0 | 0.241667 | 0.140845 | 0.100822 | 1.715836 |
+
+## Notes
+- market_copy_score=28.26
+- higher market_copy_score means stronger dependence on odds and market-aligned signals
+- early/closing odds variants are marked unavailable when matching columns do not exist in the input data

@@ -1,0 +1,190 @@
+{
+  "input": "data/raw/phase4_20240501.csv",
+  "variant": "full",
+  "model_kind": "boosted",
+  "base_metrics": {
+    "rows": 11.0,
+    "valid_rows": 11.0,
+    "brier": 0.085127,
+    "log_loss": 0.319288,
+    "calibration_gap": 0.104881,
+    "ece": 0.151448,
+    "uncertainty_mean": 0.479277,
+    "uncertainty_high_rate": 0.0,
+    "market_corr": -0.003023,
+    "market_mae": 0.098592,
+    "market_rmse": 0.114962,
+    "edge_mae": 3.74461,
+    "expected_profit_mean": 2.150527,
+    "realized_profit_mean": 0.181818,
+    "roi_top1": 650.0,
+    "top1_hit_rate": 50.0,
+    "top1_pnl": 11.0,
+    "top1_bets": 2.0
+  },
+  "odds_local_share": 0.32909533333333335,
+  "top_permutation": [
+    {
+      "feature": "recent_form_score",
+      "delta_brier": 0.01403,
+      "delta_ece": -0.041754,
+      "roi_drop": 650.0,
+      "market_corr_drop": 0.011237,
+      "abs_delta_brier": 0.01403
+    },
+    {
+      "feature": "horse_weight",
+      "delta_brier": 0.003619,
+      "delta_ece": -0.037626,
+      "roi_drop": 0.0,
+      "market_corr_drop": 0.540729,
+      "abs_delta_brier": 0.003619
+    },
+    {
+      "feature": "last_finish",
+      "delta_brier": 0.000196,
+      "delta_ece": -7.1e-05,
+      "roi_drop": 0.0,
+      "market_corr_drop": -0.022108,
+      "abs_delta_brier": 0.000196
+    },
+    {
+      "feature": "horse_weight_diff",
+      "delta_brier": 6.6e-05,
+      "delta_ece": -3.7e-05,
+      "roi_drop": 0.0,
+      "market_corr_drop": -0.015537,
+      "abs_delta_brier": 6.6e-05
+    },
+    {
+      "feature": "favorite_rank",
+      "delta_brier": 8e-06,
+      "delta_ece": 1.4e-05,
+      "roi_drop": 0.0,
+      "market_corr_drop": 0.000142,
+      "abs_delta_brier": 8e-06
+    },
+    {
+      "feature": "avg_speed_index_last5",
+      "delta_brier": 8e-06,
+      "delta_ece": 6e-06,
+      "roi_drop": 0.0,
+      "market_corr_drop": -0.000188,
+      "abs_delta_brier": 8e-06
+    },
+    {
+      "feature": "weight_carried",
+      "delta_brier": 0.0,
+      "delta_ece": 0.0,
+      "roi_drop": 0.0,
+      "market_corr_drop": 0.0,
+      "abs_delta_brier": 0.0
+    },
+    {
+      "feature": "age",
+      "delta_brier": 0.0,
+      "delta_ece": 0.0,
+      "roi_drop": 0.0,
+      "market_corr_drop": 0.0,
+      "abs_delta_brier": 0.0
+    },
+    {
+      "feature": "rest_days",
+      "delta_brier": 0.0,
+      "delta_ece": 0.0,
+      "roi_drop": 0.0,
+      "market_corr_drop": 0.0,
+      "abs_delta_brier": 0.0
+    },
+    {
+      "feature": "avg_finish_last5",
+      "delta_brier": -3e-06,
+      "delta_ece": 3e-06,
+      "roi_drop": 0.0,
+      "market_corr_drop": 4.7e-05,
+      "abs_delta_brier": 3e-06
+    }
+  ],
+  "top_leave_one_out": [
+    {
+      "feature": "recent_form_score",
+      "delta_brier": 0.006395,
+      "delta_ece": -0.08658,
+      "roi_drop": 650.0,
+      "uncertainty_delta": -0.044515,
+      "importance_score": 650.092975
+    },
+    {
+      "feature": "horse_weight",
+      "delta_brier": 0.002182,
+      "delta_ece": -0.070278,
+      "roi_drop": 0.0,
+      "uncertainty_delta": -0.028766,
+      "importance_score": 0.07246
+    },
+    {
+      "feature": "avg_finish_last5",
+      "delta_brier": 0.001154,
+      "delta_ece": 0.003446,
+      "roi_drop": 0.0,
+      "uncertainty_delta": 0.006196,
+      "importance_score": 0.0046
+    },
+    {
+      "feature": "favorite_rank",
+      "delta_brier": 0.001078,
+      "delta_ece": 0.002483,
+      "roi_drop": 0.0,
+      "uncertainty_delta": 0.0061,
+      "importance_score": 0.003561
+    },
+    {
+      "feature": "horse_weight_diff",
+      "delta_brier": 0.001056,
+      "delta_ece": 0.002356,
+      "roi_drop": 0.0,
+      "uncertainty_delta": 0.006035,
+      "importance_score": 0.003412
+    },
+    {
+      "feature": "odds",
+      "delta_brier": 0.001026,
+      "delta_ece": 0.002313,
+      "roi_drop": 0.0,
+      "uncertainty_delta": 0.005892,
+      "importance_score": 0.003339
+    },
+    {
+      "feature": "last_finish",
+      "delta_brier": 0.000679,
+      "delta_ece": 0.002605,
+      "roi_drop": 0.0,
+      "uncertainty_delta": 0.004963,
+      "importance_score": 0.003284
+    },
+    {
+      "feature": "avg_speed_index_last5",
+      "delta_brier": 0.000799,
+      "delta_ece": 0.002296,
+      "roi_drop": 0.0,
+      "uncertainty_delta": 0.001062,
+      "importance_score": 0.0030949999999999997
+    },
+    {
+      "feature": "weight_carried",
+      "delta_brier": -5e-06,
+      "delta_ece": -1.1e-05,
+      "roi_drop": 0.0,
+      "uncertainty_delta": -3.4e-05,
+      "importance_score": 1.6e-05
+    },
+    {
+      "feature": "age",
+      "delta_brier": 0.0,
+      "delta_ece": 0.0,
+      "roi_drop": 0.0,
+      "uncertainty_delta": 0.0,
+      "importance_score": 0.0
+    }
+  ]
+}

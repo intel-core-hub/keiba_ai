@@ -1,0 +1,19 @@
+kelly_fraction: 0.25
+max_fraction: 0.15
+min_edge: 0.02
+probability_shrink: 0.9
+top_n: 3
+min_odds: 1.0
+safe_mode: true
+shadow_mode: false
+calibration:
+    min_samples: 100
+    ideal_samples: 500
+    auto_refit: true
+diagnosis:
+    max_drawdown: 0.25
+    max_overfit_score: 0.70
+civilization_limits:
+    max_evolutions_per_day: 10
+    max_risk_jump: 0.15
+    max_change_fraction: 0.3

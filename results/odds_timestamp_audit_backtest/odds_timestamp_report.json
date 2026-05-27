@@ -1,0 +1,24 @@
+{
+  "status": "fail",
+  "issues": [
+    {
+      "issue_type": "ambiguous_odds",
+      "severity": "hard",
+      "message": "odds exists without a timestamp role; it is ambiguous and cannot be used as a safe feature.",
+      "rows": 1862
+    }
+  ],
+  "summary": {
+    "rows": 1862,
+    "labels": [
+      "ambiguous"
+    ],
+    "missing_available_at": 1862,
+    "missing_bet_time": 1862,
+    "missing_race_start_at": 1862,
+    "available_before_race_start": 0
+  },
+  "available_at_bet_time": 0,
+  "final_market_rows": 0,
+  "post_market_rows": 1862
+}

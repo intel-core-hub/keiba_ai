@@ -1,0 +1,19 @@
+scikit-learn
+pandas
+numpy
+joblib
+lightgbm
+streamlit
+fastapi
+uvicorn
+schedule
+requests
+beautifulsoup4
+PyYAML
+cryptography
+
+# Optional (development)
+pytest
+black
+matplotlib
+seaborn

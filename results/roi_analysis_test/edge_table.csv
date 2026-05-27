@@ -1,0 +1,4 @@
+﻿edge_bin,count,expected_positive_rate,realized_positive_rate,roi,realized_roi_pct,avg_expected_profit,avg_realized_profit,false_edge_rate,edge_mae,variance,calibration_gap,market_bias
+"(0.2, 0.5]",753,100.0,9.69,-0.19004,-19.003984,0.388057,-0.19004,90.31,1.930344,11.924217,0.18879,0.037512
+"(0.5, 1.0]",803,100.0,5.98,-0.186052,-18.60523,0.699514,-0.186052,94.02,2.313975,16.373828,0.158066,0.048073
+"(1.0, inf]",306,100.0,1.31,-0.710131,-71.013072,1.394114,-0.710131,98.69,2.625794,6.479407,0.109121,0.056685

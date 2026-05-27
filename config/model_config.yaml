@@ -1,0 +1,8 @@
+calibration_factor: 0.95
+noise_strength: 0.02
+base_rate: 0.12
+global_fitness:
+	profit: 0.45
+	drawdown: 0.25
+	stability: 0.20
+	survival: 0.10

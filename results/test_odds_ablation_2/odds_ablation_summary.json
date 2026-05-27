@@ -1,0 +1,142 @@
+{
+  "input": "data/raw/phase4_20240501.csv",
+  "model_kind": "boosted",
+  "train_ratio": 0.6,
+  "folds": 1,
+  "variants": [
+    {
+      "name": "full",
+      "available": true,
+      "reason": null,
+      "feature_columns": [
+        "odds",
+        "favorite_rank",
+        "weight_carried",
+        "age",
+        "horse_weight",
+        "horse_weight_diff",
+        "avg_finish_last5",
+        "avg_speed_index_last5",
+        "recent_form_score",
+        "last_finish",
+        "rest_days"
+      ],
+      "metrics": {
+        "brier": 0.085127,
+        "calibrated": 1.0,
+        "calibration_gap": 0.104881,
+        "ece": 0.151448,
+        "edge_mae": 3.74461,
+        "expected_profit_mean": 2.150527,
+        "feature_count": 11.0,
+        "log_loss": 0.319288,
+        "market_corr": -0.003023,
+        "market_mae": 0.098592,
+        "market_rmse": 0.114962,
+        "realized_profit_mean": 0.181818,
+        "roi_top1": 650.0,
+        "rows": 11.0,
+        "top1_bets": 2.0,
+        "top1_hit_rate": 50.0,
+        "top1_pnl": 11.0,
+        "uncertainty_high_rate": 0.0,
+        "uncertainty_mean": 0.479277,
+        "valid_rows": 11.0,
+        "prediction_rows": 11.0,
+        "distinct_races": 2.0
+      }
+    },
+    {
+      "name": "no_odds",
+      "available": true,
+      "reason": null,
+      "feature_columns": [
+        "favorite_rank",
+        "weight_carried",
+        "age",
+        "horse_weight",
+        "horse_weight_diff",
+        "avg_finish_last5",
+        "avg_speed_index_last5",
+        "recent_form_score",
+        "last_finish",
+        "rest_days"
+      ],
+      "metrics": {
+        "brier": 0.086153,
+        "calibrated": 1.0,
+        "calibration_gap": 0.110833,
+        "ece": 0.153761,
+        "edge_mae": 3.791645,
+        "expected_profit_mean": 2.215797,
+        "feature_count": 10.0,
+        "log_loss": 0.323062,
+        "market_corr": 0.047717,
+        "market_mae": 0.097832,
+        "market_rmse": 0.11643,
+        "realized_profit_mean": 0.181818,
+        "roi_top1": 650.0,
+        "rows": 11.0,
+        "top1_bets": 2.0,
+        "top1_hit_rate": 50.0,
+        "top1_pnl": 11.0,
+        "uncertainty_high_rate": 0.0,
+        "uncertainty_mean": 0.485169,
+        "valid_rows": 11.0,
+        "prediction_rows": 11.0,
+        "distinct_races": 2.0
+      }
+    },
+    {
+      "name": "market_only",
+      "available": true,
+      "reason": null,
+      "feature_columns": [
+        "odds",
+        "favorite_rank"
+      ],
+      "metrics": {
+        "brier": 0.094367,
+        "calibrated": 1.0,
+        "calibration_gap": 0.094571,
+        "ece": 0.094571,
+        "edge_mae": 3.686298,
+        "expected_profit_mean": 1.91155,
+        "feature_count": 2.0,
+        "log_loss": 0.348167,
+        "market_corr": 0.349856,
+        "market_mae": 0.093366,
+        "market_rmse": 0.101217,
+        "realized_profit_mean": 0.181818,
+        "roi_top1": 0.0,
+        "rows": 11.0,
+        "top1_bets": 2.0,
+        "top1_hit_rate": 0.0,
+        "top1_pnl": -2.0,
+        "uncertainty_high_rate": 0.0,
+        "uncertainty_mean": 0.470121,
+        "valid_rows": 11.0,
+        "prediction_rows": 11.0,
+        "distinct_races": 2.0
+      }
+    },
+    {
+      "name": "early_odds_only",
+      "available": false,
+      "reason": "no matching features",
+      "feature_columns": [],
+      "metrics": {
+        "available": 0.0
+      }
+    },
+    {
+      "name": "closing_odds",
+      "available": false,
+      "reason": "no matching features",
+      "feature_columns": [],
+      "metrics": {
+        "available": 0.0
+      }
+    }
+  ]
+}

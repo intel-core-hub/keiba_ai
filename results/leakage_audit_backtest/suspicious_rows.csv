@@ -1,0 +1,6 @@
+feature,reason,rows_suspect
+race_id,agg_full_vs_prior,1862
+odds,agg_full_vs_prior,1862
+expected_value,agg_full_vs_prior,1862
+actual_pos,agg_full_vs_prior,1862
+pnl,agg_full_vs_prior,1862

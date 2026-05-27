@@ -1,0 +1,12 @@
+﻿feature,delta_brier,delta_ece,roi_drop,market_corr_drop,abs_delta_brier
+recent_form_score,0.01403,-0.041754,650.0,0.011237,0.01403
+horse_weight,0.003619,-0.037626,0.0,0.540729,0.003619
+last_finish,0.000196,-7.1e-05,0.0,-0.022108,0.000196
+horse_weight_diff,6.6e-05,-3.7e-05,0.0,-0.015537,6.6e-05
+favorite_rank,8e-06,1.4e-05,0.0,0.000142,8e-06
+avg_speed_index_last5,8e-06,6e-06,0.0,-0.000188,8e-06
+weight_carried,0.0,0.0,0.0,0.0,0.0
+age,0.0,0.0,0.0,0.0,0.0
+rest_days,0.0,0.0,0.0,0.0,0.0
+avg_finish_last5,-3e-06,3e-06,0.0,4.7e-05,3e-06
+odds,-0.000341,-0.000111,0.0,-0.011243,0.000341

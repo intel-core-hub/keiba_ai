@@ -1,0 +1,4 @@
+﻿edge_bin,count,positive_edge_rate,edge_precision,avg_expected_profit,avg_realized_profit,edge_mae,expected_roi_pct,realized_roi_pct,calibration_gap,avg_edge_error,total_profit
+"(0.2, 0.5]",753,100.0,9.69,0.3881,-0.19,1.9303,138.81,81.0,0.1888,0.5781,-143.1
+"(0.5, 1.0]",803,100.0,5.98,0.6995,-0.1861,2.314,169.95,81.39,0.1581,0.8856,-149.4
+"(1.0, inf]",306,100.0,1.31,1.3941,-0.7101,2.6258,239.41,28.99,0.1091,2.1042,-217.3
