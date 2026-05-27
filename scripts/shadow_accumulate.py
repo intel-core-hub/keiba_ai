@@ -40,7 +40,7 @@ def _shadow_odds_confirmer(bet_info: dict) -> float:
 
 def build_loop() -> Phase2OperationalLoop:
     risk = RiskManager()
-    calibrator = CalibrationRefitJob().load_calibrator(ProbabilityCalibrator())
+    calibrator = CalibrationRefitJob(auto_refit_enabled=False).load_calibrator(ProbabilityCalibrator())
     engine = DecisionEngine(
         predictor=Predictor(),
         bet_sizer=BetSizer(risk_manager=risk),
@@ -48,7 +48,7 @@ def build_loop() -> Phase2OperationalLoop:
         edge_calculator=EdgeCalculator(),
         calibrator=calibrator,
     )
-    calibration_job = CalibrationRefitJob()
+    calibration_job = CalibrationRefitJob(auto_refit_enabled=True)
 
     def on_settle(_row: dict) -> None:
         calibration_job.record_new_settlement(1)

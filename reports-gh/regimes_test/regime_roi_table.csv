@@ -1,0 +1,5 @@
+regime,n_events,total_profit,total_stake,roi
+calibration_collapse,332,1020.2,332.0,3.0728915662650604
+edge_deterioration,471,-471.0,471.0,-1.0
+favorite_distortion,381,-381.0,381.0,-1.0
+market_efficiency_spike,678,-678.0,678.0,-1.0

@@ -24,7 +24,7 @@ class BetConfig:
 
     # --- AI過信防止 ---
     probability_shrink: float = 0.90
-    odds_slip: float = 0.00
+    odds_slip: float = 0.05
 
     # --- 分散制御 ---
     variance_penalty: float = 0.15

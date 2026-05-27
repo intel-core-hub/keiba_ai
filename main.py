@@ -192,7 +192,7 @@ class SurvivalOS:
             risk_manager=self.risk_manager
         )
 
-        self.calibration_job = CalibrationRefitJob()
+        self.calibration_job = CalibrationRefitJob(auto_refit_enabled=False)
 
         def _on_bet_settled(_row):
             self.calibration_job.record_new_settlement(1)

@@ -13,10 +13,12 @@ class EdgeCalculator:
         min_edge=0.02,
         market_trust=0.35,
         max_edge_clip=0.25,
+        odds_slip=0.05,
     ):
         self.min_edge = min_edge
         self.market_trust = market_trust
         self.max_edge_clip = max_edge_clip
+        self.odds_slip = odds_slip
 
     def odds_to_prob(self, odds):
         if odds <= 1.0:
@@ -32,7 +34,9 @@ class EdgeCalculator:
 
     def calculate_edge(self, ai_prob, odds):
 
-        market_prob = self.odds_to_prob(odds)
+        safe_odds = max(float(odds) * (1.0 - float(self.odds_slip)), 1.0)
+
+        market_prob = self.odds_to_prob(safe_odds)
 
         adjusted_prob = self.blend_with_market(
             ai_prob,
@@ -47,7 +51,7 @@ class EdgeCalculator:
             self.max_edge_clip,
         )
 
-        ev = adjusted_prob * odds - 1
+        ev = adjusted_prob * safe_odds - 1
 
         confidence_edge = edge * adjusted_prob
 
@@ -55,6 +59,7 @@ class EdgeCalculator:
             "ai_prob": ai_prob,
             "market_prob": market_prob,
             "adjusted_prob": adjusted_prob,
+            "safe_odds": safe_odds,
             "edge": edge,
             "confidence_edge": confidence_edge,
             "expected_value": ev,

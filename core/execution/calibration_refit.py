@@ -3,14 +3,51 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:  # pragma: no cover - Python < 3.9 fallback
+    ZoneInfo = None
+
 import numpy as np
 import pandas as pd
+import yaml
 
 from core.prediction.calibration import ProbabilityCalibrator
 from learning.reliability_curve import ReliabilityCurveAnalyzer
+
+
+def _parse_bool(value: Any, default: bool = False) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+
+    text = str(value).strip().lower()
+    if text in {"1", "true", "yes", "on"}:
+        return True
+    if text in {"0", "false", "no", "off"}:
+        return False
+    return default
+
+
+def _load_auto_refit_setting(settings_path: Path) -> bool:
+    if not settings_path.exists():
+        return False
+
+    try:
+        payload = yaml.safe_load(settings_path.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return False
+
+    calibration = payload.get("calibration", {}) if isinstance(payload, dict) else {}
+    if not isinstance(calibration, dict):
+        return False
+
+    return _parse_bool(calibration.get("auto_refit"), default=False)
 
 
 class CalibrationRefitJob:
@@ -25,6 +62,9 @@ class CalibrationRefitJob:
         recalibration_ece_threshold: float = 0.06,
         slippage_alert_threshold: float = -0.10,
         slippage_window: int = 20,
+        auto_refit_enabled: Optional[bool] = None,
+        weekend_embargo: bool = True,
+        timezone_name: str = "Asia/Tokyo",
     ):
         self.bets_log_path = Path(bets_log_path)
         self.calibrator_path = Path(calibrator_path)
@@ -33,8 +73,28 @@ class CalibrationRefitJob:
         self.recalibration_ece_threshold = float(recalibration_ece_threshold)
         self.slippage_alert_threshold = float(slippage_alert_threshold)
         self.slippage_window = int(slippage_window)
+        self.auto_refit_enabled = _load_auto_refit_setting(
+            Path(__file__).resolve().parents[2] / "config" / "settings.yaml"
+        ) if auto_refit_enabled is None else bool(auto_refit_enabled)
+        self.weekend_embargo = bool(weekend_embargo)
+        self.timezone_name = timezone_name
         self.last_result: Optional[Dict[str, Any]] = None
         self._samples_since_last_fit = 0
+
+    def _now(self) -> datetime:
+        if ZoneInfo is not None:
+            try:
+                return datetime.now(ZoneInfo(self.timezone_name))
+            except Exception:
+                pass
+        return datetime.now()
+
+    def _execution_embargo_active(self, now: Optional[datetime] = None) -> bool:
+        if not self.weekend_embargo:
+            return False
+
+        current = now or self._now()
+        return current.weekday() >= 5
 
     def _load_settled_rows(self) -> pd.DataFrame:
         if not self.bets_log_path.exists():
@@ -83,6 +143,12 @@ class CalibrationRefitJob:
         force: bool = False,
         reliability_analyzer: Optional[ReliabilityCurveAnalyzer] = None,
     ) -> tuple[bool, str]:
+        if not self.auto_refit_enabled:
+            return False, "AUTO_REFIT_DISABLED"
+
+        if self._execution_embargo_active():
+            return False, "EXECUTION_EMBARGO_WEEKEND"
+
         if force:
             return True, "FORCED"
 
