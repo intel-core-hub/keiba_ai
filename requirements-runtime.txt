@@ -1,0 +1,19 @@
+scikit-learn
+numpy
+joblib
+lightgbm
+# streamlit removed from runtime
+fastapi
+uvicorn
+schedule
+# requests removed - runtime uses aiohttp
+aiohttp
+beautifulsoup4
+PyYAML
+cryptography
+
+# Optional (development) - not included in runtime
+# pytest
+# black
+# matplotlib
+# seaborn
