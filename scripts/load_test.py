@@ -11,9 +11,35 @@ import os
 import sys
 import statistics
 from time import perf_counter
-from core.low_latency_execution import LowLatencyExecutionEngine
-from core.audit_hash_log import ImmutableAuditLog
-from core.circuit_breaker import CircuitBreaker
+import importlib.util
+import types
+from pathlib import Path
+
+# Load core submodules directly by file path to avoid executing heavy core.__init__
+repo_root = Path(__file__).resolve().parents[1]
+core_path = repo_root / "core"
+
+# Create a minimal 'core' package module so relative imports inside core submodules work
+core_pkg = types.ModuleType("core")
+core_pkg.__path__ = [str(core_path)]
+sys.modules["core"] = core_pkg
+
+def _load_core_mod(name, relpath):
+    spec = importlib.util.spec_from_file_location(name, str(core_path / relpath))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+lowlat_mod = _load_core_mod("core.low_latency_execution", "low_latency_execution.py")
+ll = lowlat_mod
+cb_mod = _load_core_mod("core.circuit_breaker", "circuit_breaker.py")
+cbm = cb_mod
+audit_mod = _load_core_mod("core.audit_hash_log", "audit_hash_log.py")
+audmod = audit_mod
+
+LowLatencyExecutionEngine = ll.LowLatencyExecutionEngine
+ImmutableAuditLog = audmod.ImmutableAuditLog
+CircuitBreaker = cbm.CircuitBreaker
 import json
 import csv
 import os
@@ -26,7 +52,8 @@ except Exception:
 
 class MockPredictor:
     def predict_raw(self, features):
-        return [0.2 for _ in range(len(features))] if features else [0.1]
+        # Return a scalar probability for a single selection; keep API compatible
+        return 0.2 if features else 0.1
 
 
 class MockRiskManager:
