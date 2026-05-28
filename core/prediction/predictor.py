@@ -6,7 +6,6 @@ import numpy as np
 import time
 import json
 from collections import OrderedDict
-import pandas as pd
 
 from sklearn.metrics import (
     brier_score_loss,
@@ -113,6 +112,8 @@ class Predictor:
         dataframe:
         historical horse records
         """
+
+        import pandas as pd
 
         if target_col not in dataframe:
 
