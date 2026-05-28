@@ -4,6 +4,12 @@ Requires env vars for real run: IPAT_API_URL, IPAT_API_KEY. Otherwise runs with 
 """
 import asyncio
 import os
+import sys
+from pathlib import Path
+
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from core.ipat_adapter import build_from_env
 from core.audit_hash_log import ImmutableAuditLog
 from core.circuit_breaker import CircuitBreaker

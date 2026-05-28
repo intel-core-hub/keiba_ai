@@ -90,7 +90,7 @@ class NetkeibaScraper:
         for attempt in range(1, _MAX_RETRIES + 1):
             try:
                 self._wait()
-                response = self.session.get(url, timeout=15)
+                response = self.session.get(url, timeout=(3.05, 10.0))
 
                 # 4xx はリトライしても無駄
                 if 400 <= response.status_code < 500:

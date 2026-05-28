@@ -192,7 +192,7 @@ class SurvivalOS:
             risk_manager=self.risk_manager
         )
 
-        self.calibration_job = CalibrationRefitJob(auto_refit_enabled=False)
+        self.calibration_job = CalibrationRefitJob()
 
         def _on_bet_settled(_row):
             self.calibration_job.record_new_settlement(1)
@@ -348,110 +348,10 @@ class SurvivalOS:
             bankroll,
             recent_profits,
         ):
-            if not ENABLE_RESEARCH:
-                return self._default_latency_snapshot(
-                    race_id,
-                    candidates,
-                )
-        
-            if self._causal_engine is None:
-                from core.causal_engine import CausalEngine
-                self._causal_engine = CausalEngine()
-        
-            if self._future_engine is None:
-                from core.future_engine import FutureEngine
-                self._future_engine = FutureEngine()
-        
-            causal = self._causal_engine
-            future = self._future_engine
-        
-            context_event = causal.register_event(
-                event_type="race_context",
-                payload={
-                    "race_id": race_id,
-                    "bankroll": bankroll,
-                    "regime": meta_state.get("regime", "NORMAL"),
-                    "candidate_count": len(candidates),
-                    "recent_profit_mean": float(
-                        sum(recent_profits) / len(recent_profits)
-                    ) if recent_profits else 0.0,
-                },
-                severity=min(
-                    1.0,
-                    0.2 + 0.02 * len(candidates),
-                ),
+            return self._default_latency_snapshot(
+                race_id,
+                candidates,
             )
-        
-            linked_count = 0
-            for candidate in candidates[:8]:
-                effect_event = causal.register_event(
-                    event_type="bet_candidate",
-                    payload={
-                        "selection": candidate.get("selection", "UNKNOWN"),
-                        "odds": float(candidate.get("odds", 0.0)),
-                        "edge": float(candidate.get("edge", 0.0)),
-                    },
-                    severity=min(
-                        1.0,
-                        abs(float(candidate.get("edge", 0.0))) + 0.1,
-                    ),
-                )
-                link = causal.link_events(
-                    context_event,
-                    effect_event,
-                    confidence=max(
-                        0.55,
-                        min(0.95, 0.55 + abs(float(candidate.get("edge", 0.0)))),
-                    ),
-                )
-                if link is not None:
-                    linked_count += 1
-        
-            causal_summary = causal.root_cause_analysis(
-                "bet_candidate",
-            )
-        
-            world_state = {
-                "race_id": race_id,
-                "bankroll": bankroll,
-                "regime": meta_state.get("regime", "NORMAL"),
-                "candidate_count": len(candidates),
-                "recent_profits": list(recent_profits[-10:]),
-                "linked_count": linked_count,
-            }
-            future_scenarios = future.generate_futures(
-                world_state,
-                depth=2,
-            )
-        
-            future_probabilities = [
-                float(item.get("probability", 0.0))
-                for item in future_scenarios[:10]
-            ]
-            future_risk = max(future_probabilities) if future_probabilities else 0.0
-            causal_risk = min(
-                1.0,
-                linked_count / max(1, len(candidates)),
-            )
-            risk_bias = min(
-                1.0,
-                0.55 * future_risk + 0.45 * causal_risk,
-            )
-        
-            return {
-                "race_id": race_id,
-                "candidate_count": len(candidates),
-                "source": "background_refresh",
-                "risk_bias": risk_bias,
-                "confidence_multiplier": max(0.35, 1.0 - risk_bias * 0.35),
-                "bet_multiplier": max(0.25, 1.0 - risk_bias * 0.45),
-                "halt": risk_bias >= 0.92,
-                "causal_summary": causal_summary,
-                "future_summary": {
-                    "scenario_count": len(future_scenarios),
-                    "future_risk": future_risk,
-                },
-            }
     
         def _apply_latency_snapshot(
             self,
@@ -1089,22 +989,7 @@ class SurvivalOS:
         # -----------------------------------------
 
         print("\n[PORTFOLIO]")
-
-        try:
-
-            import pandas as pd
-
-            df = pd.read_csv(
-                "logs/bets.csv"
-            )
-
-            print({
-                "bets_logged":
-                    len(df)
-            })
-
-        except:
-            pass
+        print("Portfolio diagnostics moved to scripts/admin_portfolio_summary.py (offline).")
 
     # =================================================
     # Monte Carlo
@@ -1112,31 +997,7 @@ class SurvivalOS:
 
     def monte_carlo_check(self):
 
-        try:
-
-            import pandas as pd
-
-            df = pd.read_csv(
-                "logs/bets.csv"
-            )
-
-            probs = (
-                df["probability"]
-                .astype(float)
-                .tolist()
-            )
-
-            odds = (
-                df["odds"]
-                .astype(float)
-                .tolist()
-            )
-
-            stakes = (
-                df["stake"]
-                .astype(float)
-                .tolist()
-            )
+        print("Monte Carlo diagnostics moved to scripts/admin_portfolio_summary.py (offline).")
 
             report = (
                 self.monte_carlo

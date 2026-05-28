@@ -1,6 +1,7 @@
 import asyncio
 import time
 import logging
+import inspect
 from typing import Dict, Any, Optional
 
 from .audit_hash_log import ImmutableAuditLog
@@ -26,6 +27,16 @@ class LowLatencyExecutionEngine:
         self.circuit_breaker = circuit_breaker
         self.is_locked = False
         self.staleness_threshold = staleness_threshold
+
+    def _predict_raw_safe(self, features: Any, odds: Any):
+        predict_raw = self.predictor.predict_raw
+        try:
+            parameter_count = len(inspect.signature(predict_raw).parameters)
+        except Exception:
+            parameter_count = 2
+        if parameter_count >= 2:
+            return predict_raw(features, odds)
+        return predict_raw(features)
 
     async def execute_critical_path(self, race_id: str, timeout_sec: float = 2.0):
         """
@@ -64,10 +75,36 @@ class LowLatencyExecutionEngine:
             loop = asyncio.get_running_loop()
             # Run predictor in threadpool to avoid blocking event loop
             if hasattr(self.predictor, "predict_raw"):
-                predicted_probs = await asyncio.wait_for(
-                    loop.run_in_executor(None, self.predictor.predict_raw, features),
-                    timeout=timeout_sec,
-                )
+                odds = odds_snapshot.get("odds")
+                odds_values = odds if isinstance(odds, (list, tuple)) else None
+                if isinstance(features, (list, tuple)):
+                    feature_items = features
+                else:
+                    feature_items = [features]
+
+                probs = []
+                for idx, item in enumerate(feature_items):
+                    if isinstance(item, dict):
+                        feature_payload = item
+                    else:
+                        feature_payload = {f"feature_{idx}": item}
+                    odds_for_item = (
+                        odds_values[idx]
+                        if odds_values is not None and idx < len(odds_values)
+                        else odds_values[-1] if odds_values else odds
+                    )
+
+                    prob = await asyncio.wait_for(
+                        loop.run_in_executor(
+                            None,
+                            self._predict_raw_safe,
+                            feature_payload,
+                            odds_for_item,
+                        ),
+                        timeout=timeout_sec,
+                    )
+                    probs.append(prob)
+                predicted_probs = probs
             elif hasattr(self.predictor, "predict"):
                 # predictor.predict expects (race_id, selection, features, odds)
                 # If features is a list of per-selection features, call predict per-selection.

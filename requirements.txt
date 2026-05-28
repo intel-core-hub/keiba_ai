@@ -8,6 +8,7 @@ fastapi
 uvicorn
 schedule
 requests
+aiohttp
 beautifulsoup4
 PyYAML
 cryptography

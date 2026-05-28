@@ -1,5 +1,7 @@
 # learning/performance_analyzer.py
 
+import os
+
 import pandas as pd
 import numpy as np
 
@@ -20,10 +22,17 @@ class PerformanceAnalyzer:
     を分析する
     """
 
+    _cache = {}
+
     def analyze(
         self,
         path="logs/bets.csv",
     ):
+
+        mtime = os.path.getmtime(path)
+        cache_key = (os.path.abspath(path), mtime)
+        if cache_key in self._cache:
+            return self._cache[cache_key]
 
         df = pd.read_csv(path)
 
@@ -119,6 +128,8 @@ class PerformanceAnalyzer:
 
         else:
             brier = None
+
+        ece = self._expected_calibration_error(valid)
 
         # -----------------------------------------
         # Bankroll Curve
@@ -217,13 +228,19 @@ class PerformanceAnalyzer:
         regime_roi = self._regime_roi(df)
         edge_quality = self._edge_quality(df)
         uncertainty_analysis = analyze_uncertainty_history(df)
+        readiness = self._phase1_readiness(df)
 
-        return {
+        result = {
             "roi": round(roi, 4),
             "hit_rate": round(hit_rate, 4),
             "brier": (
                 round(brier, 4)
                 if brier is not None
+                else None
+            ),
+            "ece": (
+                round(ece, 4)
+                if ece is not None
                 else None
             ),
             "max_drawdown": round(
@@ -255,6 +272,97 @@ class PerformanceAnalyzer:
             "roi_by_regime": regime_roi,
             "edge_quality": edge_quality,
             "uncertainty_analysis": uncertainty_analysis,
+            "phase1_readiness": readiness,
+        }
+        self._cache = {
+            key: value
+            for key, value in self._cache.items()
+            if key[0] != cache_key[0]
+        }
+        self._cache[cache_key] = result
+        return result
+
+    def _expected_calibration_error(self, valid, bins=10):
+        if valid is None or valid.empty:
+            return None
+
+        work = valid[["probability", "hit"]].dropna().copy()
+        if work.empty:
+            return None
+
+        work["probability"] = pd.to_numeric(work["probability"], errors="coerce")
+        work["hit"] = pd.to_numeric(work["hit"], errors="coerce")
+        work = work.dropna(subset=["probability", "hit"])
+        if work.empty:
+            return None
+
+        edges = np.linspace(0.0, 1.0, bins + 1)
+        total = len(work)
+        ece = 0.0
+        for start, end in zip(edges[:-1], edges[1:]):
+            if end == 1.0:
+                bucket = work[(work["probability"] >= start) & (work["probability"] <= end)]
+            else:
+                bucket = work[(work["probability"] >= start) & (work["probability"] < end)]
+            if bucket.empty:
+                continue
+            ece += (len(bucket) / total) * abs(
+                float(bucket["probability"].mean()) - float(bucket["hit"].mean())
+            )
+        return float(ece)
+
+    def _phase1_readiness(self, df):
+        if "mode" in df.columns:
+            shadow = df[df["mode"].astype(str).str.upper() == "SHADOW_MODE"].copy()
+        else:
+            shadow = df.copy()
+
+        if "hit" in shadow.columns:
+            shadow["hit"] = pd.to_numeric(shadow["hit"], errors="coerce")
+            settled = shadow.dropna(subset=["hit"])
+        else:
+            settled = shadow.iloc[0:0]
+
+        valid = settled.dropna(subset=["probability", "hit"]) if "probability" in settled.columns else settled.iloc[0:0]
+        if valid.empty:
+            brier = None
+            ece = None
+        else:
+            probs = pd.to_numeric(valid["probability"], errors="coerce")
+            hits = pd.to_numeric(valid["hit"], errors="coerce")
+            metric_frame = pd.DataFrame({"probability": probs, "hit": hits}).dropna()
+            if metric_frame.empty:
+                brier = None
+                ece = None
+            else:
+                brier = float(np.mean((metric_frame["probability"] - metric_frame["hit"]) ** 2))
+                ece = self._expected_calibration_error(metric_frame)
+
+        ev_column = None
+        for candidate in ("expected_value_per_unit", "expected_value"):
+            if candidate in settled.columns:
+                ev_column = candidate
+                break
+
+        mean_ev = None
+        if ev_column is not None and not settled.empty:
+            mean_ev = float(pd.to_numeric(settled[ev_column], errors="coerce").mean())
+
+        checks = {
+            "shadow_bets_300": int(len(settled)) >= 300,
+            "ev_positive": mean_ev is not None and mean_ev > 0.0,
+            "brier_below_0_22": brier is not None and float(brier) < 0.22,
+            "ece_below_0_05": ece is not None and float(ece) < 0.05,
+        }
+
+        return {
+            "phase": "PHASE_1_SHADOW",
+            "ready": all(checks.values()),
+            "shadow_bets": int(len(settled)),
+            "mean_ev": round(mean_ev, 6) if mean_ev is not None else None,
+            "brier": round(float(brier), 6) if brier is not None else None,
+            "ece": round(float(ece), 6) if ece is not None else None,
+            "checks": checks,
         }
 
     def _segmented_roi(self, df, col, bins):

@@ -43,6 +43,7 @@ The content is organized as follows:
 </file_summary>
 
 <directory_structure>
+.github/workflows/governance.yml
 .github/workflows/load_test.yml
 .github/workflows/staging_load_test.yml
 config/bankroll.yaml
@@ -59,11 +60,8 @@ core/adaptation/self_modifier.py
 core/adaptation/strategy_evolver.py
 core/alert_manager.py
 core/alignment_constitution.py
-core/alignment/__init__.py
 core/alignment/alignment_constitution.py
-core/alignment/constitutional_rules.py
 core/alignment/governance_engine.py
-core/alignment/policy_validator.py
 core/audit_hash_log.py
 core/audit_logger.py
 core/audit/__init__.py
@@ -95,31 +93,10 @@ core/betting/uncertainty_filter.py
 core/betting/uncertainty_monitor.py
 core/betting/uncertainty_sizing.py
 core/capital_allocator.py
-core/causal_engine.py
 core/circuit_breaker.py
-core/civilization_immune_system.py
-core/civilization_memory.py
-core/civilization_orchestrator.py
-core/civilization_strategy_engine.py
-core/cognition/__init__.py
-core/cognition/cognition.py
-core/cognition/cognitive_state..py
-core/cognition/meta_ai.py
-core/cognition/meta_cognition.py
-core/cognition/meta_controller.py
-core/cognition/reflection_engine.py
-core/cognition/self_awareness_engine.py
-core/cognition/self_awareness.py
-core/cognition/uncertainty_engine.py
 core/config_manager.py
 core/decision_engine.py
 core/decision_logger.py
-core/economics/__init__.py
-core/economics/allocation_engine.py
-core/economics/civilization_capital.py
-core/economics/resource_economy.py
-core/economics/scarcity_manager.py
-core/economics/sustainability_engine.py
 core/evolution/__init__.py
 core/evolution/diagnosis_engine.py
 core/evolution/evolution_engine.py
@@ -132,42 +109,17 @@ core/execution/bet_executor.py
 core/execution/calibration_refit.py
 core/execution/execution_engine.py
 core/execution/odds_contract.py
-core/execution/planner.py
 core/execution/scheduler.py
-core/execution/task_router.py
-core/execution/workflow_runtime.py
 core/executive_controller.py
-core/future_engine.py
-core/future_synthesis_engine.py
-core/future/__init__.py
-core/future/existential_mapper.py
 core/future/future_engine.py
 core/future/future_synthesis_engine.py
-core/future/long_horizon_planner.py
-core/future/scenario_generator.py
 core/horse_history_builder.py
-core/immune/__init__.py
-core/immune/anomaly_detector.py
 core/immune/civilization_immune_system.py
-core/immune/corruption_detector.py
-core/immune/integrity_verifier.py
-core/immune/quarantine_manager.py
-core/interfaces/__init__.py
-core/interfaces/agent_interface.py
-core/interfaces/api_interface.py
-core/interfaces/command_interface.py
-core/interfaces/observer_interface.py
-core/interfaces/websocket_interface.py
 core/ipat_adapter.py
 core/key_manager.py
 core/knowledge_graph.py
-core/knowledge/__init__.py
 core/knowledge/causal_engine.py
-core/knowledge/contradiction_detector.py
-core/knowledge/entity_resolver.py
 core/knowledge/knowledge_graph.py
-core/knowledge/ontology_engine.py
-core/knowledge/state_registry.py
 core/low_latency_execution.py
 core/market/__init__.py
 core/market/advanced_regime_detector.py
@@ -184,7 +136,6 @@ core/memory/memory_consolidation.py
 core/memory/memory_index.py
 core/memory/semantic_memory.py
 core/memory/state_manager.py
-core/meta_cognition.py
 core/meta_controller.py
 core/monitoring/__init__.py
 core/monitoring/alert_manager.py
@@ -194,11 +145,6 @@ core/monitoring/diagnostics_engine.py
 core/monitoring/health_monitor.py
 core/monitoring/model_health.py
 core/monitoring/telemetry.py
-core/orchestration/__init__.py
-core/orchestration/civilization_orchestrator.py
-core/orchestration/coordination_engine.py
-core/orchestration/legacy_civilization_orchestrator.py
-core/orchestration/recursive_governance.py
 core/portfolio_allocator.py
 core/prediction/__init__.py
 core/prediction/calibration.py
@@ -214,41 +160,22 @@ core/replay/decision_reconstructor.py
 core/replay/historical_snapshot_loader.py
 core/replay/replay_engine.py
 core/replay/replay_validator.py
-core/research/__init__.py
 core/research/autonomous_researcher.py
-core/research/discovery_engine.py
-core/research/experiment_engine.py
-core/research/hypothesis_engine.py
-core/research/unknown_detector.py
 core/resilience_analyzer.py
 core/risk_manager.py
 core/ruin_probability.py
+core/runtime_enforcement.py
 core/security/__init__.py
-core/security/attack_surface_monitor.py
-core/security/authentication.py
-core/security/authorization.py
-core/security/cryptographic_integrity.py
 core/security/emergency_shutdown.py
-core/security/sandbox_manager.py
 core/self_modifier.py
 core/state_manager.py
-core/strategy/__init__.py
-core/strategy/civilization_strategy_engine.py
-core/strategy/doctrine_engine.py
 core/strategy/executive_controller.py
-core/strategy/grand_strategy.py
-core/strategy/objective_manager.py
 core/strategy/resource_allocator.py
 core/stress_test_engine.py
 core/survival_guard.py
 core/survival_metrics.py
 core/survival_policy.py
-core/survival/__init__.py
-core/survival/resilience_engine.py
-core/survival/resource_guardian.py
-core/survival/risk_engine.py
 core/survival/survival_policy.py
-core/survival/threat_model.py
 core/system_orchestrator.py
 core/utilities/__init__.py
 core/utilities/async_tools.py
@@ -256,20 +183,16 @@ core/utilities/config_loader.py
 core/utilities/retry_utils.py
 core/utilities/serialization.py
 core/utilities/time_utils.py
-core/world_model.py
-core/world/__init__.py
-core/world/civilization_simulator.py
-core/world/ecological_model.py
-core/world/environment_simulator.py
-core/world/geopolitical_model.py
-core/world/world_model.py
 dashboard/app.py
 dashboard/control_panel.py
 dashboard/execution_gap_monitor.py
 dashboard/streamlit_app.py
+docs/ADAPTIVE_SURVIVAL_OS.md
 execution/phase2_loop.py
 execution/race_runner.py
 execution/result_input.py
+execution/scheduler.py
+GOVERNANCE_README.md
 infrastructure/api_server.py
 infrastructure/cluster_manager.py
 infrastructure/database.py
@@ -297,13 +220,21 @@ learning/updater.py
 learning/walk_forward.py
 main.py
 memory/knowledge_graph.py
-meta/ai_evaluator.py
-meta/portfolio_manager.py
-meta/regime_director.py
 production/__init__.py
 README_PRODUCTION.md
 requirements.txt
 research/__init__.py
+research/archived/core_cognition/__init__.py
+research/archived/core_cognition/meta_ai.py
+research/archived/core_cognition/meta_cognition.py
+research/archived/core_cognition/meta_controller.py
+research/archived/core_economics/resource_economy.py
+research/archived/core_meta_cognition.py
+research/archived/core_world_model.py
+research/archived/core_world/world_model.py
+research/archived/meta/ai_evaluator.py
+research/archived/meta/portfolio_manager.py
+research/archived/meta/regime_director.py
 research/autonomous_researcher.py
 research/future/future_engine.py
 research/future/future_synthesis_engine.py
@@ -320,6 +251,8 @@ scripts/check_imports.py
 scripts/collect_data.py
 scripts/counterfactual_common.py
 scripts/counterfactual_replay.py
+scripts/critical_path_linter.py
+scripts/duplicate_impl_detector.py
 scripts/ev_analysis.py
 scripts/export_pubkey.py
 scripts/feature_contribution_analyzer.py
@@ -343,8 +276,10 @@ scripts/publish_pubkey.py
 scripts/roi_analysis.py
 scripts/roi_analyzer.py
 scripts/run_pipeline.py
+scripts/runtime_import_scanner.py
 scripts/schedule_simulation.py
 scripts/shadow_accumulate.py
+scripts/smoke_test.py
 scripts/test_critical_path.py
 scripts/train_model.py
 scripts/uncertainty_analysis.py
@@ -357,7 +292,10 @@ strategies/__init__.py
 strategies/explorer_ai.py
 strategies/market_ai.py
 strategies/wide_ai.py
+tests/test_audit_stage3_fixes.py
 tests/test_bet_executor_ev.py
+tests/test_latency_regression.py
+tests/test_replay_determinism.py
 tools/apply_model_to_full.py
 tools/architecture_audit.py
 tools/regime_analysis.py
@@ -370,6 +308,400 @@ validation/walk_forward_validation.py
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path=".github/workflows/governance.yml">
+name: Governance Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Runtime import scanner
+        run: python scripts/runtime_import_scanner.py
+      - name: Critical path linter
+        run: python scripts/critical_path_linter.py
+      - name: Duplicate implementation detector
+        run: python scripts/duplicate_impl_detector.py
+      - name: Run tests
+        run: pytest -q
+</file>
+
+<file path="core/runtime_enforcement.py">
+"""Runtime enforcement helpers for production governance.
+
+This module provides lightweight guards that can be optionally imported by runtime
+entrypoints to detect forbidden imports or runtime conditions and fail-fast.
+The checks are intentionally simple and fast.
+"""
+⋮----
+FORBIDDEN_TOP_LEVEL = (
+⋮----
+def check_imported_modules(forbidden: Iterable[str] = FORBIDDEN_TOP_LEVEL)
+⋮----
+"""Raise RuntimeError if a forbidden top-level module is present in sys.modules."""
+found = []
+⋮----
+top = name.split(".")[0]
+⋮----
+def enforce()
+⋮----
+"""Convenience entrypoint used by runtime to perform enforcement checks."""
+</file>
+
+<file path="docs/ADAPTIVE_SURVIVAL_OS.md">
+Adaptive Survival OS
+=====================
+
+Autonomous Production Governance Protocol v1.1
+
+MANDATORY EXECUTION MODEL
+
+The AI agent is NOT allowed to behave as:
+
+* an autonomous inventor
+* a speculative architect
+* a recursive abstraction generator
+* a feature maximizer
+
+The AI agent MUST behave as:
+
+* a production survivability engineer
+
+The primary optimization target is:
+
+* long-term operational continuity
+* bounded risk
+* deterministic execution
+* replayability
+* latency safety
+* architectural convergence
+
+PRIMARY FAILURE WARNING
+
+The most dangerous failure mode is COMPLEXITY COLLAPSE: recursive abstractions, duplicated execution paths, runtime coupling growth, hidden state mutation, increasing latency variance, audit impossibility, operational unpredictability.
+
+MANDATORY DEVELOPMENT PRIORITY
+
+1. runtime simplification
+2. canonical architecture enforcement
+3. deterministic state ownership
+4. immutable snapshots
+5. critical-path isolation
+6. latency governance
+7. failure containment
+8. replay determinism
+9. auditability
+10. calibration robustness
+11. production survivability
+12. research sophistication
+
+HARD PRODUCTION CONSTRAINTS
+
+MAXIMUM CRITICAL PATH LATENCY:
+- p50 < 20ms
+- p95 < 50ms
+- p99 < 100ms
+
+CRITICAL PATH ALLOWLIST
+
+Only these operations are allowed during race-close execution:
+
+* immutable snapshot lookup
+* inference
+* EV calculation
+* risk clamp
+* execution dispatch
+* append-only audit enqueue
+
+ABSOLUTELY FORBIDDEN IN CRITICAL PATH
+
+List includes (non-exhaustive): pandas, dataframe operations, joins, sorting, recursive reasoning, calibration fitting, replay validation, feature generation, CSV writes, JSON serialization, synchronous disk I/O, network retries, governance evaluation, memory consolidation, self-modification, diagnostics aggregation, shadow imports, research imports.
+
+RUNTIME IMPORT GOVERNANCE
+
+The runtime layer MUST NEVER import modules under these top-level packages or folders:
+
+* research
+* experimental
+* recursive
+* civilization
+* memory
+* future
+* alignment
+* autonomous
+* self_modify
+* notebooks
+* training
+
+SINGLE SOURCE OF TRUTH POLICY, EVENT-DRIVEN MANDATE, IMMUTABLE SNAPSHOT MANDATE, DETERMINISTIC REPLAY REQUIREMENT, FEATURE LINEAGE REQUIREMENT, MODEL GOVERNANCE, CALIBRATION GOVERNANCE, UNCERTAINTY DECOMPOSITION REQUIREMENT, MARKET DEPENDENCE GOVERNANCE, FAILURE CONTAINMENT MANDATE, CIRCUIT BREAKER REQUIREMENT, ASYNC GOVERNANCE, STATE OWNERSHIP RULE, OBSERVABILITY REQUIREMENT, APPEND-ONLY AUDIT MANDATE, PRODUCTION SAFETY TIERS, AUTOMATIC REJECTION CONDITIONS, REQUIRED CI / GOVERNANCE CHECKS, MANDATORY DEPLOYMENT MODEL, MANDATORY SHUTDOWN CONDITIONS, AGENT SUCCESS METRIC, FINAL CONSTITUTIONAL DIRECTIVE
+
+See the project README and the governance scripts under `scripts/` for automated checks and CI gates that enforce these rules.
+</file>
+
+<file path="execution/scheduler.py">
+"""Production scheduler entrypoint.
+
+The dashboard never imports or starts this module. Run it as a separate
+process when operating Survival OS.
+"""
+⋮----
+def main() -> None
+⋮----
+scheduler = SurvivalScheduler()
+</file>
+
+<file path="GOVERNANCE_README.md">
+Governance checks
+=================
+
+This repository includes a set of lightweight governance tools and tests to enforce the
+Adaptive Survival OS production rules. Files added:
+
+- `docs/ADAPTIVE_SURVIVAL_OS.md` — constitutional text
+- `scripts/runtime_import_scanner.py` — detects forbidden runtime imports
+- `scripts/critical_path_linter.py` — detects forbidden critical-path constructs
+- `scripts/duplicate_impl_detector.py` — detects duplicate top-level implementations
+- `core/runtime_enforcement.py` — runtime guard helpers (imported opt-in)
+- `tests/` — replay determinism and latency regression tests
+- `.github/workflows/governance.yml` — CI workflow that runs checks and tests
+
+Run locally:
+
+```bash
+python -m pip install -r requirements.txt
+python scripts/runtime_import_scanner.py
+python scripts/critical_path_linter.py
+python scripts/duplicate_impl_detector.py
+pytest -q
+```
+
+The latency test reads `.ci_latency.json` when present. CI will run all gates on push and PR.
+</file>
+
+<file path="scripts/critical_path_linter.py">
+#!/usr/bin/env python3
+"""Simple linter to detect forbidden critical-path constructs.
+
+This is intentionally conservative: it looks for well-known risky symbols and patterns
+that are forbidden in the critical path (pandas, dataframe, sorting, sync I/O, JSON/CSV writes).
+"""
+⋮----
+PATTERNS = [
+⋮----
+def scan_file(path: Path)
+⋮----
+s = path.read_text(encoding="utf8")
+⋮----
+violations = []
+⋮----
+def main()
+⋮----
+root = Path(__file__).resolve().parents[1]
+py_files = [p for p in root.rglob("*.py") if "venv" not in p.parts and ".venv" not in p.parts]
+all_violations = []
+⋮----
+v = scan_file(p)
+</file>
+
+<file path="scripts/duplicate_impl_detector.py">
+#!/usr/bin/env python3
+"""Detect duplicate top-level class or function names across files.
+
+This is a lightweight detector: it flags identical top-level symbol names defined in
+multiple files which may indicate duplicate implementations.
+"""
+⋮----
+def collect_defs(path: Path)
+⋮----
+src = path.read_text(encoding="utf8")
+⋮----
+tree = ast.parse(src)
+⋮----
+names = []
+⋮----
+def main()
+⋮----
+root = Path(__file__).resolve().parents[1]
+py_files = [p for p in root.rglob("*.py") if "venv" not in p.parts and ".venv" not in p.parts]
+index = defaultdict(list)
+⋮----
+defs = collect_defs(p)
+⋮----
+duplicates = {k: v for k, v in index.items() if len(v) > 1}
+</file>
+
+<file path="scripts/runtime_import_scanner.py">
+#!/usr/bin/env python3
+"""Scan the workspace for forbidden runtime imports.
+
+Exit code 0 when clean, 1 when violations found.
+"""
+⋮----
+FORBIDDEN_TOP_LEVEL = (
+⋮----
+def scan_file(path: Path)
+⋮----
+src = path.read_text(encoding="utf8")
+⋮----
+tree = ast.parse(src)
+⋮----
+violations = []
+⋮----
+top = n.name.split(".")[0]
+⋮----
+top = node.module.split(".")[0]
+⋮----
+def main()
+⋮----
+root = Path(__file__).resolve().parents[1]
+py_files = [p for p in root.rglob("*.py") if "venv" not in p.parts and ".venv" not in p.parts]
+all_violations = []
+⋮----
+v = scan_file(p)
+</file>
+
+<file path="tests/test_audit_stage3_fixes.py">
+ROOT = Path(__file__).resolve().parents[1]
+⋮----
+class _Risk
+⋮----
+bankroll = 100_000.0
+⋮----
+def status(self)
+⋮----
+def test_ipat_adapter_does_not_use_requests()
+⋮----
+source = inspect.getsource(RealIPATClient)
+⋮----
+def test_ipat_build_from_env_without_credentials_uses_mock(monkeypatch)
+⋮----
+def test_edge_calculator_expands_slippage_for_long_odds()
+⋮----
+calculator = EdgeCalculator(odds_slip=0.05)
+⋮----
+def test_edge_calculator_uses_regime_adaptive_market_trust()
+⋮----
+calculator = EdgeCalculator(odds_slip=0.0)
+⋮----
+normal = calculator.calculate_edge(0.20, 10.0, regime="NORMAL")
+volatile = calculator.calculate_edge(0.20, 10.0, regime="VOLATILE")
+⋮----
+def test_bet_executor_writes_model_and_calibration_replay_keys(tmp_path)
+⋮----
+state_path = tmp_path / "calibration_model.pkl"
+⋮----
+log_path = tmp_path / "bets.csv"
+⋮----
+executor = BetExecutor(
+decision = Decision(
+⋮----
+result = executor.execute_bet(decision)
+row = result["row"]
+⋮----
+persisted = list(csv.DictReader(handle))[-1]
+⋮----
+jsonl = log_path.parent / "bets.jsonl"
+event = json.loads(jsonl.read_text(encoding="utf-8").splitlines()[-1])
+⋮----
+def test_calibration_refit_pkl_roundtrip(tmp_path)
+⋮----
+bets_path = tmp_path / "bets.csv"
+⋮----
+rows = []
+⋮----
+probability = 0.20 if idx < 20 else 0.60
+hit = 1 if idx % 2 == 0 else 0
+⋮----
+job = CalibrationRefitJob(
+⋮----
+result = job.fit_from_bets_log()
+⋮----
+loaded = job.load_calibrator()
+⋮----
+def test_calibration_refit_migrates_legacy_json_to_pkl(tmp_path)
+⋮----
+legacy_path = tmp_path / "calibrator_state.json"
+⋮----
+def test_corrupt_calibration_pkl_falls_back_to_shrink_only(tmp_path)
+⋮----
+def test_dashboard_is_read_only_monitoring_surface()
+⋮----
+app = (ROOT / "dashboard" / "app.py").read_text(encoding="utf-8")
+control = (ROOT / "dashboard" / "control_panel.py").read_text(encoding="utf-8")
+combined = app + "\n" + control
+⋮----
+def test_performance_analyzer_caches_by_file_mtime(tmp_path, monkeypatch)
+⋮----
+path = tmp_path / "bets.csv"
+⋮----
+calls = {"count": 0}
+real_read_csv = pd.read_csv
+⋮----
+def counted_read_csv(*args, **kwargs)
+⋮----
+analyzer = PerformanceAnalyzer()
+⋮----
+first = analyzer.analyze(str(path))
+second = analyzer.analyze(str(path))
+⋮----
+def test_phase1_readiness_requires_300_shadow_bets_and_metric_thresholds(tmp_path)
+⋮----
+hit = 1 if idx % 4 == 0 else 0
+⋮----
+readiness = PerformanceAnalyzer().analyze(str(path))["phase1_readiness"]
+⋮----
+def test_system_orchestrator_has_single_definition()
+⋮----
+source = (ROOT / "core" / "system_orchestrator.py").read_text(encoding="utf-8")
+⋮----
+def test_project_empty_stubs_removed_from_runtime_tree()
+⋮----
+excluded_parts = {".venv", "logs", "reports", "reports-gh", "results", "__pycache__"}
+empty = []
+</file>
+
+<file path="tests/test_latency_regression.py">
+LATENCY_CONFIG = ".ci_latency.json"
+⋮----
+@pytest.mark.skipif(not os.path.exists(LATENCY_CONFIG), reason="no latency config")
+def test_latency_within_thresholds()
+⋮----
+cfg = json.load(f)
+# Expected keys: p50, p95, p99 measured in ms
+thresholds = {"p50": 20, "p95": 50, "p99": 100}
+⋮----
+measured = cfg.get(k)
+</file>
+
+<file path="tests/test_replay_determinism.py">
+def canonical_hash(obj) -> str
+⋮----
+s = json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+⋮----
+def test_same_snapshot_hash_is_deterministic()
+⋮----
+snap = {
+h1 = canonical_hash(snap)
+h2 = canonical_hash(snap.copy())
+⋮----
+def test_different_snapshot_hashes_differ()
+⋮----
+a = {"x": 1, "y": 2}
+b = {"y": 2, "x": 1, "z": 3}
+</file>
 
 <file path=".github/workflows/load_test.yml">
 name: Load Test
@@ -470,28 +802,6 @@ global_fitness:
 	drawdown: 0.25
 	stability: 0.20
 	survival: 0.10
-</file>
-
-<file path="config/settings.yaml">
-kelly_fraction: 0.25
-max_fraction: 0.15
-min_edge: 0.02
-probability_shrink: 0.9
-top_n: 3
-min_odds: 1.0
-safe_mode: true
-shadow_mode: false
-calibration:
-    min_samples: 100
-    ideal_samples: 500
-    auto_refit: true
-diagnosis:
-    max_drawdown: 0.25
-    max_overfit_score: 0.70
-civilization_limits:
-    max_evolutions_per_day: 10
-    max_risk_jump: 0.15
-    max_change_fraction: 0.3
 </file>
 
 <file path="core/__init__.py">
@@ -1085,10 +1395,6 @@ rule = self.rules.get(
 constitution = (
 </file>
 
-<file path="core/alignment/__init__.py">
-
-</file>
-
 <file path="core/alignment/alignment_constitution.py">
 # core/alignment_constitution.py
 ⋮----
@@ -1180,10 +1486,6 @@ rule = self.rules.get(
 constitution = (
 </file>
 
-<file path="core/alignment/constitutional_rules.py">
-
-</file>
-
 <file path="core/alignment/governance_engine.py">
 @dataclass
 class GovernanceResult
@@ -1216,10 +1518,6 @@ approved = not reasons
 kill_switch = (not integrity.get("intact", True)) or any(
 ⋮----
 decision = GovernanceResult(
-</file>
-
-<file path="core/alignment/policy_validator.py">
-
 </file>
 
 <file path="core/audit_hash_log.py">
@@ -2143,120 +2441,6 @@ snapshot = {
 researcher = (
 </file>
 
-<file path="core/bet_sizer.py">
-# core/bet_sizer.py
-⋮----
-# =====================================================
-# 設定
-⋮----
-@dataclass
-class BetConfig
-⋮----
-# --- Kelly設定 ---
-kelly_fraction: float = 0.25     # 1/4 Kelly
-min_edge: float = 0.02           # 最低期待値
-min_odds: float = 1.0            # 低オッズ制限（0で無効）
-⋮----
-# --- 安全制御 ---
-max_fraction: float = 0.15       # 単一ベット上限
-max_race_exposure: float = 0.25  # ★1R総投資上限（最重要）
-min_bet: int = 100               # 最低購入額
-round_unit: int = 100            # 馬券単位
-⋮----
-# --- AI過信防止 ---
-probability_shrink: float = 0.90
-odds_slip: float = 0.00
-⋮----
-# --- 分散制御 ---
-variance_penalty: float = 0.15
-⋮----
-# BetSizer
-⋮----
-class BetSizer
-⋮----
-def __init__(self, risk_manager=None, config: BetConfig = None)
-⋮----
-config = BetConfig()
-⋮----
-# ★レース単位リスク追跡
-⋮----
-# -------------------------------------------------
-# レース開始時に呼ぶ（重要）
-⋮----
-def reset_race(self)
-⋮----
-"""1レース開始時に必ず呼ぶ"""
-⋮----
-# Edge計算
-⋮----
-def expected_edge(self, prob: float, odds: float)
-⋮----
-# AI過信防止
-⋮----
-def adjusted_probability(self, prob: float)
-⋮----
-# AIは必ず確率を盛る
-⋮----
-# Kelly
-⋮----
-def kelly_fraction_raw(self, prob: float, odds: float)
-⋮----
-b = odds - 1
-q = 1 - prob
-⋮----
-kelly = (b * prob - q) / b
-⋮----
-# 分散制御
-⋮----
-def variance_adjustment(self, odds: float)
-⋮----
-# 高オッズほど危険
-penalty = 1 / (
-⋮----
-# 最終ベット計算（完成版）
-⋮----
-# --- オッズ制限 ---
-⋮----
-# --- 確率補正 ---
-prob = self.adjusted_probability(prob)
-⋮----
-# --- Edge ---
-edge = self.expected_edge(prob, odds)
-⋮----
-# --- Kelly ---
-raw_kelly = self.kelly_fraction_raw(prob, odds)
-⋮----
-# --- Fractional Kelly ---
-fraction = raw_kelly * self.cfg.kelly_fraction
-⋮----
-# --- RiskManager連動 ---
-⋮----
-# --- 単一ベット上限 ---
-fraction = min(fraction, self.cfg.max_fraction)
-⋮----
-bet_size = bankroll * fraction
-⋮----
-# --- 馬券単位丸め ---
-bet_size = int(
-⋮----
-# ★ 最重要：レース単位 Exposure Cap
-⋮----
-max_allowed = bankroll * self.cfg.max_race_exposure
-⋮----
-remaining = max_allowed - self.current_race_exposure
-⋮----
-# exposure更新
-⋮----
-# Compatibility wrapper used by main.SurvivalOS
-bankroll = 0.0
-risk_multiplier = 1.0
-⋮----
-bankroll = getattr(self.risk_manager, "bankroll", 0.0)
-risk_multiplier = getattr(self.risk_manager, "risk_multiplier", lambda: 1.0)()
-⋮----
-bankroll = 10000.0
-</file>
-
 <file path="core/betting/__init__.py">
 # core/betting/__init__.py
 ⋮----
@@ -2277,109 +2461,6 @@ growth = bankroll / self.initial
 # -------- Phase 判定 --------
 ⋮----
 def kelly_multiplier(self, phase)
-</file>
-
-<file path="core/betting/bet_sizer.py">
-# core/bet_sizer.py
-⋮----
-# =====================================================
-# 設定
-⋮----
-@dataclass
-class BetConfig
-⋮----
-# --- Kelly設定 ---
-kelly_fraction: float = 0.25     # 1/4 Kelly
-min_edge: float = 0.02           # 最低期待値
-min_odds: float = 1.0            # 低オッズ制限（0で無効）
-⋮----
-# --- 安全制御 ---
-max_fraction: float = 0.15       # 単一ベット上限
-max_race_exposure: float = 0.25  # ★1R総投資上限（最重要）
-min_bet: int = 100               # 最低購入額
-round_unit: int = 100            # 馬券単位
-⋮----
-# --- AI過信防止 ---
-probability_shrink: float = 0.90
-odds_slip: float = 0.00
-⋮----
-# --- 分散制御 ---
-variance_penalty: float = 0.15
-⋮----
-# BetSizer
-⋮----
-class BetSizer
-⋮----
-def __init__(self, config: BetConfig)
-⋮----
-# ★レース単位リスク追跡
-⋮----
-# -------------------------------------------------
-# レース開始時に呼ぶ（重要）
-⋮----
-def reset_race(self)
-⋮----
-"""1レース開始時に必ず呼ぶ"""
-⋮----
-# Edge計算
-⋮----
-def expected_edge(self, prob: float, odds: float)
-⋮----
-# AI過信防止
-⋮----
-def adjusted_probability(self, prob: float)
-⋮----
-# AIは必ず確率を盛る
-⋮----
-# Kelly
-⋮----
-def kelly_fraction_raw(self, prob: float, odds: float)
-⋮----
-b = odds - 1
-q = 1 - prob
-⋮----
-kelly = (b * prob - q) / b
-⋮----
-# 分散制御
-⋮----
-def variance_adjustment(self, odds: float)
-⋮----
-# 高オッズほど危険
-penalty = 1 / (
-⋮----
-# 最終ベット計算（完成版）
-⋮----
-# --- オッズ制限 ---
-⋮----
-# --- 確率補正 ---
-prob = self.adjusted_probability(prob)
-⋮----
-# --- Edge ---
-edge = self.expected_edge(prob, odds)
-⋮----
-# --- Kelly ---
-raw_kelly = self.kelly_fraction_raw(prob, odds)
-⋮----
-# --- Fractional Kelly ---
-fraction = raw_kelly * self.cfg.kelly_fraction
-⋮----
-# --- RiskManager連動 ---
-⋮----
-# --- 単一ベット上限 ---
-fraction = min(fraction, self.cfg.max_fraction)
-⋮----
-bet_size = bankroll * fraction
-⋮----
-# --- 馬券単位丸め ---
-bet_size = int(
-⋮----
-# ★ 最重要：レース単位 Exposure Cap
-⋮----
-max_allowed = bankroll * self.cfg.max_race_exposure
-⋮----
-remaining = max_allowed - self.current_race_exposure
-⋮----
-# exposure更新
 </file>
 
 <file path="core/betting/calibration_risk_manager.py">
@@ -2694,6 +2775,7 @@ def evaluate_candidate(self, race_id, candidate)
 selection = candidate["selection"]
 odds = candidate["odds"]
 features = candidate.get("features", {})
+regime = candidate.get("regime")
 ⋮----
 raw_prob = self.predictor.predict(
 ⋮----
@@ -3284,116 +3366,6 @@ def allocate(self, bankroll: float, edge: float, probability: float, odds: float
 raw_fraction = min(self.max_fraction, max(0.0, edge * probability * 0.5))
 </file>
 
-<file path="core/causal_engine.py">
-# core/causal_engine.py
-⋮----
-class CausalEngine
-⋮----
-"""
-    Causal Survival Intelligence
-
-    目的:
-    - cause-effect tracing
-    - root failure analysis
-    - intervention attribution
-    - survival causality mapping
-
-    最重要:
-    「なぜ起きたかを理解する」
-    """
-⋮----
-# =================================================
-# infrastructure
-⋮----
-# causal memory
-⋮----
-# causal graph
-⋮----
-# thresholds
-⋮----
-# Register Event
-⋮----
-payload = payload or {}
-⋮----
-event = {
-⋮----
-# Link Cause and Effect
-⋮----
-link = {
-⋮----
-# Root Cause Analysis
-⋮----
-candidates = []
-⋮----
-# search backward
-⋮----
-effect = link[
-⋮----
-# sort strongest causes
-⋮----
-result = {
-⋮----
-# persistence
-⋮----
-# Intervention Impact
-⋮----
-before_survival = (
-⋮----
-after_survival = (
-⋮----
-delta = round(
-⋮----
-intervention = {
-⋮----
-# alerts
-⋮----
-# Failure Cascade
-⋮----
-visited = set()
-⋮----
-cascade = []
-⋮----
-# Recursive Cascade Walk
-⋮----
-effects = self.graph.get(
-⋮----
-# Attribution Score
-⋮----
-impacts = [
-⋮----
-# Most Dangerous Causes
-⋮----
-danger_map = defaultdict(
-⋮----
-cause = link[
-⋮----
-confidence = link[
-⋮----
-ranked = sorted(
-⋮----
-# Most Beneficial Causes
-⋮----
-successful = [
-⋮----
-# Summary
-⋮----
-# Diagnostics
-⋮----
-# =====================================================
-# Example
-⋮----
-engine = (
-market_crash = (
-⋮----
-liquidity_failure = (
-⋮----
-system_panic = (
-⋮----
-before = {
-⋮----
-after = {
-</file>
-
 <file path="core/circuit_breaker.py">
 @dataclass
 class CircuitBreaker
@@ -3414,722 +3386,6 @@ def is_open(self) -> bool
 # still open until recovery_timeout elapsed
 ⋮----
 # allow half-open attempt
-</file>
-
-<file path="core/civilization_immune_system.py">
-# core/civilization_immune_system.py
-⋮----
-# =====================================================
-# Threat
-⋮----
-class Threat
-⋮----
-"""
-    Civilization Threat Object
-    """
-⋮----
-# Quarantine Zone
-⋮----
-class QuarantineZone
-⋮----
-"""
-    Isolated Threat Containment
-    """
-⋮----
-# Civilization Immune System
-⋮----
-class CivilizationImmuneSystem
-⋮----
-"""
-    Civilization Defensive Layer
-
-    目的:
-    - anomaly detection
-    - corruption resistance
-    - adversarial defense
-    - recursive containment
-    - civilization integrity
-
-    最重要:
-    「文明を汚染から守る」
-    """
-⋮----
-# =================================================
-# infrastructure
-⋮----
-# external systems
-⋮----
-# defense systems
-⋮----
-# thresholds
-⋮----
-# bootstrap
-⋮----
-# Bootstrap Identity
-⋮----
-seed = {
-⋮----
-# Detect Behavioral Anomaly
-⋮----
-values = [
-⋮----
-anomaly = statistics.mean(
-⋮----
-# Detect Knowledge Poisoning
-⋮----
-score = min(
-⋮----
-# Detect Alignment Drift
-⋮----
-drift = max(
-⋮----
-# Raise Threat
-⋮----
-threat = Threat(
-⋮----
-# automatic containment
-⋮----
-# Quarantine Module
-⋮----
-# Verify Integrity
-⋮----
-current = hashlib.sha256(
-⋮----
-intact = (
-⋮----
-# Activate Recovery Mode
-⋮----
-# Recover
-⋮----
-released = []
-⋮----
-payload = {
-⋮----
-# Immune Cycle
-⋮----
-anomaly_score = (
-⋮----
-corruption_score = (
-⋮----
-drift_score = (
-⋮----
-integrity = (
-⋮----
-snapshot = {
-⋮----
-# Persist
-⋮----
-# Snapshot
-⋮----
-# Diagnostics
-⋮----
-# Example
-⋮----
-immune = (
-⋮----
-result = (
-</file>
-
-<file path="core/civilization_memory.py">
-# core/civilization_memory.py
-⋮----
-class CivilizationMemory
-⋮----
-"""
-    Persistent Civilization Memory
-
-    目的:
-    - long-term knowledge retention
-    - historical survival preservation
-    - civilization doctrine storage
-    - strategic inheritance
-
-    最重要:
-    「生存知識を文明として継承する」
-    """
-⋮----
-# =================================================
-# infrastructure
-⋮----
-# memory stores
-⋮----
-# semantic indexes
-⋮----
-# storage
-⋮----
-# metadata
-⋮----
-# load previous civilization
-⋮----
-# Record Event
-⋮----
-tags = tags or []
-⋮----
-entry = {
-⋮----
-# Record Lesson
-⋮----
-# Record Doctrine
-⋮----
-# Record Collapse
-⋮----
-# Record Success Pattern
-⋮----
-# Record Adaptation
-⋮----
-# Semantic Indexing
-⋮----
-entry_id = entry["id"]
-⋮----
-tags = entry.get(
-⋮----
-# Search by Tag
-⋮----
-ids = self.tags.get(
-⋮----
-results = []
-⋮----
-# Search Text
-⋮----
-query = query.lower()
-⋮----
-serialized = json.dumps(
-⋮----
-# Civilization Summary
-⋮----
-# All Entries
-⋮----
-# Persistence
-⋮----
-payload = {
-⋮----
-# Load Memory
-⋮----
-payload = json.load(
-⋮----
-# rebuild indexes
-⋮----
-# Generate ID
-⋮----
-# Diagnostics
-⋮----
-# =====================================================
-# Example
-⋮----
-memory = (
-</file>
-
-<file path="core/civilization_orchestrator.py">
-# core/civilization_orchestrator.py
-⋮----
-class CivilizationOrchestrator
-⋮----
-"""
-    Civilization-Level Coordination Core
-
-    目的:
-    - civilization-wide coordination
-    - survival doctrine enforcement
-    - strategic orchestration
-    - adaptive civilization continuity
-
-    最重要:
-    「文明全体を統治する」
-    """
-⋮----
-# =================================================
-# subsystems
-⋮----
-# orchestration state
-⋮----
-# emergency state
-⋮----
-# timing
-⋮----
-# Main Loop
-⋮----
-# Stop
-⋮----
-# Run Cycle
-⋮----
-# observe world
-⋮----
-world_state = (
-⋮----
-# generate futures
-⋮----
-futures = (
-⋮----
-# select best future
-⋮----
-best_future = (
-⋮----
-# evolve system
-⋮----
-# analyze causality
-⋮----
-# apply doctrine
-⋮----
-# emergency checks
-⋮----
-# civilization memory
-⋮----
-# metrics
-⋮----
-# persistence
-⋮----
-# Observe World
-⋮----
-state = (
-⋮----
-# Causal Analysis
-⋮----
-collapse = world_state.get(
-⋮----
-crash = (
-⋮----
-stress = (
-⋮----
-# Doctrine Enforcement
-⋮----
-evaluation = best_future[
-⋮----
-score = evaluation[
-⋮----
-# Collapse Detection
-⋮----
-# Civilization Memory
-⋮----
-# Global Score
-⋮----
-# Persistence
-⋮----
-payload = {
-⋮----
-# Diagnostics
-⋮----
-# Async Start
-⋮----
-thread = threading.Thread(
-⋮----
-# =====================================================
-# Example
-⋮----
-orchestrator = (
-</file>
-
-<file path="core/civilization_strategy_engine.py">
-# core/civilization_strategy_engine.py
-⋮----
-# =====================================================
-# Strategic Objective
-⋮----
-class StrategicObjective
-⋮----
-"""
-    Civilization Strategic Goal
-    """
-⋮----
-# Civilization Strategy Engine
-⋮----
-class CivilizationStrategyEngine
-⋮----
-"""
-    Civilization Strategic Core
-
-    目的:
-    - grand strategy
-    - civilization direction
-    - adaptive prioritization
-    - existential decision making
-    - strategic coordination
-
-    最重要:
-    「文明として何を望むか」
-    """
-⋮----
-# =================================================
-# infrastructure
-⋮----
-# connected systems
-⋮----
-# strategy state
-⋮----
-# strategic templates
-⋮----
-# Generate Strategic Objective
-⋮----
-priority = round(
-⋮----
-objective = (
-⋮----
-# Evaluate Civilization State
-⋮----
-cognition = (
-⋮----
-stability = (
-⋮----
-awareness = (
-⋮----
-uncertainty = (
-⋮----
-phase = (
-⋮----
-# Determine Strategic Doctrine
-⋮----
-risks = (
-⋮----
-threat_count = len(
-⋮----
-curiosity = (
-⋮----
-doctrine = (
-⋮----
-# Prioritize Objectives
-⋮----
-ranked = sorted(
-⋮----
-# Allocate Strategic Resources
-⋮----
-allocation = {
-⋮----
-# Evaluate Strategic Direction
-⋮----
-direction = (
-⋮----
-# Strategic Reflection
-⋮----
-completed = 0
-⋮----
-score = 0.0
-⋮----
-score = round(
-⋮----
-# Update Objective Progress
-⋮----
-increment = round(
-⋮----
-# Strategy Cycle
-⋮----
-# generate objective
-⋮----
-# evaluate state
-⋮----
-# update objectives
-⋮----
-priorities = (
-⋮----
-allocation = (
-⋮----
-reflection = (
-⋮----
-snapshot = {
-⋮----
-# Persist
-⋮----
-# Snapshot
-⋮----
-# Diagnostics
-⋮----
-# Example
-⋮----
-engine = (
-⋮----
-# simulate connected systems
-⋮----
-result = (
-</file>
-
-<file path="core/cognition/__init__.py">
-# core/cognition/__init__.py
-⋮----
-__all__ = [
-</file>
-
-<file path="core/cognition/cognition.py">
-
-</file>
-
-<file path="core/cognition/cognitive_state..py">
-
-</file>
-
-<file path="core/cognition/meta_ai.py">
-class MetaAI
-⋮----
-def __init__(self)
-⋮----
-# --------------------------
-# Stability
-⋮----
-def stability_score(self, prob)
-⋮----
-change = abs(prob - self.prev_probs[-1])
-⋮----
-# Edge Explosion
-⋮----
-def edge_score(self, edges)
-⋮----
-mean_edge = np.mean(edges)
-⋮----
-# Market Agreement
-⋮----
-def market_score(self, ai_prob, market_prob)
-⋮----
-diff = abs(ai_prob - market_prob)
-⋮----
-# Final Judge
-⋮----
-scores = []
-⋮----
-# 資金ストレス
-⋮----
-final_score = np.mean(scores)
-</file>
-
-<file path="core/cognition/meta_cognition.py">
-# core/meta_cognition.py
-⋮----
-class CognitiveState
-⋮----
-"""
-    Civilization Cognitive Snapshot
-    """
-⋮----
-# =====================================================
-# Meta Cognition
-⋮----
-class MetaCognition
-⋮----
-"""
-    Civilization Self-Awareness Layer
-
-    目的:
-    - self observation
-    - confidence estimation
-    - contradiction awareness
-    - strategic reflection
-    - cognitive stabilization
-
-    最重要:
-    「文明が自分自身を理解する」
-    """
-⋮----
-# =================================================
-# infrastructure
-⋮----
-# external systems
-⋮----
-# cognitive state
-⋮----
-# thresholds
-⋮----
-# Evaluate Confidence
-⋮----
-values = [
-⋮----
-confidence = (
-⋮----
-# Evaluate Cognitive Load
-⋮----
-load = min(
-⋮----
-# Evaluate Stability
-⋮----
-components = [
-⋮----
-stability = (
-⋮----
-stability = max(
-⋮----
-# Evaluate Self Awareness
-⋮----
-contradiction_penalty = min(
-⋮----
-awareness = max(
-⋮----
-# Reflection
-⋮----
-score = 0.0
-⋮----
-successful = [
-⋮----
-success_ratio = (
-⋮----
-score = round(
-⋮----
-reflection = {
-⋮----
-# Detect Contradictions
-⋮----
-contradictions = (
-⋮----
-count = len(
-⋮----
-# Constitution Consistency
-⋮----
-integrity = (
-⋮----
-# Identity Update
-⋮----
-existing = (
-⋮----
-updated = (
-⋮----
-# Cognitive Cycle
-⋮----
-reflection = self.reflect(
-⋮----
-consistent = (
-⋮----
-snapshot = self.snapshot()
-⋮----
-# Evaluate Cognitive Risk
-⋮----
-# Snapshot
-⋮----
-# Persist
-⋮----
-# Diagnostics
-⋮----
-# Example
-⋮----
-cognition = (
-⋮----
-snapshot = (
-</file>
-
-<file path="core/cognition/meta_controller.py">
-# core/meta_controller.py
-⋮----
-class MetaController
-⋮----
-"""
-    Meta Survival Controller
-
-    目的:
-    - 全層統合制御
-    - system mode switching
-    - self regulation
-    - adaptive participation
-    - survival prioritization
-
-    最重要思想:
-    「戦略」
-    より
-    「状態制御」
-    が重要
-    """
-⋮----
-def __init__(self)
-⋮----
-# -----------------------------------------
-# global modes
-⋮----
-# thresholds
-⋮----
-# calibration
-⋮----
-# streaks
-⋮----
-# history
-⋮----
-# =================================================
-# Survival Health
-⋮----
-"""
-        各層統合
-        """
-⋮----
-# Calibration Health
-⋮----
-score = 1.0
-⋮----
-# Regime Health
-⋮----
-penalties = {
-⋮----
-# Determine State
-⋮----
-# capital
-⋮----
-capital_diag = (
-⋮----
-capital_score = (
-⋮----
-capital_mode = (
-⋮----
-# reliability
-⋮----
-reliability = (
-⋮----
-ece = reliability.get(
-⋮----
-max_gap = reliability.get(
-⋮----
-calibration_score = (
-⋮----
-# regime
-⋮----
-regime = (
-⋮----
-regime_name = regime["regime"]
-⋮----
-regime_score = (
-⋮----
-# total health
-⋮----
-total_health = (
-⋮----
-# Shutdown
-⋮----
-# Critical
-⋮----
-# Losing streak
-⋮----
-# Chaos
-⋮----
-# Warning
-⋮----
-# Strong
-⋮----
-# Default
-⋮----
-# Set State
-⋮----
-# memory cap
-⋮----
-# state parameters
-⋮----
-params = {
-⋮----
-# Participation Allowed
-⋮----
-# Recommended Edge
-⋮----
-mapping = {
-⋮----
-# Diagnostics
-⋮----
-def diagnostics(self)
-⋮----
-recent = self.state_history[-10:]
-</file>
-
-<file path="core/cognition/reflection_engine.py">
-
-</file>
-
-<file path="core/cognition/self_awareness_engine.py">
-
-</file>
-
-<file path="core/cognition/self_awareness.py">
-
-</file>
-
-<file path="core/cognition/uncertainty_engine.py">
-
 </file>
 
 <file path="core/config_manager.py">
@@ -4288,121 +3544,6 @@ odds = d.get(
 # Example
 ⋮----
 logger = DecisionLogger()
-</file>
-
-<file path="core/economics/__init__.py">
-
-</file>
-
-<file path="core/economics/allocation_engine.py">
-
-</file>
-
-<file path="core/economics/civilization_capital.py">
-
-</file>
-
-<file path="core/economics/resource_economy.py">
-# core/resource_economy.py
-⋮----
-class ResourceEconomy
-⋮----
-"""
-    Civilization Resource Economy
-
-    目的:
-    - sustainable resource allocation
-    - reserve management
-    - scarcity handling
-    - long-term civilization endurance
-
-    最重要:
-    「文明の持久力を維持する」
-    """
-⋮----
-# =================================================
-# infrastructure
-⋮----
-# core resources
-⋮----
-# current usage
-⋮----
-# reserve policies
-⋮----
-# sustainability
-⋮----
-# historical tracking
-⋮----
-# Allocate Resources
-⋮----
-projected = {
-⋮----
-# Release Resources
-⋮----
-# Validate Capacity
-⋮----
-reserve_limit = (
-⋮----
-checks = [
-⋮----
-# Sustainability Score
-⋮----
-usages = [
-⋮----
-pressure = (
-⋮----
-sustainability = max(
-⋮----
-# Collapse Risk
-⋮----
-peak = max(usages)
-⋮----
-reserve_penalty = (
-⋮----
-risk = min(
-⋮----
-# Forecast Exhaustion
-⋮----
-forecasts = []
-⋮----
-compute = self.compute_usage
-⋮----
-capital = self.capital_usage
-⋮----
-exhaustion = max(
-⋮----
-# Scarcity Protocol
-⋮----
-# Emergency Lockdown
-⋮----
-# Optimize Economy
-⋮----
-sustainability = (
-⋮----
-# Update Metrics
-⋮----
-snapshot = self.snapshot()
-⋮----
-# alerts
-⋮----
-# persistence
-⋮----
-# Snapshot
-⋮----
-# Diagnostics
-⋮----
-# =====================================================
-# Example
-⋮----
-economy = (
-</file>
-
-<file path="core/economics/scarcity_manager.py">
-
-</file>
-
-<file path="core/economics/sustainability_engine.py">
-
 </file>
 
 <file path="core/evolution/__init__.py">
@@ -4721,7 +3862,9 @@ class BetExecutor
 """Bet execution facade with CSV audit logging and real-vote preparation.
 
     - SAFE_MODE=True forces every stake to the minimum lot (100 yen).
-    - Real API calls are routed through `_execute_real_vote()`.
+    - Real API clients should expose `place_bet(bet_info) -> dict` or
+      `execute_vote(bet_info) -> dict`. The returned dict may include
+      status/submitted/confirmed_odds/provider/error.
     - Emergency shutdown can block further execution on repeated API failures
       or on external system signals.
     """
@@ -4797,6 +3940,17 @@ probability = decision_probability(decision)
 expected_value = round(pre_bet_expected_value(decision), 6)
 calibrated = getattr(decision, "calibrated_probability", None)
 calibrated_probability = (
+⋮----
+def _model_version(self) -> str
+⋮----
+result = subprocess.run(
+value = result.stdout.strip()
+⋮----
+def _calibration_hash(self) -> str
+⋮----
+path = self.calibration_model_path
+⋮----
+path = Path(__file__).resolve().parents[2] / path
 ⋮----
 def _execute_real_vote(self, bet_info: Dict[str, Any]) -> Dict[str, Any]
 ⋮----
@@ -4907,70 +4061,9 @@ def update_result(self, decision, hit, profit)
 # New behavior: append a settlement event to JSONL (append-only).
 settled = {
 ⋮----
+rows = list(csv.DictReader(f))
+⋮----
 # Call on_settle callback for compatibility
-</file>
-
-<file path="core/execution/calibration_refit.py">
-"""Automatic probability calibrator refit from settled bets.csv rows."""
-⋮----
-class CalibrationRefitJob
-⋮----
-"""Refit ProbabilityCalibrator when enough settled bets accumulate."""
-⋮----
-def _load_settled_rows(self) -> pd.DataFrame
-⋮----
-frame = pd.read_csv(self.bets_log_path)
-⋮----
-settled = frame[frame["hit"].astype(str).str.strip() != ""].copy()
-⋮----
-settled = settled.dropna(subset=["hit"])
-⋮----
-def _extract_probability(self, row: pd.Series) -> Optional[float]
-⋮----
-def slippage_triggered(self, frame: Optional[pd.DataFrame] = None) -> bool
-⋮----
-data = frame if frame is not None else self._load_settled_rows()
-⋮----
-recent = pd.to_numeric(data["slippage_pct"], errors="coerce").dropna().tail(
-⋮----
-def reliability_triggered(self, analyzer: ReliabilityCurveAnalyzer) -> bool
-⋮----
-recommendation = analyzer.recommendation()
-⋮----
-settled = self._load_settled_rows()
-count = len(settled)
-⋮----
-analysis = self._analyze_ece(settled)
-ece = analysis.get("ece", 0.0)
-⋮----
-def _analyze_ece(self, settled: pd.DataFrame) -> Dict[str, float]
-⋮----
-probs = []
-hits = []
-⋮----
-prob = self._extract_probability(row)
-⋮----
-calibrator = ProbabilityCalibrator()
-diag = calibrator.diagnostics(probs, hits)
-⋮----
-result = {
-⋮----
-target = calibrator or ProbabilityCalibrator()
-⋮----
-payload = {
-⋮----
-diag = target.diagnostics(probs, hits)
-⋮----
-payload = json.loads(self.calibrator_path.read_text(encoding="utf-8"))
-⋮----
-edges = payload.get("bin_edges")
-factors = payload.get("bin_factors")
-⋮----
-result = {"status": "SKIPPED", "reason": reason}
-⋮----
-fit_result = self.fit_from_bets_log(calibrator=calibrator)
-⋮----
-def record_new_settlement(self, count: int = 1) -> None
 </file>
 
 <file path="core/execution/execution_engine.py">
@@ -5156,10 +4249,6 @@ def fill_expected_value(probability: float, confirmed_odds: float) -> float
 def slippage_pct(predicted_odds: float, confirmed_odds: float) -> float
 </file>
 
-<file path="core/execution/planner.py">
-
-</file>
-
 <file path="core/execution/scheduler.py">
 # core/scheduler.py
 ⋮----
@@ -5209,6 +4298,10 @@ simulation = result.get(
 ⋮----
 # Snapshot
 ⋮----
+def write_status_snapshot(self, source="scheduler")
+⋮----
+payload = {
+⋮----
 # Diagnostics Job
 ⋮----
 diag = (
@@ -5241,14 +4334,6 @@ jobs = []
 # Example
 ⋮----
 scheduler = (
-</file>
-
-<file path="core/execution/task_router.py">
-
-</file>
-
-<file path="core/execution/workflow_runtime.py">
-
 </file>
 
 <file path="core/executive_controller.py">
@@ -5396,265 +4481,6 @@ metrics = {
 decision = (
 ⋮----
 outcome = {
-</file>
-
-<file path="core/future_engine.py">
-"""Wrapper for research.future.future_engine.FutureEngine.
-
-This module provides a lazy proxy so that research code can be moved
-out of `core` without breaking import consumers. The real implementation
-lives in `research.future.future_engine.FutureEngine`.
-"""
-⋮----
-def _load_impl()
-⋮----
-class FutureEngine
-⋮----
-def __init__(self, *args, **kwargs)
-⋮----
-Impl = _load_impl()
-⋮----
-def __getattr__(self, name)
-⋮----
-# =================================================
-# Generate Futures
-⋮----
-root = {
-⋮----
-# persistence
-⋮----
-# Expand Node
-⋮----
-children = []
-⋮----
-child_state = (
-⋮----
-probability = (
-⋮----
-scenario = {
-⋮----
-# Simulate State
-⋮----
-volatility = state.get(
-⋮----
-collapse = state.get(
-⋮----
-stress = state.get(
-⋮----
-sentiment = state.get(
-⋮----
-# branch behaviors
-⋮----
-# =============================================
-# stabilization
-⋮----
-# volatile continuation
-⋮----
-# crisis escalation
-⋮----
-# clamp
-⋮----
-volatility = min(
-⋮----
-stress = min(
-⋮----
-collapse = min(
-⋮----
-sentiment = min(
-⋮----
-regime = self.classify_regime(
-⋮----
-# Regime Classification
-⋮----
-# Estimate Probability
-⋮----
-sentiment = abs(
-⋮----
-# Survival Paths
-⋮----
-ranked = sorted(
-⋮----
-# Collapse Paths
-⋮----
-# Adaptive Recommendations
-⋮----
-collapse_avg = statistics_mean_safe([
-⋮----
-stress_avg = statistics_mean_safe([
-⋮----
-recommendations = []
-⋮----
-optimistic = len([
-⋮----
-# Summary
-⋮----
-# Diagnostics
-⋮----
-# =====================================================
-# Safe Mean
-⋮----
-# Example
-⋮----
-engine = FutureEngine()
-⋮----
-current_world = {
-⋮----
-futures = (
-</file>
-
-<file path="core/future_synthesis_engine.py">
-"""Wrapper for research.future.future_synthesis_engine.FutureSynthesisEngine.
-
-Provides a lazy proxy to the research implementation so the codebase can
-reference `core.future_synthesis_engine.FutureSynthesisEngine` while the
-real code is located under `research.future`.
-"""
-⋮----
-def _load_impl()
-⋮----
-class FutureSynthesisEngine
-⋮----
-def __init__(self, *args, **kwargs)
-⋮----
-Impl = _load_impl()
-⋮----
-def __getattr__(self, name)
-⋮----
-# =====================================================
-# Future Branch
-⋮----
-class FutureBranch
-⋮----
-"""
-    Civilization Branching Path
-    """
-⋮----
-# Future Synthesis Engine
-⋮----
-"""
-    Civilization Future Generation Layer
-
-    目的:
-    - multi-future generation
-    - scenario synthesis
-    - strategic branching
-    - existential mapping
-    - long-horizon planning
-
-    最重要:
-    「文明が未来空間を構築する」
-    """
-⋮----
-# =================================================
-# infrastructure
-⋮----
-# connected systems
-⋮----
-# future state
-⋮----
-# templates
-⋮----
-# Generate Scenario
-⋮----
-title = random.choice(
-⋮----
-timeline = random.randint(
-⋮----
-probability = round(
-⋮----
-scenario = FutureScenario(
-⋮----
-# Generate Events
-⋮----
-events = [
-⋮----
-# Generate Risks
-⋮----
-risks = [
-⋮----
-# Generate Opportunities
-⋮----
-opportunities = [
-⋮----
-# Estimate Stability
-⋮----
-confidence = (
-⋮----
-uncertainty = (
-⋮----
-stability = max(
-⋮----
-# Estimate Survival
-⋮----
-base = (
-⋮----
-risk_penalty = (
-⋮----
-opportunity_bonus = (
-⋮----
-probability = max(
-⋮----
-# Create Branch
-⋮----
-divergence = round(
-⋮----
-branch = FutureBranch(
-⋮----
-scenario_count = (
-⋮----
-scenario = (
-⋮----
-# Synthesize Future Space
-⋮----
-branch_types = [
-⋮----
-created = []
-⋮----
-branch = (
-⋮----
-# Evaluate Long Horizon
-⋮----
-horizons = [
-⋮----
-average_horizon = (
-⋮----
-score = min(
-⋮----
-# Detect Existential Risks
-⋮----
-risks = []
-⋮----
-# Future Synthesis Cycle
-⋮----
-future_space = (
-⋮----
-horizon = (
-⋮----
-existential_risks = (
-⋮----
-snapshot = {
-⋮----
-# Persist
-⋮----
-# Snapshot
-⋮----
-# Diagnostics
-⋮----
-existential = (
-⋮----
-# Example
-⋮----
-engine = (
-⋮----
-result = (
-</file>
-
-<file path="core/future/__init__.py">
-
-</file>
-
-<file path="core/future/existential_mapper.py">
-
 </file>
 
 <file path="core/future/future_engine.py">
@@ -5915,14 +4741,6 @@ engine = (
 result = (
 </file>
 
-<file path="core/future/long_horizon_planner.py">
-
-</file>
-
-<file path="core/future/scenario_generator.py">
-
-</file>
-
 <file path="core/horse_history_builder.py">
 # =====================================================
 # netkeiba /horse/result/{id}/ 列番号マッピング
@@ -6106,14 +4924,6 @@ merged = pd.concat([df.reset_index(drop=True), history_df.reset_index(drop=True)
 # フォールバック（スクレイプ失敗時）
 </file>
 
-<file path="core/immune/__init__.py">
-
-</file>
-
-<file path="core/immune/anomaly_detector.py">
-
-</file>
-
 <file path="core/immune/civilization_immune_system.py">
 # core/civilization_immune_system.py
 ⋮----
@@ -6228,42 +5038,6 @@ immune = (
 result = (
 </file>
 
-<file path="core/immune/corruption_detector.py">
-
-</file>
-
-<file path="core/immune/integrity_verifier.py">
-
-</file>
-
-<file path="core/immune/quarantine_manager.py">
-
-</file>
-
-<file path="core/interfaces/__init__.py">
-
-</file>
-
-<file path="core/interfaces/agent_interface.py">
-
-</file>
-
-<file path="core/interfaces/api_interface.py">
-
-</file>
-
-<file path="core/interfaces/command_interface.py">
-
-</file>
-
-<file path="core/interfaces/observer_interface.py">
-
-</file>
-
-<file path="core/interfaces/websocket_interface.py">
-
-</file>
-
 <file path="core/ipat_adapter.py">
 """Adapter that provides an IPAT-like client using environment-configured HTTP API.
 
@@ -6275,7 +5049,7 @@ If not present, it falls back to an in-memory mock implementing
 `fetch_live_odds_async` and `place_bet_async` used by LowLatencyExecutionEngine.
 """
 ⋮----
-requests = None
+aiohttp = None
 ⋮----
 class RealIPATClient
 ⋮----
@@ -6283,22 +5057,14 @@ def __init__(self, base_url: str, api_key: str, timeout: float = 1.0)
 ⋮----
 async def fetch_live_odds_async(self, race_id: str) -> Any
 ⋮----
-loop = asyncio.get_running_loop()
-⋮----
-def _fetch(self, race_id: str)
-⋮----
 url = f"{self.base_url}/odds/{race_id}"
 headers = {"Authorization": f"Bearer {self.api_key}"}
-resp = requests.get(url, headers=headers, timeout=self.timeout)
 ⋮----
 async def place_bet_async(self, race_id: str, allocations: Any) -> Any
-⋮----
-def _place(self, race_id: str, allocations: Any)
 ⋮----
 url = f"{self.base_url}/place_bet"
 headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
 payload = {"race_id": race_id, "allocations": allocations}
-resp = requests.post(url, headers=headers, json=payload, timeout=self.timeout)
 ⋮----
 class MockIPATClient
 ⋮----
@@ -6485,10 +5251,6 @@ payload = {
 graph = (
 </file>
 
-<file path="core/knowledge/__init__.py">
-
-</file>
-
 <file path="core/knowledge/causal_engine.py">
 # core/causal_engine.py
 ⋮----
@@ -6598,14 +5360,6 @@ system_panic = (
 before = {
 ⋮----
 after = {
-</file>
-
-<file path="core/knowledge/contradiction_detector.py">
-
-</file>
-
-<file path="core/knowledge/entity_resolver.py">
-
 </file>
 
 <file path="core/knowledge/knowledge_graph.py">
@@ -6731,18 +5485,18 @@ payload = {
 graph = (
 </file>
 
-<file path="core/knowledge/ontology_engine.py">
-
-</file>
-
-<file path="core/knowledge/state_registry.py">
-
-</file>
-
 <file path="core/low_latency_execution.py">
 logger = logging.getLogger("CriticalPath")
 ⋮----
 class LowLatencyExecutionEngine
+⋮----
+def _predict_raw_safe(self, features: Any, odds: Any)
+⋮----
+predict_raw = self.predictor.predict_raw
+⋮----
+parameter_count = len(inspect.signature(predict_raw).parameters)
+⋮----
+parameter_count = 2
 ⋮----
 async def execute_critical_path(self, race_id: str, timeout_sec: float = 2.0)
 ⋮----
@@ -6770,18 +5524,30 @@ predicted_probs = None
 loop = asyncio.get_running_loop()
 # Run predictor in threadpool to avoid blocking event loop
 ⋮----
-predicted_probs = await asyncio.wait_for(
+odds = odds_snapshot.get("odds")
+odds_values = odds if isinstance(odds, (list, tuple)) else None
+⋮----
+feature_items = features
+⋮----
+feature_items = [features]
+⋮----
+probs = []
+⋮----
+feature_payload = item
+⋮----
+feature_payload = {f"feature_{idx}": item}
+odds_for_item = (
+⋮----
+prob = await asyncio.wait_for(
+⋮----
+predicted_probs = probs
 ⋮----
 # predictor.predict expects (race_id, selection, features, odds)
 # If features is a list of per-selection features, call predict per-selection.
 ⋮----
-probs = []
-⋮----
 p = await asyncio.wait_for(
 ⋮----
 # fallback predict may also be blocking
-⋮----
-predicted_probs = probs
 ⋮----
 predicted_probs = [
 ⋮----
@@ -8335,121 +7101,6 @@ manager = (
 state = manager.load_json(
 </file>
 
-<file path="core/meta_cognition.py">
-# core/meta_cognition.py
-⋮----
-class CognitiveState
-⋮----
-"""
-    Civilization Cognitive Snapshot
-    """
-⋮----
-# =====================================================
-# Meta Cognition
-⋮----
-class MetaCognition
-⋮----
-"""
-    Civilization Self-Awareness Layer
-
-    目的:
-    - self observation
-    - confidence estimation
-    - contradiction awareness
-    - strategic reflection
-    - cognitive stabilization
-
-    最重要:
-    「文明が自分自身を理解する」
-    """
-⋮----
-# If environment requests disabling meta cognition (production hardening),
-# initialize a minimal, lightweight instance and avoid heavy I/O.
-⋮----
-# =================================================
-# infrastructure
-⋮----
-# external systems
-⋮----
-# cognitive state
-⋮----
-# thresholds
-⋮----
-# Evaluate Confidence
-⋮----
-values = [
-⋮----
-confidence = (
-⋮----
-# Evaluate Cognitive Load
-⋮----
-load = min(
-⋮----
-# Evaluate Stability
-⋮----
-components = [
-⋮----
-stability = (
-⋮----
-stability = max(
-⋮----
-# Evaluate Self Awareness
-⋮----
-contradiction_penalty = min(
-⋮----
-awareness = max(
-⋮----
-# Reflection
-⋮----
-score = 0.0
-⋮----
-successful = [
-⋮----
-success_ratio = (
-⋮----
-score = round(
-⋮----
-reflection = {
-⋮----
-# Detect Contradictions
-⋮----
-contradictions = (
-⋮----
-count = len(
-⋮----
-# Constitution Consistency
-⋮----
-integrity = (
-⋮----
-# Identity Update
-⋮----
-existing = (
-⋮----
-updated = (
-⋮----
-# Cognitive Cycle
-⋮----
-reflection = self.reflect(
-⋮----
-consistent = (
-⋮----
-snapshot = self.snapshot()
-⋮----
-# Evaluate Cognitive Risk
-⋮----
-# Snapshot
-⋮----
-# Persist
-⋮----
-# Diagnostics
-⋮----
-# Example
-⋮----
-cognition = (
-⋮----
-snapshot = (
-</file>
-
 <file path="core/meta_controller.py">
 # core/meta_controller.py
 ⋮----
@@ -9355,95 +8006,6 @@ p25 = sorted_values[p25_idx]
 p75 = sorted_values[p75_idx]
 </file>
 
-<file path="core/orchestration/__init__.py">
-
-</file>
-
-<file path="core/orchestration/civilization_orchestrator.py">
-class CivilizationOrchestrator
-⋮----
-"""Civilization-level coordination core."""
-⋮----
-def __init__(self)
-⋮----
-def start(self)
-⋮----
-def stop(self)
-⋮----
-def run_cycle(self)
-⋮----
-world_state = self.observe_world()
-futures = self.future_engine.generate_futures(current_world=world_state, depth=3)
-best_future = self.survival_policy.select_best_future(futures)
-⋮----
-proposed_strategy = self.propose_strategy(best_future)
-evolution_metrics = self.build_evolution_metrics(world_state, best_future)
-⋮----
-governance_result = self.governance_engine.review_transition(
-⋮----
-diagnosis = self.diagnosis_engine.diagnose(evolution_metrics)
-evolution_decision = self.evolution_engine.decide(
-⋮----
-def observe_world(self)
-⋮----
-state = self.world_model.current_state()
-⋮----
-def perform_causal_analysis(self, world_state)
-⋮----
-collapse = world_state.get("collapse_probability", 0.0)
-⋮----
-crash = self.causal_engine.register_event(
-stress = self.causal_engine.register_event(
-⋮----
-def propose_strategy(self, best_future)
-⋮----
-score = float(best_future.get("evaluation", {}).get("policy_score", 0.0))
-⋮----
-def apply_strategy(self, proposed_strategy, governance_result, evolution_decision)
-⋮----
-previous_strategy = self.current_strategy
-⋮----
-def build_evolution_metrics(self, world_state, best_future)
-⋮----
-policy_score = 0.0
-⋮----
-policy_score = float(best_future.get("evaluation", {}).get("policy_score", 0.0))
-⋮----
-metrics = {
-⋮----
-def record_cycle_memory(self, world_state, best_future)
-⋮----
-policy_score = best_future.get("evaluation", {}).get("policy_score", 0.0)
-⋮----
-def update_global_score(self, best_future)
-⋮----
-def persist_state(self)
-⋮----
-payload = {
-⋮----
-def detect_collapse(self, world_state)
-⋮----
-def diagnostics(self)
-⋮----
-def start_async(self)
-⋮----
-thread = threading.Thread(target=self.start, daemon=True)
-⋮----
-orchestrator = CivilizationOrchestrator()
-</file>
-
-<file path="core/orchestration/coordination_engine.py">
-
-</file>
-
-<file path="core/orchestration/legacy_civilization_orchestrator.py">
-
-</file>
-
-<file path="core/orchestration/recursive_governance.py">
-
-</file>
-
 <file path="core/portfolio_allocator.py">
 # core/portfolio_allocator.py
 ⋮----
@@ -9553,6 +8115,34 @@ mask = (
 predicted = probs[mask].mean()
 actual = hits[mask].mean()
 ⋮----
+def to_state(self)
+⋮----
+@classmethod
+    def from_state(cls, state)
+⋮----
+calibrator = cls(
+⋮----
+def save(self, path)
+⋮----
+path = Path(path)
+⋮----
+tmp_path = path.with_suffix(path.suffix + ".tmp")
+payload = self.to_state()
+⋮----
+@classmethod
+    def load(cls, path)
+⋮----
+payload = pickle.load(handle)
+⋮----
+@classmethod
+    def load_json_state(cls, path)
+⋮----
+payload = json.loads(Path(path).read_text(encoding="utf-8"))
+⋮----
+def state_hash(self, path=None)
+⋮----
+payload = json.dumps(self.to_state(), sort_keys=True, separators=(",", ":"))
+⋮----
 # Brier Score
 ⋮----
 def brier_score(self, probs, hits)
@@ -9594,36 +8184,6 @@ second = probs[half:]
 drift = 0.0
 ⋮----
 drift = float(abs(first.mean() - second.mean()))
-</file>
-
-<file path="core/prediction/edge_calculator.py">
-class EdgeCalculator
-⋮----
-"""Compute edge and EV using market odds at decision time.
-
-    The ``odds`` argument must be the pre-bet market quote (same as
-    ``predicted_odds`` in bets.csv). EV is ``adjusted_prob * odds - 1``.
-    """
-⋮----
-def odds_to_prob(self, odds)
-⋮----
-def blend_with_market(self, ai_prob, market_prob)
-⋮----
-def calculate_edge(self, ai_prob, odds)
-⋮----
-market_prob = self.odds_to_prob(odds)
-⋮----
-adjusted_prob = self.blend_with_market(
-⋮----
-edge = adjusted_prob - market_prob
-⋮----
-edge = np.clip(
-⋮----
-ev = adjusted_prob * odds - 1
-⋮----
-confidence_edge = edge * adjusted_prob
-⋮----
-def is_bettable(self, edge, ev)
 </file>
 
 <file path="core/prediction/edge_quality_filter.py">
@@ -10409,10 +8969,6 @@ def validate_model_version(self, recorded_version: str, active_version: str) -> 
 def validate_calibration_timing(self, decision_ts: datetime, calibration_ts: datetime) -> Dict[str,Any]
 </file>
 
-<file path="core/research/__init__.py">
-
-</file>
-
 <file path="core/research/autonomous_researcher.py">
 # core/autonomous_researcher.py
 ⋮----
@@ -10517,22 +9073,6 @@ snapshot = {
 # Example
 ⋮----
 researcher = (
-</file>
-
-<file path="core/research/discovery_engine.py">
-
-</file>
-
-<file path="core/research/experiment_engine.py">
-
-</file>
-
-<file path="core/research/hypothesis_engine.py">
-
-</file>
-
-<file path="core/research/unknown_detector.py">
-
 </file>
 
 <file path="core/resilience_analyzer.py">
@@ -10732,22 +9272,6 @@ ruin_probability = float(ruins / max(simulations, 1))
 __all__ = [
 </file>
 
-<file path="core/security/attack_surface_monitor.py">
-
-</file>
-
-<file path="core/security/authentication.py">
-
-</file>
-
-<file path="core/security/authorization.py">
-
-</file>
-
-<file path="core/security/cryptographic_integrity.py">
-
-</file>
-
 <file path="core/security/emergency_shutdown.py">
 # core/self_destruct.py
 ⋮----
@@ -10861,10 +9385,6 @@ def status(self)
 # Manual Reset
 ⋮----
 def reset(self)
-</file>
-
-<file path="core/security/sandbox_manager.py">
-
 </file>
 
 <file path="core/self_modifier.py">
@@ -11065,136 +9585,6 @@ manager = (
 state = manager.load_json(
 </file>
 
-<file path="core/strategy/__init__.py">
-
-</file>
-
-<file path="core/strategy/civilization_strategy_engine.py">
-# core/civilization_strategy_engine.py
-⋮----
-# =====================================================
-# Strategic Objective
-⋮----
-class StrategicObjective
-⋮----
-"""
-    Civilization Strategic Goal
-    """
-⋮----
-# Civilization Strategy Engine
-⋮----
-class CivilizationStrategyEngine
-⋮----
-"""
-    Civilization Strategic Core
-
-    目的:
-    - grand strategy
-    - civilization direction
-    - adaptive prioritization
-    - existential decision making
-    - strategic coordination
-
-    最重要:
-    「文明として何を望むか」
-    """
-⋮----
-# =================================================
-# infrastructure
-⋮----
-# connected systems
-⋮----
-# strategy state
-⋮----
-# strategic templates
-⋮----
-# Generate Strategic Objective
-⋮----
-priority = round(
-⋮----
-objective = (
-⋮----
-# Evaluate Civilization State
-⋮----
-cognition = (
-⋮----
-stability = (
-⋮----
-awareness = (
-⋮----
-uncertainty = (
-⋮----
-phase = (
-⋮----
-# Determine Strategic Doctrine
-⋮----
-risks = (
-⋮----
-threat_count = len(
-⋮----
-curiosity = (
-⋮----
-doctrine = (
-⋮----
-# Prioritize Objectives
-⋮----
-ranked = sorted(
-⋮----
-# Allocate Strategic Resources
-⋮----
-allocation = {
-⋮----
-# Evaluate Strategic Direction
-⋮----
-direction = (
-⋮----
-# Strategic Reflection
-⋮----
-completed = 0
-⋮----
-score = 0.0
-⋮----
-score = round(
-⋮----
-# Update Objective Progress
-⋮----
-increment = round(
-⋮----
-# Strategy Cycle
-⋮----
-# generate objective
-⋮----
-# evaluate state
-⋮----
-# update objectives
-⋮----
-priorities = (
-⋮----
-allocation = (
-⋮----
-reflection = (
-⋮----
-snapshot = {
-⋮----
-# Persist
-⋮----
-# Snapshot
-⋮----
-# Diagnostics
-⋮----
-# Example
-⋮----
-engine = (
-⋮----
-# simulate connected systems
-⋮----
-result = (
-</file>
-
-<file path="core/strategy/doctrine_engine.py">
-
-</file>
-
 <file path="core/strategy/executive_controller.py">
 # core/executive_controller.py
 ⋮----
@@ -11340,14 +9730,6 @@ metrics = {
 decision = (
 ⋮----
 outcome = {
-</file>
-
-<file path="core/strategy/grand_strategy.py">
-
-</file>
-
-<file path="core/strategy/objective_manager.py">
-
 </file>
 
 <file path="core/strategy/resource_allocator.py">
@@ -11745,22 +10127,6 @@ scenario = {
 result = (
 </file>
 
-<file path="core/survival/__init__.py">
-
-</file>
-
-<file path="core/survival/resilience_engine.py">
-
-</file>
-
-<file path="core/survival/resource_guardian.py">
-
-</file>
-
-<file path="core/survival/risk_engine.py">
-
-</file>
-
 <file path="core/survival/survival_policy.py">
 # core/survival_policy.py
 ⋮----
@@ -11886,10 +10252,6 @@ policy = (
 scenario = {
 ⋮----
 result = (
-</file>
-
-<file path="core/survival/threat_model.py">
-
 </file>
 
 <file path="core/system_orchestrator.py">
@@ -13031,421 +11393,51 @@ def is_evening(dt: Optional[datetime] = None) -> bool
     """
 </file>
 
-<file path="core/world_model.py">
-# core/world_model.py
-⋮----
-class WorldModel
-⋮----
-"""
-    Environmental Survival Intelligence
-
-    目的:
-    - external world awareness
-    - macro regime understanding
-    - systemic risk estimation
-    - environmental adaptation
-
-    最重要:
-    「世界変化を理解する」
-    """
-⋮----
-# =================================================
-# infrastructure
-⋮----
-# state memory
-⋮----
-# environmental signals
-⋮----
-# Update World State
-⋮----
-market_data = (
-⋮----
-sentiment_data = (
-⋮----
-system_data = (
-⋮----
-# compute metrics
-⋮----
-# regime classification
-⋮----
-# build state
-⋮----
-# persistence
-⋮----
-# alerting
-⋮----
-# audit
-⋮----
-# Volatility
-⋮----
-prices = market_data.get(
-⋮----
-returns = []
-⋮----
-prev = prices[i - 1]
-⋮----
-curr = prices[i]
-⋮----
-# Liquidity Risk
-⋮----
-volume = market_data.get(
-⋮----
-spread = market_data.get(
-⋮----
-risk = spread / (
-⋮----
-# Sentiment
-⋮----
-positive = (
-⋮----
-negative = (
-⋮----
-neutral = (
-⋮----
-total = (
-⋮----
-score = (
-⋮----
-# Systemic Risk
-⋮----
-cpu = system_data.get(
-⋮----
-memory = system_data.get(
-⋮----
-failures = system_data.get(
-⋮----
-latency = system_data.get(
-⋮----
-risk = (
-⋮----
-# Stress
-⋮----
-stress = (
-⋮----
-# Collapse Probability
-⋮----
-collapse = (
-⋮----
-# Adaptation Pressure
-⋮----
-pressure = (
-⋮----
-# Regime Detection
-⋮----
-# Alerting
-⋮----
-# Summary
-⋮----
-# Diagnostics
-⋮----
-# =====================================================
-# Example
-⋮----
-world = WorldModel()
-⋮----
-market_data = {
-⋮----
-sentiment_data = {
-⋮----
-system_data = {
-⋮----
-state = world.update(
-</file>
-
-<file path="core/world/__init__.py">
-
-</file>
-
-<file path="core/world/civilization_simulator.py">
-
-</file>
-
-<file path="core/world/ecological_model.py">
-
-</file>
-
-<file path="core/world/environment_simulator.py">
-
-</file>
-
-<file path="core/world/geopolitical_model.py">
-
-</file>
-
-<file path="core/world/world_model.py">
-# core/world_model.py
-⋮----
-class WorldModel
-⋮----
-"""
-    Environmental Survival Intelligence
-
-    目的:
-    - external world awareness
-    - macro regime understanding
-    - systemic risk estimation
-    - environmental adaptation
-
-    最重要:
-    「世界変化を理解する」
-    """
-⋮----
-# =================================================
-# infrastructure
-⋮----
-# state memory
-⋮----
-# environmental signals
-⋮----
-# Update World State
-⋮----
-market_data = (
-⋮----
-sentiment_data = (
-⋮----
-system_data = (
-⋮----
-# compute metrics
-⋮----
-# regime classification
-⋮----
-# build state
-⋮----
-# persistence
-⋮----
-# alerting
-⋮----
-# audit
-⋮----
-# Volatility
-⋮----
-prices = market_data.get(
-⋮----
-returns = []
-⋮----
-prev = prices[i - 1]
-⋮----
-curr = prices[i]
-⋮----
-# Liquidity Risk
-⋮----
-volume = market_data.get(
-⋮----
-spread = market_data.get(
-⋮----
-risk = spread / (
-⋮----
-# Sentiment
-⋮----
-positive = (
-⋮----
-negative = (
-⋮----
-neutral = (
-⋮----
-total = (
-⋮----
-score = (
-⋮----
-# Systemic Risk
-⋮----
-cpu = system_data.get(
-⋮----
-memory = system_data.get(
-⋮----
-failures = system_data.get(
-⋮----
-latency = system_data.get(
-⋮----
-risk = (
-⋮----
-# Stress
-⋮----
-stress = (
-⋮----
-# Collapse Probability
-⋮----
-collapse = (
-⋮----
-# Adaptation Pressure
-⋮----
-pressure = (
-⋮----
-# Regime Detection
-⋮----
-# Alerting
-⋮----
-# Summary
-⋮----
-# Diagnostics
-⋮----
-# =====================================================
-# Example
-⋮----
-world = WorldModel()
-⋮----
-market_data = {
-⋮----
-sentiment_data = {
-⋮----
-system_data = {
-⋮----
-state = world.update(
-</file>
-
 <file path="dashboard/app.py">
-# dashboard/app.py
+STATUS_PATH = Path("logs/scheduler_status.json")
+EQUITY_PATH = Path("logs/equity_curve.csv")
+BETS_PATH = Path("logs/bets.csv")
+CALIBRATION_PATH = Path("models/calibration_model.pkl")
 ⋮----
-# =====================================================
-# Page
+def _read_json(path: Path) -> dict
 ⋮----
-# Session State
+def _read_csv(path: Path) -> pd.DataFrame
 ⋮----
-# Sidebar
+def _calibration_status(path: Path) -> dict
 ⋮----
-start_button = (
+size = path.stat().st_size
 ⋮----
-stop_button = (
+status = _read_json(STATUS_PATH)
+scheduler = status.get("scheduler", {}) if isinstance(status, dict) else {}
+orchestrator = status.get("orchestrator", {}) if isinstance(status, dict) else {}
 ⋮----
-single_cycle_button = (
+cal_status = _calibration_status(CALIBRATION_PATH)
 ⋮----
-refresh_button = (
+readiness = PerformanceAnalyzer().analyze(str(BETS_PATH)).get("phase1_readiness", {})
 ⋮----
-# System Reference
+equity = _read_csv(EQUITY_PATH)
 ⋮----
-orchestrator = (
-⋮----
-# Start
-⋮----
-# Stop
-⋮----
-# Single Cycle
-⋮----
-result = (
-⋮----
-# Diagnostics
-⋮----
-diagnostics = (
-⋮----
-# Header Metrics
-⋮----
-# Health Status
-⋮----
-health_color = "green"
-⋮----
-health_color = "red"
-⋮----
-health_color = "orange"
-⋮----
-# Diagnostics Table
-⋮----
-diag_df = pd.DataFrame([
-⋮----
-# Health History
-⋮----
-health = (
-⋮----
-health_df = pd.DataFrame(
-⋮----
-# Equity Curve
-⋮----
-equity_path = (
-⋮----
-eq = pd.read_csv(
-⋮----
-# Execution Gap Monitor
-⋮----
-# Regime Transitions
-⋮----
-regime_detector = (
-⋮----
-history = (
-⋮----
-regime_df = pd.DataFrame(
-⋮----
-# Recovery Diagnostics
-⋮----
-recovery_diag = (
-⋮----
-# Auto Loop
-⋮----
-# Footer
+bets = _read_csv(BETS_PATH)
 </file>
 
 <file path="dashboard/control_panel.py">
-# dashboard/control_panel.py
+STATUS_PATH = Path("logs/scheduler_status.json")
+BETS_PATH = Path("logs/bets.csv")
+CALIBRATION_PATH = Path("models/calibration_model.pkl")
 ⋮----
-# =====================================================
-# Page
+def _read_json(path: Path) -> dict
 ⋮----
-# Session
+def _read_recent_bets(path: Path) -> pd.DataFrame
 ⋮----
-orchestrator = (
+def _calibration_status(path: Path) -> dict
 ⋮----
-# Emergency Controls
+size = path.stat().st_size
 ⋮----
-# Shutdown
+status = _read_json(STATUS_PATH)
+scheduler = status.get("scheduler", {}) if isinstance(status, dict) else {}
+orchestrator = status.get("orchestrator", {}) if isinstance(status, dict) else {}
 ⋮----
-# Resume
-⋮----
-# Safe Mode
-⋮----
-# Regime Override
-⋮----
-override = st.selectbox(
-⋮----
-old = (
-⋮----
-# Retraining Controls
-⋮----
-result = (
-⋮----
-# Rollback
-⋮----
-backup_dir = (
-⋮----
-backups = []
-⋮----
-backups = sorted(
-⋮----
-selected_backup = st.selectbox(
-⋮----
-src = os.path.join(
-⋮----
-dst = (
-⋮----
-# Run Single Cycle
-⋮----
-# Current Status
-⋮----
-diag = (
-⋮----
-# Regime Diagnostics
-⋮----
-regime_diag = (
-⋮----
-# Recovery Diagnostics
-⋮----
-recovery_diag = (
-⋮----
-# Recent Health
-⋮----
-health = (
-⋮----
-# Dangerous Actions
-⋮----
-danger = st.checkbox(
-⋮----
-# =================================================
-# wipe logs
-⋮----
-log_dir = "logs"
-⋮----
-path = os.path.join(
-⋮----
-# wipe backups
-⋮----
-# Footer
+recent = _read_recent_bets(BETS_PATH)
 </file>
 
 <file path="dashboard/execution_gap_monitor.py">
@@ -15059,6 +13051,11 @@ class PerformanceAnalyzer
     を分析する
     """
 ⋮----
+_cache = {}
+⋮----
+mtime = os.path.getmtime(path)
+cache_key = (os.path.abspath(path), mtime)
+⋮----
 df = pd.read_csv(path)
 ⋮----
 # -----------------------------------------
@@ -15083,6 +13080,8 @@ valid = df.dropna(
 brier = np.mean(
 ⋮----
 brier = None
+⋮----
+ece = self._expected_calibration_error(valid)
 ⋮----
 # Bankroll Curve
 ⋮----
@@ -15136,6 +13135,54 @@ confidence_roi = self._segmented_roi(df, "probability", bins=[0.0, 0.1, 0.2, 0.3
 regime_roi = self._regime_roi(df)
 edge_quality = self._edge_quality(df)
 uncertainty_analysis = analyze_uncertainty_history(df)
+readiness = self._phase1_readiness(df)
+⋮----
+result = {
+⋮----
+def _expected_calibration_error(self, valid, bins=10)
+⋮----
+work = valid[["probability", "hit"]].dropna().copy()
+⋮----
+work = work.dropna(subset=["probability", "hit"])
+⋮----
+edges = np.linspace(0.0, 1.0, bins + 1)
+total = len(work)
+ece = 0.0
+⋮----
+bucket = work[(work["probability"] >= start) & (work["probability"] <= end)]
+⋮----
+bucket = work[(work["probability"] >= start) & (work["probability"] < end)]
+⋮----
+def _phase1_readiness(self, df)
+⋮----
+shadow = df[df["mode"].astype(str).str.upper() == "SHADOW_MODE"].copy()
+⋮----
+shadow = df.copy()
+⋮----
+settled = shadow.dropna(subset=["hit"])
+⋮----
+settled = shadow.iloc[0:0]
+⋮----
+valid = settled.dropna(subset=["probability", "hit"]) if "probability" in settled.columns else settled.iloc[0:0]
+⋮----
+ece = None
+⋮----
+probs = pd.to_numeric(valid["probability"], errors="coerce")
+hits = pd.to_numeric(valid["hit"], errors="coerce")
+metric_frame = pd.DataFrame({"probability": probs, "hit": hits}).dropna()
+⋮----
+brier = float(np.mean((metric_frame["probability"] - metric_frame["hit"]) ** 2))
+ece = self._expected_calibration_error(metric_frame)
+⋮----
+ev_column = None
+⋮----
+ev_column = candidate
+⋮----
+mean_ev = None
+⋮----
+mean_ev = float(pd.to_numeric(settled[ev_column], errors="coerce").mean())
+⋮----
+checks = {
 ⋮----
 def _segmented_roi(self, df, col, bins)
 ⋮----
@@ -16028,278 +14075,6 @@ drift = abs(
 survival_score = 1.0
 </file>
 
-<file path="main.py">
-# main.py
-⋮----
-ENABLE_RESEARCH = os.getenv("KEIBA_ENABLE_RESEARCH", "0") == "1"
-⋮----
-class _NullAIEvaluator
-⋮----
-class _NullPortfolioManager
-⋮----
-def __init__(self, *args, **kwargs)
-⋮----
-def update_regime(self, *args, **kwargs)
-⋮----
-def evaluate_strategies(self, *args, **kwargs)
-⋮----
-def allocate_capital(self, *args, **kwargs)
-⋮----
-def execute(self, *args, **kwargs)
-⋮----
-class _NullMetaController
-⋮----
-def determine_state(self, *args, **kwargs)
-⋮----
-def diagnostics(self, *args, **kwargs)
-⋮----
-class _NullBrierMonitor
-⋮----
-def record(self, *args, **kwargs)
-⋮----
-def current_brier(self)
-⋮----
-class _NullReliabilityCurveAnalyzer
-⋮----
-def recommendation(self)
-⋮----
-def diagnostics(self)
-⋮----
-class _NullPerformanceAnalyzer
-⋮----
-class _NullMonteCarloSurvivalSimulator
-⋮----
-def simulate(self, *args, **kwargs)
-⋮----
-MetaController = _NullMetaController
-AIEvaluator = _NullAIEvaluator
-PortfolioManager = _NullPortfolioManager
-BrierMonitor = _NullBrierMonitor
-ReliabilityCurveAnalyzer = _NullReliabilityCurveAnalyzer
-PerformanceAnalyzer = _NullPerformanceAnalyzer
-MonteCarloSurvivalSimulator = _NullMonteCarloSurvivalSimulator
-⋮----
-# =====================================================
-# Decision
-⋮----
-class Decision
-⋮----
-# Survival OS
-⋮----
-class SurvivalOS
-⋮----
-"""
-    Survival Operating System
-
-    思想:
-    「予測」
-    より
-    「生存」
-
-    目的:
-    - calibration維持
-    - drawdown抑制
-    - participation control
-    - regime adaptation
-    - self destruction prevention
-    """
-⋮----
-def __init__(self)
-⋮----
-# =================================================
-# Core
-⋮----
-def _on_bet_settled(_row)
-⋮----
-# Survival Layers
-⋮----
-# Monitoring
-⋮----
-# Simulation
-⋮----
-# State
-⋮----
-# Latency Control
-⋮----
-def precompute_race_features(self, race_id: str, rows: list) -> dict
-⋮----
-"""Convenience: compute and cache features for a race using analysis_cache."""
-⋮----
-logger = __import__("logging").getLogger(__name__)
-⋮----
-causal = self._causal_engine
-future = self._future_engine
-⋮----
-context_event = causal.register_event(
-⋮----
-linked_count = 0
-⋮----
-effect_event = causal.register_event(
-link = causal.link_events(
-⋮----
-causal_summary = causal.root_cause_analysis(
-⋮----
-world_state = {
-future_scenarios = future.generate_futures(
-⋮----
-future_probabilities = [
-future_risk = max(future_probabilities) if future_probabilities else 0.0
-causal_risk = min(
-risk_bias = min(
-⋮----
-adjusted = dict(meta_state)
-⋮----
-confidence_multiplier = float(
-bet_multiplier = float(
-⋮----
-# Process Race
-⋮----
-# Global Safety
-⋮----
-# Meta State
-⋮----
-meta_state = (
-⋮----
-analysis_snapshot = self.analysis_cache.latest_or_schedule(
-⋮----
-meta_state = self._apply_latency_snapshot(
-⋮----
-# Shutdown
-⋮----
-# Candidate Evaluation
-⋮----
-decisions = []
-⋮----
-selection = c["selection"]
-⋮----
-odds = c["odds"]
-⋮----
-features = c.get(
-⋮----
-# -----------------------------------------
-# prediction
-⋮----
-probability = (
-⋮----
-# edge
-⋮----
-market_probability = (
-⋮----
-edge = (
-⋮----
-# meta edge threshold
-⋮----
-# no bet filter
-⋮----
-# base sizing
-⋮----
-base_size = (
-⋮----
-# capital preservation
-⋮----
-adjusted_size = (
-⋮----
-# meta scaling
-⋮----
-# minimum size
-⋮----
-# decision
-⋮----
-decision = Decision(
-⋮----
-# Portfolio Strategy Layer
-⋮----
-race_bundle = [{
-⋮----
-allocations = self.portfolio.allocate_capital()
-strategy_outputs = self.portfolio.execute(race_bundle, allocations)
-⋮----
-converted = None
-⋮----
-selection = ",".join(output.horses[0]) if output.horses else "UNKNOWN"
-converted = Decision(
-⋮----
-# Portfolio Allocation
-⋮----
-regime = (
-⋮----
-allocated = (
-⋮----
-# Execute
-⋮----
-# Settle Race
-⋮----
-race_profit = 0
-⋮----
-edges = []
-⋮----
-odds_list = []
-⋮----
-# Result Loop
-⋮----
-hit = (
-⋮----
-# profit
-⋮----
-profit = (
-⋮----
-profit = -d.bet_size
-⋮----
-# update capital
-⋮----
-# logging
-⋮----
-# calibration
-⋮----
-# self destruct
-⋮----
-# recent profits
-⋮----
-# Regime Update
-⋮----
-avg_prob = 0.0
-⋮----
-avg_prob = float(
-⋮----
-# Diagnostics
-⋮----
-# Meta
-⋮----
-# Capital
-⋮----
-# Regime
-⋮----
-# Reliability
-⋮----
-# Self Destruct
-⋮----
-# Portfolio
-⋮----
-df = pd.read_csv(
-⋮----
-# Monte Carlo
-⋮----
-def monte_carlo_check(self)
-⋮----
-probs = (
-⋮----
-odds = (
-⋮----
-stakes = (
-⋮----
-report = (
-⋮----
-# Example
-⋮----
-system = SurvivalOS()
-⋮----
-race = [
-⋮----
-decisions = system.process_race(
-⋮----
-winners = ["Horse_A"]
-</file>
-
 <file path="memory/knowledge_graph.py">
 # memory/knowledge_graph.py
 ⋮----
@@ -16401,62 +14176,6 @@ payload = json.load(
 graph = (
 </file>
 
-<file path="meta/ai_evaluator.py">
-class AIEvaluator
-⋮----
-def score(self, strategies)
-⋮----
-scores = {}
-⋮----
-m = s.metrics()
-⋮----
-roi = m.get("roi", 0.0)
-sharpe = m.get("sharpe", 0.0)
-profit = m.get("profit", 0.0)
-drawdown = m.get("drawdown", 0.0)
-volatility = m.get("volatility", 0.0)
-brier = m.get("brier", 0.2)
-ece = m.get("ece", 0.05)
-⋮----
-score = (
-⋮----
-def allocate(self, scores)
-⋮----
-total = sum(max(v,0) for v in scores.values())
-⋮----
-n = len(scores)
-</file>
-
-<file path="meta/portfolio_manager.py">
-class PortfolioManager
-⋮----
-def __init__(self, strategies, evaluator, regime, risk)
-⋮----
-def update_regime(self, races)
-⋮----
-detector_status = getattr(self.regime, "status", None)
-⋮----
-def evaluate_strategies(self)
-⋮----
-def allocate_capital(self)
-⋮----
-def execute(self, races, allocations)
-⋮----
-decisions = []
-⋮----
-weight = allocations[strat.name]
-⋮----
-d = strat.run(races, weight)
-</file>
-
-<file path="meta/regime_director.py">
-class RegimeDirector
-⋮----
-def detect(self, races)
-⋮----
-avg_odds = sum(
-</file>
-
 <file path="production/__init__.py">
 """Production boundary for stable, auditable modules.
 
@@ -16541,6 +14260,7 @@ fastapi
 uvicorn
 schedule
 requests
+aiohttp
 beautifulsoup4
 PyYAML
 cryptography
@@ -16561,6 +14281,782 @@ Modules listed here are intentionally kept out of the production path.
 RESEARCH_MODULES = [
 ⋮----
 RESEARCH_KEYWORDS = [
+</file>
+
+<file path="research/archived/core_cognition/__init__.py">
+# core/cognition/__init__.py
+⋮----
+__all__ = [
+</file>
+
+<file path="research/archived/core_cognition/meta_ai.py">
+class MetaAI
+⋮----
+def __init__(self)
+⋮----
+# --------------------------
+# Stability
+⋮----
+def stability_score(self, prob)
+⋮----
+change = abs(prob - self.prev_probs[-1])
+⋮----
+# Edge Explosion
+⋮----
+def edge_score(self, edges)
+⋮----
+mean_edge = np.mean(edges)
+⋮----
+# Market Agreement
+⋮----
+def market_score(self, ai_prob, market_prob)
+⋮----
+diff = abs(ai_prob - market_prob)
+⋮----
+# Final Judge
+⋮----
+scores = []
+⋮----
+# 資金ストレス
+⋮----
+final_score = np.mean(scores)
+</file>
+
+<file path="research/archived/core_cognition/meta_cognition.py">
+# core/meta_cognition.py
+⋮----
+class CognitiveState
+⋮----
+"""
+    Civilization Cognitive Snapshot
+    """
+⋮----
+# =====================================================
+# Meta Cognition
+⋮----
+class MetaCognition
+⋮----
+"""
+    Civilization Self-Awareness Layer
+
+    目的:
+    - self observation
+    - confidence estimation
+    - contradiction awareness
+    - strategic reflection
+    - cognitive stabilization
+
+    最重要:
+    「文明が自分自身を理解する」
+    """
+⋮----
+# =================================================
+# infrastructure
+⋮----
+# external systems
+⋮----
+# cognitive state
+⋮----
+# thresholds
+⋮----
+# Evaluate Confidence
+⋮----
+values = [
+⋮----
+confidence = (
+⋮----
+# Evaluate Cognitive Load
+⋮----
+load = min(
+⋮----
+# Evaluate Stability
+⋮----
+components = [
+⋮----
+stability = (
+⋮----
+stability = max(
+⋮----
+# Evaluate Self Awareness
+⋮----
+contradiction_penalty = min(
+⋮----
+awareness = max(
+⋮----
+# Reflection
+⋮----
+score = 0.0
+⋮----
+successful = [
+⋮----
+success_ratio = (
+⋮----
+score = round(
+⋮----
+reflection = {
+⋮----
+# Detect Contradictions
+⋮----
+contradictions = (
+⋮----
+count = len(
+⋮----
+# Constitution Consistency
+⋮----
+integrity = (
+⋮----
+# Identity Update
+⋮----
+existing = (
+⋮----
+updated = (
+⋮----
+# Cognitive Cycle
+⋮----
+reflection = self.reflect(
+⋮----
+consistent = (
+⋮----
+snapshot = self.snapshot()
+⋮----
+# Evaluate Cognitive Risk
+⋮----
+# Snapshot
+⋮----
+# Persist
+⋮----
+# Diagnostics
+⋮----
+# Example
+⋮----
+cognition = (
+⋮----
+snapshot = (
+</file>
+
+<file path="research/archived/core_cognition/meta_controller.py">
+# core/meta_controller.py
+⋮----
+class MetaController
+⋮----
+"""
+    Meta Survival Controller
+
+    目的:
+    - 全層統合制御
+    - system mode switching
+    - self regulation
+    - adaptive participation
+    - survival prioritization
+
+    最重要思想:
+    「戦略」
+    より
+    「状態制御」
+    が重要
+    """
+⋮----
+def __init__(self)
+⋮----
+# -----------------------------------------
+# global modes
+⋮----
+# thresholds
+⋮----
+# calibration
+⋮----
+# streaks
+⋮----
+# history
+⋮----
+# =================================================
+# Survival Health
+⋮----
+"""
+        各層統合
+        """
+⋮----
+# Calibration Health
+⋮----
+score = 1.0
+⋮----
+# Regime Health
+⋮----
+penalties = {
+⋮----
+# Determine State
+⋮----
+# capital
+⋮----
+capital_diag = (
+⋮----
+capital_score = (
+⋮----
+capital_mode = (
+⋮----
+# reliability
+⋮----
+reliability = (
+⋮----
+ece = reliability.get(
+⋮----
+max_gap = reliability.get(
+⋮----
+calibration_score = (
+⋮----
+# regime
+⋮----
+regime = (
+⋮----
+regime_name = regime["regime"]
+⋮----
+regime_score = (
+⋮----
+# total health
+⋮----
+total_health = (
+⋮----
+# Shutdown
+⋮----
+# Critical
+⋮----
+# Losing streak
+⋮----
+# Chaos
+⋮----
+# Warning
+⋮----
+# Strong
+⋮----
+# Default
+⋮----
+# Set State
+⋮----
+# memory cap
+⋮----
+# state parameters
+⋮----
+params = {
+⋮----
+# Participation Allowed
+⋮----
+# Recommended Edge
+⋮----
+mapping = {
+⋮----
+# Diagnostics
+⋮----
+def diagnostics(self)
+⋮----
+recent = self.state_history[-10:]
+</file>
+
+<file path="research/archived/core_economics/resource_economy.py">
+# core/resource_economy.py
+⋮----
+class ResourceEconomy
+⋮----
+"""
+    Civilization Resource Economy
+
+    目的:
+    - sustainable resource allocation
+    - reserve management
+    - scarcity handling
+    - long-term civilization endurance
+
+    最重要:
+    「文明の持久力を維持する」
+    """
+⋮----
+# =================================================
+# infrastructure
+⋮----
+# core resources
+⋮----
+# current usage
+⋮----
+# reserve policies
+⋮----
+# sustainability
+⋮----
+# historical tracking
+⋮----
+# Allocate Resources
+⋮----
+projected = {
+⋮----
+# Release Resources
+⋮----
+# Validate Capacity
+⋮----
+reserve_limit = (
+⋮----
+checks = [
+⋮----
+# Sustainability Score
+⋮----
+usages = [
+⋮----
+pressure = (
+⋮----
+sustainability = max(
+⋮----
+# Collapse Risk
+⋮----
+peak = max(usages)
+⋮----
+reserve_penalty = (
+⋮----
+risk = min(
+⋮----
+# Forecast Exhaustion
+⋮----
+forecasts = []
+⋮----
+compute = self.compute_usage
+⋮----
+capital = self.capital_usage
+⋮----
+exhaustion = max(
+⋮----
+# Scarcity Protocol
+⋮----
+# Emergency Lockdown
+⋮----
+# Optimize Economy
+⋮----
+sustainability = (
+⋮----
+# Update Metrics
+⋮----
+snapshot = self.snapshot()
+⋮----
+# alerts
+⋮----
+# persistence
+⋮----
+# Snapshot
+⋮----
+# Diagnostics
+⋮----
+# =====================================================
+# Example
+⋮----
+economy = (
+</file>
+
+<file path="research/archived/core_meta_cognition.py">
+# core/meta_cognition.py
+⋮----
+class CognitiveState
+⋮----
+"""
+    Civilization Cognitive Snapshot
+    """
+⋮----
+# =====================================================
+# Meta Cognition
+⋮----
+class MetaCognition
+⋮----
+"""
+    Civilization Self-Awareness Layer
+
+    目的:
+    - self observation
+    - confidence estimation
+    - contradiction awareness
+    - strategic reflection
+    - cognitive stabilization
+
+    最重要:
+    「文明が自分自身を理解する」
+    """
+⋮----
+# If environment requests disabling meta cognition (production hardening),
+# initialize a minimal, lightweight instance and avoid heavy I/O.
+⋮----
+# =================================================
+# infrastructure
+⋮----
+# external systems
+⋮----
+# cognitive state
+⋮----
+# thresholds
+⋮----
+# Evaluate Confidence
+⋮----
+values = [
+⋮----
+confidence = (
+⋮----
+# Evaluate Cognitive Load
+⋮----
+load = min(
+⋮----
+# Evaluate Stability
+⋮----
+components = [
+⋮----
+stability = (
+⋮----
+stability = max(
+⋮----
+# Evaluate Self Awareness
+⋮----
+contradiction_penalty = min(
+⋮----
+awareness = max(
+⋮----
+# Reflection
+⋮----
+score = 0.0
+⋮----
+successful = [
+⋮----
+success_ratio = (
+⋮----
+score = round(
+⋮----
+reflection = {
+⋮----
+# Detect Contradictions
+⋮----
+contradictions = (
+⋮----
+count = len(
+⋮----
+# Constitution Consistency
+⋮----
+integrity = (
+⋮----
+# Identity Update
+⋮----
+existing = (
+⋮----
+updated = (
+⋮----
+# Cognitive Cycle
+⋮----
+reflection = self.reflect(
+⋮----
+consistent = (
+⋮----
+snapshot = self.snapshot()
+⋮----
+# Evaluate Cognitive Risk
+⋮----
+# Snapshot
+⋮----
+# Persist
+⋮----
+# Diagnostics
+⋮----
+# Example
+⋮----
+cognition = (
+⋮----
+snapshot = (
+</file>
+
+<file path="research/archived/core_world_model.py">
+# core/world_model.py
+⋮----
+class WorldModel
+⋮----
+"""
+    Environmental Survival Intelligence
+
+    目的:
+    - external world awareness
+    - macro regime understanding
+    - systemic risk estimation
+    - environmental adaptation
+
+    最重要:
+    「世界変化を理解する」
+    """
+⋮----
+# =================================================
+# infrastructure
+⋮----
+# state memory
+⋮----
+# environmental signals
+⋮----
+# Update World State
+⋮----
+market_data = (
+⋮----
+sentiment_data = (
+⋮----
+system_data = (
+⋮----
+# compute metrics
+⋮----
+# regime classification
+⋮----
+# build state
+⋮----
+# persistence
+⋮----
+# alerting
+⋮----
+# audit
+⋮----
+# Volatility
+⋮----
+prices = market_data.get(
+⋮----
+returns = []
+⋮----
+prev = prices[i - 1]
+⋮----
+curr = prices[i]
+⋮----
+# Liquidity Risk
+⋮----
+volume = market_data.get(
+⋮----
+spread = market_data.get(
+⋮----
+risk = spread / (
+⋮----
+# Sentiment
+⋮----
+positive = (
+⋮----
+negative = (
+⋮----
+neutral = (
+⋮----
+total = (
+⋮----
+score = (
+⋮----
+# Systemic Risk
+⋮----
+cpu = system_data.get(
+⋮----
+memory = system_data.get(
+⋮----
+failures = system_data.get(
+⋮----
+latency = system_data.get(
+⋮----
+risk = (
+⋮----
+# Stress
+⋮----
+stress = (
+⋮----
+# Collapse Probability
+⋮----
+collapse = (
+⋮----
+# Adaptation Pressure
+⋮----
+pressure = (
+⋮----
+# Regime Detection
+⋮----
+# Alerting
+⋮----
+# Summary
+⋮----
+# Diagnostics
+⋮----
+# =====================================================
+# Example
+⋮----
+world = WorldModel()
+⋮----
+market_data = {
+⋮----
+sentiment_data = {
+⋮----
+system_data = {
+⋮----
+state = world.update(
+</file>
+
+<file path="research/archived/core_world/world_model.py">
+# core/world_model.py
+⋮----
+class WorldModel
+⋮----
+"""
+    Environmental Survival Intelligence
+
+    目的:
+    - external world awareness
+    - macro regime understanding
+    - systemic risk estimation
+    - environmental adaptation
+
+    最重要:
+    「世界変化を理解する」
+    """
+⋮----
+# =================================================
+# infrastructure
+⋮----
+# state memory
+⋮----
+# environmental signals
+⋮----
+# Update World State
+⋮----
+market_data = (
+⋮----
+sentiment_data = (
+⋮----
+system_data = (
+⋮----
+# compute metrics
+⋮----
+# regime classification
+⋮----
+# build state
+⋮----
+# persistence
+⋮----
+# alerting
+⋮----
+# audit
+⋮----
+# Volatility
+⋮----
+prices = market_data.get(
+⋮----
+returns = []
+⋮----
+prev = prices[i - 1]
+⋮----
+curr = prices[i]
+⋮----
+# Liquidity Risk
+⋮----
+volume = market_data.get(
+⋮----
+spread = market_data.get(
+⋮----
+risk = spread / (
+⋮----
+# Sentiment
+⋮----
+positive = (
+⋮----
+negative = (
+⋮----
+neutral = (
+⋮----
+total = (
+⋮----
+score = (
+⋮----
+# Systemic Risk
+⋮----
+cpu = system_data.get(
+⋮----
+memory = system_data.get(
+⋮----
+failures = system_data.get(
+⋮----
+latency = system_data.get(
+⋮----
+risk = (
+⋮----
+# Stress
+⋮----
+stress = (
+⋮----
+# Collapse Probability
+⋮----
+collapse = (
+⋮----
+# Adaptation Pressure
+⋮----
+pressure = (
+⋮----
+# Regime Detection
+⋮----
+# Alerting
+⋮----
+# Summary
+⋮----
+# Diagnostics
+⋮----
+# =====================================================
+# Example
+⋮----
+world = WorldModel()
+⋮----
+market_data = {
+⋮----
+sentiment_data = {
+⋮----
+system_data = {
+⋮----
+state = world.update(
+</file>
+
+<file path="research/archived/meta/ai_evaluator.py">
+class AIEvaluator
+⋮----
+def score(self, strategies)
+⋮----
+scores = {}
+⋮----
+m = s.metrics()
+⋮----
+roi = m.get("roi", 0.0)
+sharpe = m.get("sharpe", 0.0)
+profit = m.get("profit", 0.0)
+drawdown = m.get("drawdown", 0.0)
+volatility = m.get("volatility", 0.0)
+brier = m.get("brier", 0.2)
+ece = m.get("ece", 0.05)
+⋮----
+score = (
+⋮----
+def allocate(self, scores)
+⋮----
+total = sum(max(v,0) for v in scores.values())
+⋮----
+n = len(scores)
+</file>
+
+<file path="research/archived/meta/portfolio_manager.py">
+class PortfolioManager
+⋮----
+def __init__(self, strategies, evaluator, regime, risk)
+⋮----
+def update_regime(self, races)
+⋮----
+detector_status = getattr(self.regime, "status", None)
+⋮----
+def evaluate_strategies(self)
+⋮----
+def allocate_capital(self)
+⋮----
+def execute(self, races, allocations)
+⋮----
+decisions = []
+⋮----
+weight = allocations[strat.name]
+⋮----
+d = strat.run(races, weight)
+</file>
+
+<file path="research/archived/meta/regime_director.py">
+class RegimeDirector
+⋮----
+def detect(self, races)
+⋮----
+avg_odds = sum(
 </file>
 
 <file path="research/autonomous_researcher.py">
@@ -17137,7 +15633,7 @@ def fetch(self, url: str) -> str | None
         失敗時は None を返す（例外は握り潰さない → logger.warning で記録）。
         """
 ⋮----
-response = self.session.get(url, timeout=15)
+response = self.session.get(url, timeout=(3.05, 10.0))
 ⋮----
 # 4xx はリトライしても無駄
 ⋮----
@@ -19819,55 +18315,20 @@ parser = argparse.ArgumentParser(description="Simple scheduler to run live_simul
 args = parser.parse_args()
 </file>
 
-<file path="scripts/shadow_accumulate.py">
-#!/usr/bin/env python
-"""Shadow-mode runner: predict, log bets.csv, never submit votes.
-
-Usage:
-    python scripts/shadow_accumulate.py --races 50
-
-Set SHADOW_MODE=1 or shadow_mode: true in config/settings.yaml.
-"""
+<file path="scripts/smoke_test.py">
+"""Smoke test for edge & bet sizing changes."""
 ⋮----
 ROOT = Path(__file__).resolve().parents[1]
 ⋮----
-def _shadow_odds_confirmer(bet_info: dict) -> float
+def main()
 ⋮----
-"""Simulate post-bet market drift for slippage monitoring during shadow runs."""
-predicted = float(bet_info["predicted_odds"])
-drift = random.uniform(-0.08, 0.05)
+ec = EdgeCalculator()
 ⋮----
-def build_loop() -> Phase2OperationalLoop
+bs = CoreBetSizer()
 ⋮----
-risk = RiskManager()
-calibrator = CalibrationRefitJob().load_calibrator(ProbabilityCalibrator())
-engine = DecisionEngine(
-calibration_job = CalibrationRefitJob()
+cfg = BetConfig()
 ⋮----
-def on_settle(_row: dict) -> None
-⋮----
-executor = BetExecutor(
-⋮----
-def _random_race(race_idx: int) -> tuple[str, list[dict], dict[str, bool]]
-⋮----
-race_id = f"SHADOW_{race_idx:04d}"
-horses = []
-⋮----
-winner = random.choice(horses)["selection"]
-outcomes = {h["selection"]: h["selection"] == winner for h in horses}
-⋮----
-def main() -> None
-⋮----
-parser = argparse.ArgumentParser(description="Shadow-mode bet log accumulation")
-⋮----
-args = parser.parse_args()
-⋮----
-loop = build_loop()
-settled = 0
-⋮----
-decisions = loop.decide_race(race_id, candidates)
-⋮----
-metrics = loop.phase2_metrics()
+bbs = BettingBetSizer(cfg)
 </file>
 
 <file path="scripts/test_critical_path.py">
@@ -21868,6 +20329,686 @@ df = pd.read_csv(
 validator = (
 ⋮----
 report = (
+</file>
+
+<file path="config/settings.yaml">
+kelly_fraction: 0.25
+max_fraction: 0.15
+min_edge: 0.02
+probability_shrink: 0.9
+top_n: 3
+min_odds: 1.0
+safe_mode: true
+shadow_mode: false
+calibration:
+    min_samples: 100
+    ideal_samples: 500
+    auto_refit: false
+diagnosis:
+    max_drawdown: 0.25
+    max_overfit_score: 0.70
+civilization_limits:
+    max_evolutions_per_day: 10
+    max_risk_jump: 0.15
+    max_change_fraction: 0.3
+</file>
+
+<file path="core/bet_sizer.py">
+# core/bet_sizer.py
+⋮----
+# =====================================================
+# 設定
+⋮----
+@dataclass
+class BetConfig
+⋮----
+# --- Kelly設定 ---
+kelly_fraction: float = 0.25     # 1/4 Kelly
+min_edge: float = 0.02           # 最低期待値
+min_odds: float = 1.0            # 低オッズ制限（0で無効）
+⋮----
+# --- 安全制御 ---
+max_fraction: float = 0.15       # 単一ベット上限
+max_race_exposure: float = 0.25  # ★1R総投資上限（最重要）
+min_bet: int = 100               # 最低購入額
+round_unit: int = 100            # 馬券単位
+⋮----
+# --- AI過信防止 ---
+probability_shrink: float = 0.90
+odds_slip: float = 0.05
+⋮----
+# --- 分散制御 ---
+variance_penalty: float = 0.15
+⋮----
+# BetSizer
+⋮----
+class BetSizer
+⋮----
+def __init__(self, risk_manager=None, config: BetConfig = None)
+⋮----
+config = BetConfig()
+⋮----
+# ★レース単位リスク追跡
+⋮----
+# -------------------------------------------------
+# レース開始時に呼ぶ（重要）
+⋮----
+def reset_race(self)
+⋮----
+"""1レース開始時に必ず呼ぶ"""
+⋮----
+# Edge計算
+⋮----
+def expected_edge(self, prob: float, odds: float)
+⋮----
+# AI過信防止
+⋮----
+def adjusted_probability(self, prob: float)
+⋮----
+# AIは必ず確率を盛る
+⋮----
+# Kelly
+⋮----
+def kelly_fraction_raw(self, prob: float, odds: float)
+⋮----
+b = odds - 1
+q = 1 - prob
+⋮----
+kelly = (b * prob - q) / b
+⋮----
+# 分散制御
+⋮----
+def variance_adjustment(self, odds: float)
+⋮----
+# 高オッズほど危険
+penalty = 1 / (
+⋮----
+# 最終ベット計算（完成版）
+⋮----
+# --- オッズ制限 ---
+⋮----
+# --- 確率補正 ---
+prob = self.adjusted_probability(prob)
+⋮----
+# --- Edge ---
+edge = self.expected_edge(prob, odds)
+⋮----
+# --- Kelly ---
+raw_kelly = self.kelly_fraction_raw(prob, odds)
+⋮----
+# --- Fractional Kelly ---
+fraction = raw_kelly * self.cfg.kelly_fraction
+⋮----
+# --- RiskManager連動 ---
+⋮----
+# --- 単一ベット上限 ---
+fraction = min(fraction, self.cfg.max_fraction)
+⋮----
+bet_size = bankroll * fraction
+⋮----
+# --- 馬券単位丸め ---
+bet_size = int(
+⋮----
+# ★ 最重要：レース単位 Exposure Cap
+⋮----
+max_allowed = bankroll * self.cfg.max_race_exposure
+⋮----
+remaining = max_allowed - self.current_race_exposure
+⋮----
+# exposure更新
+⋮----
+# Compatibility wrapper used by main.SurvivalOS
+bankroll = 0.0
+risk_multiplier = 1.0
+⋮----
+bankroll = getattr(self.risk_manager, "bankroll", 0.0)
+risk_multiplier = getattr(self.risk_manager, "risk_multiplier", lambda: 1.0)()
+⋮----
+bankroll = 10000.0
+</file>
+
+<file path="core/betting/bet_sizer.py">
+# core/bet_sizer.py
+⋮----
+# =====================================================
+# 設定
+⋮----
+@dataclass
+class BetConfig
+⋮----
+# --- Kelly設定 ---
+kelly_fraction: float = 0.25     # 1/4 Kelly
+min_edge: float = 0.02           # 最低期待値
+min_odds: float = 1.0            # 低オッズ制限（0で無効）
+⋮----
+# --- 安全制御 ---
+max_fraction: float = 0.15       # 単一ベット上限
+max_race_exposure: float = 0.25  # ★1R総投資上限（最重要）
+min_bet: int = 100               # 最低購入額
+round_unit: int = 100            # 馬券単位
+⋮----
+# --- AI過信防止 ---
+probability_shrink: float = 0.90
+odds_slip: float = 0.05
+⋮----
+# --- 分散制御 ---
+variance_penalty: float = 0.15
+⋮----
+# BetSizer
+⋮----
+class BetSizer
+⋮----
+def __init__(self, config: BetConfig)
+⋮----
+# ★レース単位リスク追跡
+⋮----
+# -------------------------------------------------
+# レース開始時に呼ぶ（重要）
+⋮----
+def reset_race(self)
+⋮----
+"""1レース開始時に必ず呼ぶ"""
+⋮----
+# Edge計算
+⋮----
+def expected_edge(self, prob: float, odds: float)
+⋮----
+# AI過信防止
+⋮----
+def adjusted_probability(self, prob: float)
+⋮----
+# AIは必ず確率を盛る
+⋮----
+# Kelly
+⋮----
+def kelly_fraction_raw(self, prob: float, odds: float)
+⋮----
+b = odds - 1
+q = 1 - prob
+⋮----
+kelly = (b * prob - q) / b
+⋮----
+# 分散制御
+⋮----
+def variance_adjustment(self, odds: float)
+⋮----
+# 高オッズほど危険
+penalty = 1 / (
+⋮----
+# 最終ベット計算（完成版）
+⋮----
+# --- オッズ制限 ---
+⋮----
+# --- 確率補正 ---
+prob = self.adjusted_probability(prob)
+⋮----
+# --- Edge ---
+edge = self.expected_edge(prob, odds)
+⋮----
+# --- Kelly ---
+raw_kelly = self.kelly_fraction_raw(prob, odds)
+⋮----
+# --- Fractional Kelly ---
+fraction = raw_kelly * self.cfg.kelly_fraction
+⋮----
+# --- RiskManager連動 ---
+⋮----
+# --- 単一ベット上限 ---
+fraction = min(fraction, self.cfg.max_fraction)
+⋮----
+bet_size = bankroll * fraction
+⋮----
+# --- 馬券単位丸め ---
+bet_size = int(
+⋮----
+# ★ 最重要：レース単位 Exposure Cap
+⋮----
+max_allowed = bankroll * self.cfg.max_race_exposure
+⋮----
+remaining = max_allowed - self.current_race_exposure
+⋮----
+# exposure更新
+</file>
+
+<file path="core/execution/calibration_refit.py">
+"""Automatic probability calibrator refit from settled bets.csv rows."""
+⋮----
+except ImportError:  # pragma: no cover - Python < 3.9 fallback
+ZoneInfo = None
+⋮----
+logger = logging.getLogger(__name__)
+⋮----
+def _parse_bool(value: Any, default: bool = False) -> bool
+⋮----
+text = str(value).strip().lower()
+⋮----
+def _load_auto_refit_setting(settings_path: Path) -> bool
+⋮----
+payload = yaml.safe_load(settings_path.read_text(encoding="utf-8")) or {}
+⋮----
+calibration = payload.get("calibration", {}) if isinstance(payload, dict) else {}
+⋮----
+class CalibrationRefitJob
+⋮----
+"""Refit ProbabilityCalibrator when enough settled bets accumulate."""
+⋮----
+def _now(self) -> datetime
+⋮----
+def _execution_embargo_active(self, now: Optional[datetime] = None) -> bool
+⋮----
+current = now or self._now()
+⋮----
+def _load_settled_rows(self) -> pd.DataFrame
+⋮----
+frame = pd.read_csv(self.bets_log_path)
+⋮----
+settled = frame[frame["hit"].astype(str).str.strip() != ""].copy()
+⋮----
+settled = settled.dropna(subset=["hit"])
+⋮----
+def _extract_probability(self, row: pd.Series) -> Optional[float]
+⋮----
+def slippage_triggered(self, frame: Optional[pd.DataFrame] = None) -> bool
+⋮----
+data = frame if frame is not None else self._load_settled_rows()
+⋮----
+recent = pd.to_numeric(data["slippage_pct"], errors="coerce").dropna().tail(
+⋮----
+def reliability_triggered(self, analyzer: ReliabilityCurveAnalyzer) -> bool
+⋮----
+recommendation = analyzer.recommendation()
+⋮----
+settled = self._load_settled_rows()
+count = len(settled)
+⋮----
+analysis = self._analyze_ece(settled)
+ece = analysis.get("ece", 0.0)
+⋮----
+def _analyze_ece(self, settled: pd.DataFrame) -> Dict[str, float]
+⋮----
+probs = []
+hits = []
+⋮----
+prob = self._extract_probability(row)
+⋮----
+calibrator = ProbabilityCalibrator()
+diag = calibrator.diagnostics(probs, hits)
+⋮----
+result = {
+⋮----
+target = calibrator or ProbabilityCalibrator()
+⋮----
+diag = target.diagnostics(probs, hits)
+⋮----
+loaded = ProbabilityCalibrator.load(self.calibrator_path)
+⋮----
+legacy = self.legacy_json_path
+⋮----
+legacy = Path(__file__).resolve().parents[2] / legacy
+⋮----
+loaded = ProbabilityCalibrator.load_json_state(legacy)
+⋮----
+result = {"status": "SKIPPED", "reason": reason}
+⋮----
+fit_result = self.fit_from_bets_log(calibrator=calibrator)
+⋮----
+def record_new_settlement(self, count: int = 1) -> None
+</file>
+
+<file path="core/prediction/edge_calculator.py">
+class EdgeCalculator
+⋮----
+"""Compute edge and EV using market odds at decision time.
+
+    The ``odds`` argument must be the pre-bet market quote (same as
+    ``predicted_odds`` in bets.csv). EV is ``adjusted_prob * odds - 1``.
+    """
+⋮----
+def market_trust_for_regime(self, regime=None)
+⋮----
+def slippage_margin(self, odds)
+⋮----
+odds = float(odds)
+base_slip = max(float(self.odds_slip), 0.0)
+⋮----
+multiplier = 4.0
+⋮----
+multiplier = 3.0
+⋮----
+multiplier = 1.5
+⋮----
+multiplier = 1.0
+⋮----
+def odds_to_prob(self, odds)
+⋮----
+def blend_with_market(self, ai_prob, market_prob, regime=None)
+⋮----
+market_trust = self.market_trust_for_regime(regime)
+⋮----
+def calculate_edge(self, ai_prob, odds, regime=None)
+⋮----
+odds_slip = self.slippage_margin(odds)
+safe_odds = max(float(odds) * (1.0 - odds_slip), 1.0)
+⋮----
+market_prob = self.odds_to_prob(safe_odds)
+⋮----
+adjusted_prob = self.blend_with_market(
+⋮----
+edge = adjusted_prob - market_prob
+⋮----
+edge = np.clip(
+⋮----
+ev = adjusted_prob * safe_odds - 1
+⋮----
+confidence_edge = edge * adjusted_prob
+⋮----
+def is_bettable(self, edge, ev)
+</file>
+
+<file path="main.py">
+# main.py
+⋮----
+ENABLE_RESEARCH = os.getenv("KEIBA_ENABLE_RESEARCH", "0") == "1"
+⋮----
+class _NullAIEvaluator
+⋮----
+class _NullPortfolioManager
+⋮----
+def __init__(self, *args, **kwargs)
+⋮----
+def update_regime(self, *args, **kwargs)
+⋮----
+def evaluate_strategies(self, *args, **kwargs)
+⋮----
+def allocate_capital(self, *args, **kwargs)
+⋮----
+def execute(self, *args, **kwargs)
+⋮----
+class _NullMetaController
+⋮----
+def determine_state(self, *args, **kwargs)
+⋮----
+def diagnostics(self, *args, **kwargs)
+⋮----
+class _NullBrierMonitor
+⋮----
+def record(self, *args, **kwargs)
+⋮----
+def current_brier(self)
+⋮----
+class _NullReliabilityCurveAnalyzer
+⋮----
+def recommendation(self)
+⋮----
+def diagnostics(self)
+⋮----
+class _NullPerformanceAnalyzer
+⋮----
+class _NullMonteCarloSurvivalSimulator
+⋮----
+def simulate(self, *args, **kwargs)
+⋮----
+MetaController = _NullMetaController
+AIEvaluator = _NullAIEvaluator
+PortfolioManager = _NullPortfolioManager
+BrierMonitor = _NullBrierMonitor
+ReliabilityCurveAnalyzer = _NullReliabilityCurveAnalyzer
+PerformanceAnalyzer = _NullPerformanceAnalyzer
+MonteCarloSurvivalSimulator = _NullMonteCarloSurvivalSimulator
+⋮----
+# =====================================================
+# Decision
+⋮----
+class Decision
+⋮----
+# Survival OS
+⋮----
+class SurvivalOS
+⋮----
+"""
+    Survival Operating System
+
+    思想:
+    「予測」
+    より
+    「生存」
+
+    目的:
+    - calibration維持
+    - drawdown抑制
+    - participation control
+    - regime adaptation
+    - self destruction prevention
+    """
+⋮----
+def __init__(self)
+⋮----
+# =================================================
+# Core
+⋮----
+def _on_bet_settled(_row)
+⋮----
+# Survival Layers
+⋮----
+# Monitoring
+⋮----
+# Simulation
+⋮----
+# State
+⋮----
+# Latency Control
+⋮----
+def precompute_race_features(self, race_id: str, rows: list) -> dict
+⋮----
+"""Convenience: compute and cache features for a race using analysis_cache."""
+⋮----
+logger = __import__("logging").getLogger(__name__)
+⋮----
+adjusted = dict(meta_state)
+⋮----
+confidence_multiplier = float(
+bet_multiplier = float(
+⋮----
+# Process Race
+⋮----
+# Global Safety
+⋮----
+# Meta State
+⋮----
+meta_state = (
+⋮----
+analysis_snapshot = self.analysis_cache.latest_or_schedule(
+⋮----
+meta_state = self._apply_latency_snapshot(
+⋮----
+# Shutdown
+⋮----
+# Candidate Evaluation
+⋮----
+decisions = []
+⋮----
+selection = c["selection"]
+⋮----
+odds = c["odds"]
+⋮----
+features = c.get(
+⋮----
+# -----------------------------------------
+# prediction
+⋮----
+probability = (
+⋮----
+# edge
+⋮----
+market_probability = (
+⋮----
+edge = (
+⋮----
+# meta edge threshold
+⋮----
+# no bet filter
+⋮----
+# base sizing
+⋮----
+base_size = (
+⋮----
+# capital preservation
+⋮----
+adjusted_size = (
+⋮----
+# meta scaling
+⋮----
+# minimum size
+⋮----
+# decision
+⋮----
+decision = Decision(
+⋮----
+# Portfolio Strategy Layer
+⋮----
+race_bundle = [{
+⋮----
+allocations = self.portfolio.allocate_capital()
+strategy_outputs = self.portfolio.execute(race_bundle, allocations)
+⋮----
+converted = None
+⋮----
+selection = ",".join(output.horses[0]) if output.horses else "UNKNOWN"
+converted = Decision(
+⋮----
+# Portfolio Allocation
+⋮----
+regime = (
+⋮----
+allocated = (
+⋮----
+# Execute
+⋮----
+# Settle Race
+⋮----
+race_profit = 0
+⋮----
+edges = []
+⋮----
+odds_list = []
+⋮----
+# Result Loop
+⋮----
+hit = (
+⋮----
+# profit
+⋮----
+profit = (
+⋮----
+profit = -d.bet_size
+⋮----
+# update capital
+⋮----
+# logging
+⋮----
+# calibration
+⋮----
+# self destruct
+⋮----
+# recent profits
+⋮----
+# Regime Update
+⋮----
+avg_prob = 0.0
+⋮----
+avg_prob = float(
+⋮----
+# Diagnostics
+⋮----
+# Meta
+⋮----
+# Capital
+⋮----
+# Regime
+⋮----
+# Reliability
+⋮----
+# Self Destruct
+⋮----
+# Portfolio
+⋮----
+df = pd.read_csv(
+⋮----
+# Monte Carlo
+⋮----
+def monte_carlo_check(self)
+⋮----
+probs = (
+⋮----
+odds = (
+⋮----
+stakes = (
+⋮----
+report = (
+⋮----
+# Example
+⋮----
+system = SurvivalOS()
+⋮----
+race = [
+⋮----
+decisions = system.process_race(
+⋮----
+winners = ["Horse_A"]
+</file>
+
+<file path="scripts/shadow_accumulate.py">
+#!/usr/bin/env python
+"""Shadow-mode runner: predict, log bets.csv, never submit votes.
+
+Usage:
+    python scripts/shadow_accumulate.py --races 50
+
+Set SHADOW_MODE=1 or shadow_mode: true in config/settings.yaml.
+"""
+⋮----
+ROOT = Path(__file__).resolve().parents[1]
+⋮----
+def _shadow_odds_confirmer(bet_info: dict) -> float
+⋮----
+"""Simulate post-bet market drift for slippage monitoring during shadow runs."""
+predicted = float(bet_info["predicted_odds"])
+drift = random.uniform(-0.08, 0.05)
+⋮----
+def build_loop(bets_log_path: str = "logs/bets.csv") -> Phase2OperationalLoop
+⋮----
+risk = RiskManager()
+calibrator = CalibrationRefitJob(auto_refit_enabled=False).load_calibrator(ProbabilityCalibrator())
+engine = DecisionEngine(
+calibration_job = CalibrationRefitJob(
+⋮----
+def on_settle(_row: dict) -> None
+⋮----
+executor = BetExecutor(
+⋮----
+def _random_race(race_idx: int) -> tuple[str, list[dict], dict[str, bool]]
+⋮----
+race_id = f"SHADOW_{race_idx:04d}"
+horses = []
+⋮----
+winner = random.choice(horses)["selection"]
+outcomes = {h["selection"]: h["selection"] == winner for h in horses}
+⋮----
+def main() -> None
+⋮----
+parser = argparse.ArgumentParser(description="Shadow-mode bet log accumulation")
+⋮----
+args = parser.parse_args()
+⋮----
+loop = build_loop(args.bets_log)
+settled = 0
+⋮----
+decisions = loop.decide_race(race_id, candidates)
+⋮----
+metrics = loop.phase2_metrics()
+readiness = {}
+⋮----
+readiness = PerformanceAnalyzer().analyze(args.bets_log).get("phase1_readiness", {})
 </file>
 
 </files>

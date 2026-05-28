@@ -1,0 +1,27 @@
+name: Governance Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Runtime import scanner
+        run: python scripts/runtime_import_scanner.py
+      - name: Critical path linter
+        run: python scripts/critical_path_linter.py
+      - name: Duplicate implementation detector
+        run: python scripts/duplicate_impl_detector.py
+      - name: Run tests
+        run: pytest -q

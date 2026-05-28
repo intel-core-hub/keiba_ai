@@ -7,6 +7,7 @@ import concurrent.futures
 import logging
 import os
 import socket
+import subprocess
 import threading
 from dataclasses import dataclass
 from datetime import datetime
@@ -93,7 +94,9 @@ class BetExecutor:
     """Bet execution facade with CSV audit logging and real-vote preparation.
 
     - SAFE_MODE=True forces every stake to the minimum lot (100 yen).
-    - Real API calls are routed through `_execute_real_vote()`.
+    - Real API clients should expose `place_bet(bet_info) -> dict` or
+      `execute_vote(bet_info) -> dict`. The returned dict may include
+      status/submitted/confirmed_odds/provider/error.
     - Emergency shutdown can block further execution on repeated API failures
       or on external system signals.
     """
@@ -114,6 +117,8 @@ class BetExecutor:
         max_consecutive_timeouts: int = 3,
         max_consecutive_auth_errors: int = 2,
         api_timeout_seconds: float = 0.5,
+        calibrator_state_path: str = "models/calibration_model.pkl",
+        calibration_model_path: Optional[str] = None,
     ):
 
         self.risk_manager = risk_manager
@@ -125,6 +130,7 @@ class BetExecutor:
         self.max_consecutive_timeouts = int(max_consecutive_timeouts)
         self.max_consecutive_auth_errors = int(max_consecutive_auth_errors)
         self.api_timeout_seconds = float(api_timeout_seconds)
+        self.calibration_model_path = Path(calibration_model_path or calibrator_state_path)
         self._emergency_sources = list(emergency_sources or [])
         self._state_lock = threading.RLock()
         self._settings_path = self._resolve_settings_path(settings_path)
@@ -189,6 +195,8 @@ class BetExecutor:
             "lose_streak",
             "win_streak",
             "race_risk_used",
+            "model_version",
+            "calibration_hash",
             "shutdown_state",
             "shutdown_reason",
         ]
@@ -382,7 +390,35 @@ class BetExecutor:
             "lose_streak": snapshot["lose_streak"],
             "win_streak": snapshot["win_streak"],
             "race_risk_used": snapshot["race_risk_used"],
+            "model_version": self._model_version(),
+            "calibration_hash": self._calibration_hash(),
         }
+
+    def _model_version(self) -> str:
+        try:
+            result = subprocess.run(
+                ["git", "rev-parse", "--short=12", "HEAD"],
+                cwd=Path(__file__).resolve().parents[2],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=1.0,
+            )
+            value = result.stdout.strip()
+            return value or "unknown"
+        except Exception:
+            return "unknown"
+
+    def _calibration_hash(self) -> str:
+        path = self.calibration_model_path
+        if not path.is_absolute():
+            path = Path(__file__).resolve().parents[2] / path
+        if not path.exists() or path.stat().st_size == 0:
+            return "unfitted"
+        try:
+            return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
+        except Exception:
+            return "unavailable"
 
     def _execute_real_vote(self, bet_info: Dict[str, Any]) -> Dict[str, Any]:
         """Placeholder for JRA IPAT / live-vote API integration.
@@ -656,6 +692,8 @@ class BetExecutor:
             "lose_streak": bet_info["lose_streak"],
             "win_streak": bet_info["win_streak"],
             "race_risk_used": bet_info["race_risk_used"],
+            "model_version": bet_info["model_version"],
+            "calibration_hash": bet_info["calibration_hash"],
             "shutdown_state": "STANDBY" if self.is_blocked() else "ACTIVE",
             "shutdown_reason": self._state.reason or "",
         }
@@ -713,6 +751,29 @@ class BetExecutor:
             self._append_jsonl_event("bet_settled", settled)
         except Exception as exc:
             logger.warning("Failed to write settlement event: %s", exc)
+
+        try:
+            with open(self.log_path, "r", newline="", encoding="utf-8") as f:
+                rows = list(csv.DictReader(f))
+
+            for row in reversed(rows):
+                if (
+                    row.get("race_id") == str(decision.race_id)
+                    and row.get("selection") == str(decision.selection)
+                    and not row.get("hit")
+                    and not row.get("profit")
+                ):
+                    row["hit"] = str(int(hit))
+                    row["profit"] = str(round(float(profit), 2))
+                    break
+
+            with open(self.log_path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=self._csv_headers())
+                writer.writeheader()
+                for row in rows:
+                    writer.writerow({key: row.get(key, "") for key in self._csv_headers()})
+        except Exception as exc:
+            logger.warning("Failed to backfill CSV settlement: %s", exc)
 
         # Call on_settle callback for compatibility
         try:

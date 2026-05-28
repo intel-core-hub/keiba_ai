@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from core.execution.calibration_refit import CalibrationRefitJob
 from core.prediction.calibration import ProbabilityCalibrator
 from core.prediction.edge_calculator import EdgeCalculator
 from core.prediction.edge_quality_filter import EdgeQualityFilter
@@ -63,7 +64,12 @@ class DecisionEngine:
 
         self.edge_calculator = edge_calculator or EdgeCalculator()
         self.edge_quality_filter = edge_quality_filter or EdgeQualityFilter()
-        self.calibrator = calibrator or ProbabilityCalibrator()
+        if calibrator is None:
+            self.calibrator = CalibrationRefitJob(
+                auto_refit_enabled=False,
+            ).load_calibrator(ProbabilityCalibrator())
+        else:
+            self.calibrator = calibrator
 
         self.uncertainty_profile = uncertainty_profile
         self.max_uncertainty = max_uncertainty
@@ -190,6 +196,7 @@ class DecisionEngine:
         selection = candidate["selection"]
         odds = candidate["odds"]
         features = candidate.get("features", {})
+        regime = candidate.get("regime")
 
         if odds is None or odds <= 1.0:
             return None
@@ -212,6 +219,7 @@ class DecisionEngine:
         edge_info = self.edge_calculator.calculate_edge(
             ai_prob=calibrated_prob,
             odds=float(odds),
+            regime=regime,
         )
         edge = float(edge_info["edge"])
         expected_value = float(edge_info["expected_value"])

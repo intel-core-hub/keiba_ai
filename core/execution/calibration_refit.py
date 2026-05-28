@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import json
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -12,12 +12,13 @@ try:
 except ImportError:  # pragma: no cover - Python < 3.9 fallback
     ZoneInfo = None
 
-import numpy as np
 import pandas as pd
 import yaml
 
 from core.prediction.calibration import ProbabilityCalibrator
 from learning.reliability_curve import ReliabilityCurveAnalyzer
+
+logger = logging.getLogger(__name__)
 
 
 def _parse_bool(value: Any, default: bool = False) -> bool:
@@ -56,7 +57,8 @@ class CalibrationRefitJob:
     def __init__(
         self,
         bets_log_path: str = "logs/bets.csv",
-        calibrator_path: str = "models/calibrator_state.json",
+        calibrator_path: str = "models/calibration_model.pkl",
+        legacy_json_path: str = "models/calibrator_state.json",
         min_samples: int = 100,
         ideal_samples: int = 500,
         recalibration_ece_threshold: float = 0.06,
@@ -68,6 +70,7 @@ class CalibrationRefitJob:
     ):
         self.bets_log_path = Path(bets_log_path)
         self.calibrator_path = Path(calibrator_path)
+        self.legacy_json_path = Path(legacy_json_path)
         self.min_samples = int(min_samples)
         self.ideal_samples = int(ideal_samples)
         self.recalibration_ece_threshold = float(recalibration_ece_threshold)
@@ -226,21 +229,7 @@ class CalibrationRefitJob:
         target = calibrator or ProbabilityCalibrator()
         target.fit_from_logs(probs, hits)
 
-        self.calibrator_path.parent.mkdir(parents=True, exist_ok=True)
-        payload = {
-            "shrink": target.shrink,
-            "min_prob": target.min_prob,
-            "max_prob": target.max_prob,
-            "bin_edges": target.bin_edges.tolist() if target.bin_edges is not None else None,
-            "bin_factors": target.bin_factors.tolist()
-            if target.bin_factors is not None
-            else None,
-            "sample_count": len(probs),
-        }
-        self.calibrator_path.write_text(
-            json.dumps(payload, indent=2),
-            encoding="utf-8",
-        )
+        target.save(self.calibrator_path)
 
         diag = target.diagnostics(probs, hits)
         self._samples_since_last_fit = 0
@@ -252,6 +241,7 @@ class CalibrationRefitJob:
             "brier": diag.get("brier"),
             "reliability": diag.get("reliability"),
             "calibrator_path": str(self.calibrator_path),
+            "calibration_hash": target.state_hash(self.calibrator_path),
         }
         self.last_result = result
         return result
@@ -261,19 +251,42 @@ class CalibrationRefitJob:
         calibrator: Optional[ProbabilityCalibrator] = None,
     ) -> ProbabilityCalibrator:
         target = calibrator or ProbabilityCalibrator()
-        if not self.calibrator_path.exists():
+        try:
+            loaded = ProbabilityCalibrator.load(self.calibrator_path)
+            target.shrink = loaded.shrink
+            target.min_prob = loaded.min_prob
+            target.max_prob = loaded.max_prob
+            target.bin_edges = loaded.bin_edges
+            target.bin_factors = loaded.bin_factors
+            return target
+        except FileNotFoundError:
+            pass
+        except Exception as exc:
+            logger.warning(
+                "Failed to load calibration model %s; using shrink-only fallback: %s",
+                self.calibrator_path,
+                exc,
+            )
             return target
 
-        payload = json.loads(self.calibrator_path.read_text(encoding="utf-8"))
-        target.shrink = float(payload.get("shrink", target.shrink))
-        target.min_prob = float(payload.get("min_prob", target.min_prob))
-        target.max_prob = float(payload.get("max_prob", target.max_prob))
-
-        edges = payload.get("bin_edges")
-        factors = payload.get("bin_factors")
-        if edges is not None and factors is not None:
-            target.bin_edges = np.array(edges)
-            target.bin_factors = np.array(factors)
+        try:
+            legacy = self.legacy_json_path
+            if not legacy.is_absolute():
+                legacy = Path(__file__).resolve().parents[2] / legacy
+            if legacy.exists() and legacy.stat().st_size > 0:
+                loaded = ProbabilityCalibrator.load_json_state(legacy)
+                loaded.save(self.calibrator_path)
+                target.shrink = loaded.shrink
+                target.min_prob = loaded.min_prob
+                target.max_prob = loaded.max_prob
+                target.bin_edges = loaded.bin_edges
+                target.bin_factors = loaded.bin_factors
+        except Exception as exc:
+            logger.warning(
+                "Failed to migrate legacy calibration JSON %s: %s",
+                self.legacy_json_path,
+                exc,
+            )
 
         return target
 
