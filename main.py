@@ -135,21 +135,8 @@ from core.prediction.feature_precompute import precompute_for_race
 class Decision:
 
     def __init__(
-        self,
-        race_id,
-        selection,
-        probability,
-        odds,
-        edge,
-        bet_size,
-    ):
-
-        self.race_id = race_id
-
-        self.selection = selection
-
-        self.probability = probability
-
+        # Diagnostics moved to scripts/admin_portfolio_summary.py (offline tool).
+        print("Run scripts/admin_portfolio_summary.py for portfolio diagnostics (offline).")
         self.odds = odds
 
         self.edge = edge
@@ -167,31 +154,8 @@ class SurvivalOS:
 
     思想:
     「予測」
-    より
-    「生存」
-
-    目的:
-    - calibration維持
-    - drawdown抑制
-    - participation control
-    - regime adaptation
-    - self destruction prevention
-    """
-
-    def __init__(self):
-
-        # =================================================
-        # Core
-        # =================================================
-
-        self.predictor = Predictor()
-
-        self.risk_manager = RiskManager()
-
-        self.bet_sizer = BetSizer(
-            risk_manager=self.risk_manager
-        )
-
+        # Monte Carlo diagnostics moved to scripts/admin_portfolio_summary.py (offline tool).
+        print("Run scripts/admin_portfolio_summary.py --monte-carlo for offline monte carlo checks.")
         self.calibration_job = CalibrationRefitJob()
 
         def _on_bet_settled(_row):
