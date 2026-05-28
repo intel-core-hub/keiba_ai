@@ -4,6 +4,8 @@ from core.prediction.predictor import Predictor
 import os
 import joblib
 import numpy as np
+import threading
+from time import perf_counter
 try:
     import pandas as pd
 except Exception:
@@ -68,6 +70,21 @@ class Predictor:
         self.feature_names = None
 
         self.trained = False
+
+        # cached feature metadata for low-latency path
+        self._feature_idx = None
+        self._n_features = 0
+
+        # thread-local buffers to avoid cross-thread races while reusing arrays
+        self._thread_local = threading.local()
+
+        # simple profiling counters for predict_raw
+        self._enable_predict_raw_profiling = False
+        self._predict_raw_stats = {
+            "count": 0,
+            "assemble_time": 0.0,
+            "predict_time": 0.0,
+        }
 
         # -----------------------------------------
         # calibration targets
@@ -284,6 +301,10 @@ class Predictor:
             numeric_cols
         )
 
+        # cache feature index mapping and counts for predict_raw
+        self._feature_idx = {f: i for i, f in enumerate(self.feature_names)}
+        self._n_features = len(self.feature_names)
+
         # -----------------------------------------
         # split
         # -----------------------------------------
@@ -482,22 +503,44 @@ class Predictor:
         if (not self.trained) or (self.model is None):
             return self.fallback_predict(features, odds)
 
-        # Build feature vector in the trained feature order
-        vals = []
-        for f in (self.feature_names or []):
+        # Prepare thread-local fixed-size buffer to avoid repeated allocations
+        n = self._n_features or len(self.feature_names or [])
+        if n == 0:
+            return self.fallback_predict(features, odds)
+
+        tl = self._thread_local
+        buf = getattr(tl, "predict_buf", None)
+        if buf is None or buf.size != n:
+            buf = np.empty(n, dtype=float)
+            tl.predict_buf = buf
+
+        start_assemble = perf_counter()
+        # fill buffer in-order
+        for i, f in enumerate(self.feature_names):
             v = features.get(f, None)
             if v is None:
-                vals.append(np.nan)
+                buf[i] = np.nan
             else:
                 try:
-                    vals.append(float(v))
+                    buf[i] = float(v)
                 except Exception:
-                    vals.append(np.nan)
+                    buf[i] = np.nan
+        assemble_time = perf_counter() - start_assemble
 
-        X = np.array([vals], dtype=float)
+        X = buf.reshape(1, -1)
 
         try:
+            start_pred = perf_counter()
             prob = self.model.predict_proba(X)[0][1]
+            predict_time = perf_counter() - start_pred
+
+            # update lightweight profiling
+            if self._enable_predict_raw_profiling:
+                s = self._predict_raw_stats
+                s["count"] += 1
+                s["assemble_time"] += assemble_time
+                s["predict_time"] += predict_time
+
             prob = np.clip(prob, 0.01, 0.99)
             return float(prob)
         except Exception:
@@ -698,6 +741,13 @@ class Predictor:
                 "metrics",
                 {},
             )
+            # ensure cached metadata exists after loading
+            try:
+                self._feature_idx = {f: i for i, f in enumerate(self.feature_names)}
+                self._n_features = len(self.feature_names)
+            except Exception:
+                self._feature_idx = None
+                self._n_features = 0
 
             return True
 
@@ -735,6 +785,14 @@ class Predictor:
             "metrics":
                 self.last_metrics,
         }
+
+    def enable_predict_raw_profiling(self, enable: bool = True):
+        """Enable/disable lightweight profiling for `predict_raw`."""
+        self._enable_predict_raw_profiling = bool(enable)
+
+    def get_predict_raw_stats(self):
+        """Return aggregated predict_raw profiling stats."""
+        return dict(self._predict_raw_stats)
 
 
 # =====================================================
