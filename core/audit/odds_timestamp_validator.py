@@ -5,7 +5,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable
 
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 from .odds_availability_checker import OddsAvailabilityChecker
 from .odds_history_manager import OddsHistoryManager, SnapshotConfig

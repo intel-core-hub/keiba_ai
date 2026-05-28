@@ -1,5 +1,8 @@
 from typing import Optional, Dict
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 from .regime_detector import rule_based_regime, ClusterRegimeDetector
 
 

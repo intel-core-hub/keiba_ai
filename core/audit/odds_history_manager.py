@@ -7,7 +7,10 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import Any, Iterable
 
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 from .odds_snapshot import (
     CLOSING_LABELS,

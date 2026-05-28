@@ -1,6 +1,9 @@
 from typing import Dict, Optional
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 

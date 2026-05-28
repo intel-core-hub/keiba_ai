@@ -95,12 +95,7 @@ class LowLatencyExecutionEngine:
                     )
 
                     prob = await asyncio.wait_for(
-                        loop.run_in_executor(
-                            None,
-                            self._predict_raw_safe,
-                            feature_payload,
-                            odds_for_item,
-                        ),
+                        asyncio.to_thread(self._predict_raw_safe, feature_payload, odds_for_item),
                         timeout=timeout_sec,
                     )
                     probs.append(prob)
@@ -113,13 +108,13 @@ class LowLatencyExecutionEngine:
                     for sel_idx, feat in enumerate(features):
                         try:
                             p = await asyncio.wait_for(
-                                loop.run_in_executor(None, self.predictor.predict, race_id, sel_idx, feat, odds_snapshot.get("odds")),
+                                asyncio.to_thread(self.predictor.predict, race_id, sel_idx, feat, odds_snapshot.get("odds")),
                                 timeout=timeout_sec,
                             )
                         except Exception:
                             # fallback predict may also be blocking
                             p = await asyncio.wait_for(
-                                loop.run_in_executor(None, getattr(self.predictor, "fallback_predict", lambda f, o: 0.0), feat, odds_snapshot.get("odds")),
+                                asyncio.to_thread(getattr(self.predictor, "fallback_predict", lambda f, o: 0.0), feat, odds_snapshot.get("odds")),
                                 timeout=timeout_sec,
                             )
                         probs.append(p)
@@ -128,14 +123,14 @@ class LowLatencyExecutionEngine:
                     try:
                         predicted_probs = [
                             await asyncio.wait_for(
-                                loop.run_in_executor(None, self.predictor.predict, race_id, None, features, odds_snapshot.get("odds")),
+                                asyncio.to_thread(self.predictor.predict, race_id, None, features, odds_snapshot.get("odds")),
                                 timeout=timeout_sec,
                             )
                         ]
                     except Exception:
                         predicted_probs = [
                             await asyncio.wait_for(
-                                loop.run_in_executor(None, getattr(self.predictor, "fallback_predict", lambda f, o: 0.0), features, odds_snapshot.get("odds")),
+                                asyncio.to_thread(getattr(self.predictor, "fallback_predict", lambda f, o: 0.0), features, odds_snapshot.get("odds")),
                                 timeout=timeout_sec,
                             )
                         ]
@@ -144,14 +139,14 @@ class LowLatencyExecutionEngine:
                     try:
                         predicted_probs = [
                             await asyncio.wait_for(
-                                loop.run_in_executor(None, self.predictor.predict, race_id, None, features, odds_snapshot.get("odds")),
+                                asyncio.to_thread(self.predictor.predict, race_id, None, features, odds_snapshot.get("odds")),
                                 timeout=timeout_sec,
                             )
                         ]
                     except Exception:
                         predicted_probs = [
                             await asyncio.wait_for(
-                                loop.run_in_executor(None, getattr(self.predictor, "fallback_predict", lambda f, o: 0.0), features, odds_snapshot.get("odds")),
+                                asyncio.to_thread(getattr(self.predictor, "fallback_predict", lambda f, o: 0.0), features, odds_snapshot.get("odds")),
                                 timeout=timeout_sec,
                             )
                         ]
@@ -163,7 +158,7 @@ class LowLatencyExecutionEngine:
                 # Run sizing in threadpool with timeout to avoid blocking critical loop
                 try:
                     bet_decision = await asyncio.wait_for(
-                        loop.run_in_executor(None, self.risk_manager.calculate_sizing, predicted_probs, odds_snapshot.get("odds")),
+                        asyncio.to_thread(self.risk_manager.calculate_sizing, predicted_probs, odds_snapshot.get("odds")),
                         timeout=timeout_sec,
                     )
                 except Exception:

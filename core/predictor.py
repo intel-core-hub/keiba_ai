@@ -4,7 +4,10 @@ from core.prediction.predictor import Predictor
 import os
 import joblib
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 from sklearn.calibration import (
     CalibratedClassifierCV

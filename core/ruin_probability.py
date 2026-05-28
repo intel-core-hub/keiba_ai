@@ -4,7 +4,10 @@ from dataclasses import dataclass
 from typing import Dict, Optional, Sequence
 
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 
 @dataclass

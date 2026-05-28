@@ -3,7 +3,10 @@ import logging
 from typing import List, Optional, Dict, Any, Tuple
 
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 from .odds_timestamp_validator import OddsTimestampValidator
 

@@ -15,7 +15,10 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 from typing import Any, Mapping
 
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 
 SNAPSHOT_LABELS: tuple[str, ...] = ("t-60min", "t-30min", "t-10min", "final odds")

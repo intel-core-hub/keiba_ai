@@ -12,7 +12,10 @@ try:
 except ImportError:  # pragma: no cover - Python < 3.9 fallback
     ZoneInfo = None
 
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 import yaml
 
 from core.prediction.calibration import ProbabilityCalibrator

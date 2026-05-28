@@ -1,0 +1,5 @@
+regime,n_events,calibration_gap,brier_score
+calibration_collapse,332,0.0,0.0
+edge_deterioration,471,0.0,0.0
+favorite_distortion,381,0.0,0.0
+market_efficiency_spike,678,0.0,0.0

@@ -4,7 +4,10 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 
 @dataclass

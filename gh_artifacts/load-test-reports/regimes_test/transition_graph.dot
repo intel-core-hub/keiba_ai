@@ -1,0 +1,18 @@
+digraph regime_transitions {
+  "calibration_collapse" -> "market_efficiency_spike" [label="109"];
+  "calibration_collapse" -> "edge_deterioration" [label="91"];
+  "calibration_collapse" -> "calibration_collapse" [label="67"];
+  "calibration_collapse" -> "favorite_distortion" [label="64"];
+  "edge_deterioration" -> "market_efficiency_spike" [label="173"];
+  "edge_deterioration" -> "edge_deterioration" [label="104"];
+  "edge_deterioration" -> "calibration_collapse" [label="99"];
+  "edge_deterioration" -> "favorite_distortion" [label="95"];
+  "favorite_distortion" -> "market_efficiency_spike" [label="132"];
+  "favorite_distortion" -> "edge_deterioration" [label="104"];
+  "favorite_distortion" -> "favorite_distortion" [label="93"];
+  "favorite_distortion" -> "calibration_collapse" [label="52"];
+  "market_efficiency_spike" -> "market_efficiency_spike" [label="264"];
+  "market_efficiency_spike" -> "edge_deterioration" [label="172"];
+  "market_efficiency_spike" -> "favorite_distortion" [label="128"];
+  "market_efficiency_spike" -> "calibration_collapse" [label="114"];
+}

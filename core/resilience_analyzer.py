@@ -4,7 +4,10 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 from core.stress_test_engine import StressTestEngine
 from core.survival_metrics import SurvivalMetricsSystem

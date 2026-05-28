@@ -1,0 +1,15 @@
+{
+  "production_readiness_score": 87.11,
+  "production_modules_checked": 64,
+  "production_modules_ready": 58,
+  "circular_dependencies": 0,
+  "shadow_wrappers": 9,
+  "risky_production_modules": [
+    "simulation.live_simulation",
+    "main",
+    "core.auto_operator",
+    "validation.walk_forward_validation",
+    "infrastructure.api_server",
+    "execution.phase2_loop"
+  ]
+}

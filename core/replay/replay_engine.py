@@ -9,7 +9,10 @@ import json
 from datetime import datetime
 from typing import Optional, Dict, Any
 from pathlib import Path
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 from .historical_snapshot_loader import HistoricalSnapshotLoader
 from .replay_validator import ReplayValidator
