@@ -20,13 +20,12 @@ from core.key_manager import KeyManager
 async def main():
     ipat = build_from_env()
     audit = ImmutableAuditLog(os.path.join("logs","audit_safe_run.jsonl"))
-    # if key exists, enable it
+    # If key material exists, enable signing without assuming filesystem-backed storage.
     km = KeyManager()
-    v = km.latest_version()
-    if v:
-        priv = os.path.join(km._version_dir(v), "priv.pem")
+    private_pem = km.load_private_pem()
+    if private_pem:
         try:
-            audit.enable_ecdsa_from_file(priv, include_public_in_entry=True)
+            audit.enable_ecdsa_from_private_pem(private_pem, include_public_in_entry=True)
         except Exception:
             pass
 

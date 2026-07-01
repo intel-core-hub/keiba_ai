@@ -2,7 +2,6 @@ import sys
 import json
 import glob
 import os
-import statistics
 
 def extract_numbers(obj):
     nums = []
@@ -19,7 +18,7 @@ def extract_numbers(obj):
 
 def find_latency_list(d):
     # common keys
-    for key in ("latencies", "durations", "durations_ms", "elapsed_ms", "times", "request_times", "response_times", "durations_ms"):
+    for key in ("latencies", "latencies_ms", "durations", "durations_ms", "elapsed_ms", "times", "request_times", "response_times"):
         if key in d and isinstance(d[key], list):
             return extract_numbers(d[key])
     # some formats embed per-request dicts under "requests" or "samples"
@@ -41,7 +40,7 @@ def find_latency_list(d):
     return all_nums
 
 
-def safe_percentiles(arr, ps=(50,95,99)):
+def safe_percentiles(arr, ps=(50, 95, 99, 99.9)):
     if not arr:
         return {p: None for p in ps}
     arr = sorted(arr)
@@ -63,24 +62,14 @@ def analyze_file(path):
     lat = find_latency_list(d)
     if not lat:
         return (path, 'no-latency-data-found', None)
-    # try statistics.quantiles when enough data
-    try:
-        if len(lat) >= 3:
-            qs = statistics.quantiles(lat, n=100)
-            p50 = qs[49]
-            p95 = qs[94]
-            p99 = qs[98]
-        else:
-            vals = safe_percentiles(lat)
-            p50 = vals[50]
-            p95 = vals[95]
-            p99 = vals[99]
-    except Exception:
-        vals = safe_percentiles(lat)
-        p50 = vals[50]
-        p95 = vals[95]
-        p99 = vals[99]
-    return (path, 'ok', {'count': len(lat), 'p50': p50, 'p95': p95, 'p99': p99})
+    vals = safe_percentiles(lat)
+    return (path, 'ok', {
+        'count': len(lat),
+        'p50': vals[50],
+        'p95': vals[95],
+        'p99': vals[99],
+        'p999': vals[99.9],
+    })
 
 
 def main():
@@ -104,7 +93,11 @@ def main():
         if status != 'ok':
             print(f'FILE: {path} STATUS: {status}')
         else:
-            print(f'FILE: {path} COUNT: {data["count"]} P50: {data["p50"]} P95: {data["p95"]} P99: {data["p99"]}')
+            print(
+                f'FILE: {path} COUNT: {data["count"]} '
+                f'P50: {data["p50"]} P95: {data["p95"]} '
+                f'P99: {data["p99"]} P999: {data["p999"]}'
+            )
     return 0
 
 if __name__ == '__main__':

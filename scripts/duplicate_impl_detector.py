@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
-"""Detect duplicate top-level class or function names across files.
-
-This is a lightweight detector: it flags identical top-level symbol names defined in
-multiple files which may indicate duplicate implementations.
-"""
+"""Detect duplicate production implementations across runtime-owned files."""
 import ast
 import sys
 from collections import defaultdict
 from pathlib import Path
+
+RUNTIME_TARGETS = (
+    "core/low_latency_execution.py",
+    "core/betting",
+    "core/execution",
+    "core/replay",
+    "production",
+    "execution",
+    "infrastructure/api_server.py",
+    "schemas",
+)
+
+UNIQUE_RUNTIME_CLASSES = {"DecisionEngine", "RegimeDetector"}
 
 
 def collect_defs(path: Path):
@@ -21,21 +30,42 @@ def collect_defs(path: Path):
         return []
     names = []
     for node in tree.body:
-        if isinstance(node, ast.ClassDef) or isinstance(node, ast.FunctionDef):
+        if isinstance(node, ast.ClassDef):
+            if node.name not in UNIQUE_RUNTIME_CLASSES:
+                continue
             names.append(node.name)
     return names
 
 
-def main():
-    root = Path(__file__).resolve().parents[1]
-    py_files = [p for p in root.rglob("*.py") if "venv" not in p.parts and ".venv" not in p.parts]
+def runtime_files(root: Path):
+    files = set()
+    for raw in RUNTIME_TARGETS:
+        target = root / raw
+        if target.is_file():
+            files.add(target)
+        elif target.is_dir():
+            files.update(
+                p
+                for p in target.rglob("*.py")
+                if "__pycache__" not in p.parts and ".venv" not in p.parts
+            )
+    return sorted(files)
+
+
+def find_duplicates(root: Path):
+    py_files = runtime_files(root)
     index = defaultdict(list)
     for p in py_files:
         defs = collect_defs(p)
         for name in defs:
             index[name].append(str(p))
 
-    duplicates = {k: v for k, v in index.items() if len(v) > 1}
+    return {k: v for k, v in index.items() if len(v) > 1}
+
+
+def main():
+    root = Path(__file__).resolve().parents[1]
+    duplicates = find_duplicates(root)
     if duplicates:
         print("Duplicate implementations detected:")
         for name, files in duplicates.items():

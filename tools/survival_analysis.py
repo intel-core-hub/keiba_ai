@@ -61,7 +61,7 @@ def main(input_csv: str, out_dir: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="logs/bets.csv")
+    parser.add_argument("--input", default="derived/bets.csv")
     parser.add_argument("--out", default="reports/survival_analysis")
     args = parser.parse_args()
     main(args.input, args.out)

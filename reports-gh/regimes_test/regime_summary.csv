@@ -1,5 +1,0 @@
-regime,n_events,roi_health,drawdown_health,calibration_health,uncertainty_health,survival_score,ruin_probability,roi
-calibration_collapse,332,1.0,0.9921737429074545,1.0,1.0,99.72608100176089,0.0030120481927710845,3.0728915662650604
-edge_deterioration,471,0.0,0.0,1.0,1.0,30.000000000000004,1.0,-1.0
-favorite_distortion,381,0.0,0.0,1.0,1.0,30.000000000000004,1.0,-1.0
-market_efficiency_spike,678,0.0,0.0,1.0,1.0,30.000000000000004,1.0,-1.0

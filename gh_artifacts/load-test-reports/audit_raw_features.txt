@@ -1,9 +1,0 @@
-suspicious_columns:
-
-numeric_na_counts:
-- race_id: 0
-- odds: 0
-- pred_prob: 0
-- expected_value: 0
-- actual_pos: 0
-- pnl: 0

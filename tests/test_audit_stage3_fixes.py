@@ -1,4 +1,5 @@
 import inspect
+import asyncio
 import csv
 import json
 import sys
@@ -12,12 +13,27 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from core.ipat_adapter import MockIPATClient, RealIPATClient, build_from_env
+from core.bet_sizer import BetConfig
+from core.circuit_breaker import SharedCircuitBreaker
 from core.betting.decision_engine import Decision
 from core.execution.bet_executor import BetExecutor
 from core.execution.calibration_refit import CalibrationRefitJob
+from core.low_latency_execution import LowLatencyExecutionEngine
 from core.prediction.calibration import ProbabilityCalibrator
 from core.prediction.edge_calculator import EdgeCalculator
+from core.replay.replay_engine import ReplayEngine
 from learning.performance_analyzer import PerformanceAnalyzer
+
+
+def _with_risk_clamp_proof(decision):
+    decision.risk_limits_hash = "risk-hash"
+    decision.risk_clamp_reason = "risk_clamp_allowed"
+    decision.risk_clamp_allowed = True
+    decision.policy_hash = "policy-hash"
+    decision.model_hash = "model-hash"
+    decision.odds_snapshot_hash = "odds-hash"
+    decision.feature_snapshot_hash = "feature-hash"
+    return decision
 
 
 class _Risk:
@@ -48,12 +64,51 @@ def test_ipat_build_from_env_without_credentials_uses_mock(monkeypatch):
     assert isinstance(build_from_env(), MockIPATClient)
 
 
+def test_ipat_rejects_html_response():
+    class _Response:
+        headers = {"Content-Type": "text/html; charset=utf-8"}
+
+        async def text(self):
+            return "<html>blocked</html>"
+
+    client = RealIPATClient.__new__(RealIPATClient)
+    with pytest.raises(RuntimeError, match="HTML response"):
+        asyncio.run(client._json_or_raise(_Response()))
+
+
 def test_edge_calculator_expands_slippage_for_long_odds():
     calculator = EdgeCalculator(odds_slip=0.05)
 
     assert calculator.slippage_margin(2.0) == 0.05
     assert calculator.slippage_margin(30.0) == pytest.approx(0.15)
     assert calculator.calculate_edge(0.08, 30.0)["safe_odds"] == 25.5
+
+
+def test_bet_config_race_exposure_clamped_to_eight_percent():
+    assert BetConfig().max_race_exposure == pytest.approx(0.08)
+
+
+def test_shared_circuit_breaker_blocks_bet_executor_and_low_latency_engine(tmp_path):
+    breaker = SharedCircuitBreaker(failure_threshold=2, recovery_timeout=60)
+    executor = BetExecutor(
+        risk_manager=_Risk(),
+        log_path=str(tmp_path / "bets.csv"),
+        shadow_mode=True,
+        safe_mode=True,
+        circuit_breaker=breaker,
+    )
+    engine = LowLatencyExecutionEngine(
+        predictor=object(),
+        risk_manager=object(),
+        ipat_client=object(),
+        circuit_breaker=breaker,
+    )
+
+    executor.emergency_shutdown("TEST_SHUTDOWN")
+
+    assert breaker.is_open()
+    assert executor.is_blocked()
+    assert engine.circuit_breaker.is_open()
 
 
 def test_edge_calculator_uses_regime_adaptive_market_trust():
@@ -79,7 +134,7 @@ def test_bet_executor_writes_model_and_calibration_replay_keys(tmp_path):
         safe_mode=True,
         calibrator_state_path=str(state_path),
     )
-    decision = Decision(
+    decision = _with_risk_clamp_proof(Decision(
         race_id="R1",
         selection="H1",
         probability=0.2,
@@ -91,13 +146,17 @@ def test_bet_executor_writes_model_and_calibration_replay_keys(tmp_path):
         uncertainty_score=0.1,
         edge_quality=0.7,
         bet_size=500,
-    )
+    ))
 
     result = executor.execute_bet(decision)
     row = result["row"]
 
     assert row["model_version"]
     assert row["model_version"] != ""
+    assert row["model_pkl_sha256"]
+    assert "model_pkl_sha256" in row
+    assert "calibration_last_refit_at" in row
+    assert "odds_snapshot_ts" in row
     assert row["calibration_hash"] != "unfitted"
 
     with log_path.open(encoding="utf-8") as handle:
@@ -105,10 +164,83 @@ def test_bet_executor_writes_model_and_calibration_replay_keys(tmp_path):
     assert persisted["model_version"] == row["model_version"]
     assert persisted["calibration_hash"] == row["calibration_hash"]
 
-    jsonl = log_path.parent / "bets.jsonl"
-    event = json.loads(jsonl.read_text(encoding="utf-8").splitlines()[-1])
+    jsonl = log_path.parent / "decisions.jsonl"
+    events = [json.loads(line) for line in jsonl.read_text(encoding="utf-8").splitlines()]
+    event = next(item for item in events if item["event_type"] == "BetSubmitted")
     assert event["payload"]["model_version"] == row["model_version"]
     assert event["payload"]["calibration_hash"] == row["calibration_hash"]
+    assert event["payload"]["model_pkl_sha256"] == row["model_pkl_sha256"]
+
+
+def test_bet_executor_defaults_to_jsonl_without_csv_report(tmp_path):
+    decision_log_path = tmp_path / "decisions.jsonl"
+    default_csv = tmp_path / "bets.csv"
+    executor = BetExecutor(
+        risk_manager=_Risk(),
+        decision_log_path=str(decision_log_path),
+        shadow_mode=True,
+        safe_mode=True,
+    )
+    decision = _with_risk_clamp_proof(Decision(
+        race_id="R1",
+        selection="H1",
+        probability=0.2,
+        calibrated_probability=0.18,
+        market_probability=0.1,
+        odds=10.0,
+        edge=0.05,
+        expected_value=0.8,
+        uncertainty_score=0.1,
+        edge_quality=0.7,
+        bet_size=500,
+    ))
+
+    result = executor.execute_bet(decision)
+
+    assert result["blocked"] is False
+    assert decision_log_path.exists()
+    assert not default_csv.exists()
+    events = [json.loads(line) for line in decision_log_path.read_text(encoding="utf-8").splitlines()]
+    assert "BetSubmitted" in {event["event_type"] for event in events}
+    submitted = next(event for event in events if event["event_type"] == "BetSubmitted")
+    assert submitted["payload"]["risk_limits_hash"]
+
+
+def test_replay_engine_rejects_csv_and_accepts_jsonl(tmp_path):
+    class _Loader:
+        timestamp_col = "timestamp"
+
+        def get_latest_odds(self, *args, **kwargs):
+            return None
+
+        def get_latest_features(self, *args, **kwargs):
+            return None
+
+        def get_calibration_state(self, *args, **kwargs):
+            return None
+
+    csv_path = tmp_path / "bets.csv"
+    csv_path.write_text("timestamp,race_id\n2026-01-01T00:00:00,R1\n", encoding="utf-8")
+    jsonl_path = tmp_path / "decisions.jsonl"
+    jsonl_path.write_text(
+        json.dumps({
+            "event": "bet_executed",
+            "payload": {
+                "timestamp": "2026-01-01T00:00:00",
+                "race_id": "R1",
+                "selection": "H1",
+                "model_version": "abc",
+            },
+        }) + "\n",
+        encoding="utf-8",
+    )
+    replay = ReplayEngine(loader=_Loader())
+
+    with pytest.raises(ValueError, match="JSONL"):
+        replay.replay(csv_path)
+
+    report = replay.replay(jsonl_path)
+    assert report["summary"]["total"] == 1
 
 
 def test_calibration_refit_pkl_roundtrip(tmp_path):

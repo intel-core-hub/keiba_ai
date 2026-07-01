@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Counterfactual replay system")
-    parser.add_argument("--input", default="logs/bets.csv", help="Base log CSV/JSONL")
+    parser.add_argument("--input", default="logs/decisions.jsonl", help="Canonical decision JSONL")
     parser.add_argument("--outcomes", default=None, help="Optional outcome log to merge")
     parser.add_argument("--outdir", default="results/counterfactual_replay", help="Output directory")
     return parser.parse_args()

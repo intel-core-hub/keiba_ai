@@ -1,8 +1,8 @@
 """
-Verify integrity of logs/bets.jsonl by checking canonical JSON -> SHA256 chain.
+Verify integrity of logs/decisions.jsonl by checking canonical JSON -> SHA256 chain.
 
 Usage:
-    python scripts/verify_bets_jsonl.py --jsonl logs/bets.jsonl
+    python scripts/verify_bets_jsonl.py --jsonl logs/decisions.jsonl
 """
 import argparse
 import json
@@ -54,7 +54,7 @@ def verify(jsonl_path: Path) -> int:
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("--jsonl", default="logs/bets.jsonl")
+    p.add_argument("--jsonl", default="logs/decisions.jsonl")
     args = p.parse_args()
     errs = verify(Path(args.jsonl))
     if errs:

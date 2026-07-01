@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run a single counterfactual policy replay")
-    parser.add_argument("--input", default="logs/bets.csv", help="Base log CSV/JSONL")
+    parser.add_argument("--input", default="logs/decisions.jsonl", help="Canonical decision JSONL")
     parser.add_argument("--outcomes", default=None, help="Optional outcome log to merge by race/selection")
     parser.add_argument("--policy", default="recorded", help="Policy name (recorded/no_bet/kelly_half/aggressive/defensive/regime_no_bet/calibration_stop/uncertainty_threshold)")
     parser.add_argument("--outdir", default="results/counterfactual_replay/single_policy", help="Output directory")

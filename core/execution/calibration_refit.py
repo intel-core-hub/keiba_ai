@@ -19,7 +19,6 @@ except Exception:
 import yaml
 
 from core.prediction.calibration import ProbabilityCalibrator
-from learning.reliability_curve import ReliabilityCurveAnalyzer
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +58,7 @@ class CalibrationRefitJob:
 
     def __init__(
         self,
-        bets_log_path: str = "logs/bets.csv",
+        bets_log_path: str = "derived/bets.csv",
         calibrator_path: str = "models/calibration_model.pkl",
         legacy_json_path: str = "models/calibrator_state.json",
         min_samples: int = 100,
@@ -147,7 +146,7 @@ class CalibrationRefitJob:
         self,
         *,
         force: bool = False,
-        reliability_analyzer: Optional[ReliabilityCurveAnalyzer] = None,
+        reliability_analyzer: Optional[Any] = None,
     ) -> tuple[bool, str]:
         if not self.auto_refit_enabled:
             return False, "AUTO_REFIT_DISABLED"

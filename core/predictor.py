@@ -1,19 +1,16 @@
-from core.prediction.predictor import Predictor
 # core/predictor.py
 
 import os
 import joblib
 import numpy as np
+import time
+import json
 import threading
-from time import perf_counter
+from collections import OrderedDict
 try:
     import pandas as pd
 except Exception:
     pd = None
-
-from sklearn.calibration import (
-    CalibratedClassifierCV
-)
 
 from sklearn.metrics import (
     brier_score_loss,
@@ -24,23 +21,11 @@ from sklearn.model_selection import (
     train_test_split,
 )
 
-from sklearn.ensemble import (
-    RandomForestClassifier
-)
-
-from sklearn.impute import (
-    SimpleImputer
-)
-
-from sklearn.pipeline import Pipeline
-
-from sklearn.preprocessing import (
-    StandardScaler,
-)
-
 from schemas.race_schema import (
     RaceSchemaUtils
 )
+
+from learning.model_factory import build_boosted_pipeline
 
 
 class Predictor:
@@ -70,21 +55,16 @@ class Predictor:
         self.feature_names = None
 
         self.trained = False
-
-        # cached feature metadata for low-latency path
+        self._state_lock = threading.RLock()
+        self._thread_local = threading.local()
         self._feature_idx = None
         self._n_features = 0
 
-        # thread-local buffers to avoid cross-thread races while reusing arrays
-        self._thread_local = threading.local()
-
-        # simple profiling counters for predict_raw
-        self._enable_predict_raw_profiling = False
-        self._predict_raw_stats = {
-            "count": 0,
-            "assemble_time": 0.0,
-            "predict_time": 0.0,
-        }
+        # in-memory predict cache: OrderedDict for simple LRU
+        # key -> (timestamp, value)
+        self._predict_cache = OrderedDict()
+        self._predict_cache_ttl = float(os.getenv("PREDICT_CACHE_TTL", "10"))
+        self._predict_cache_max = int(os.getenv("PREDICT_CACHE_MAX", "1024"))
 
         # -----------------------------------------
         # calibration targets
@@ -118,55 +98,11 @@ class Predictor:
         生存重視:
         過学習しにくい構成
         """
-
-        base_model = (
-            RandomForestClassifier(
-
-                n_estimators=200,
-
-                max_depth=6,
-
-                min_samples_leaf=8,
-
-                random_state=42,
-
-                class_weight="balanced",
-            )
+        return build_boosted_pipeline(
+            cv=cv,
+            calibrated=calibrated,
+            use_scaler=False,
         )
-
-        if calibrated:
-            model = CalibratedClassifierCV(
-                estimator=base_model,
-                method="sigmoid",
-                cv=cv,
-            )
-        else:
-            model = base_model
-
-        pipeline = Pipeline([
-
-            (
-                "imputer",
-
-                SimpleImputer(
-                    strategy="median"
-                ),
-            ),
-
-            (
-                "scaler",
-
-                StandardScaler()
-            ),
-
-            (
-                "model",
-
-                model
-            ),
-        ])
-
-        return pipeline
 
     # =================================================
     # Train
@@ -185,6 +121,9 @@ class Predictor:
         dataframe:
         historical horse records
         """
+
+        if pd is None:
+            raise RuntimeError("pandas is required for training")
 
         if target_col not in dataframe:
 
@@ -297,13 +236,10 @@ class Predictor:
             target_col
         ].astype(int)
 
-        self.feature_names = (
-            numeric_cols
-        )
-
-        # cache feature index mapping and counts for predict_raw
-        self._feature_idx = {f: i for i, f in enumerate(self.feature_names)}
-        self._n_features = len(self.feature_names)
+        with self._state_lock:
+            self.feature_names = numeric_cols
+            self._feature_idx = {f: i for i, f in enumerate(numeric_cols)}
+            self._n_features = len(numeric_cols)
 
         # -----------------------------------------
         # split
@@ -325,11 +261,16 @@ class Predictor:
         # train
         # -----------------------------------------
 
-        self.model = (
-            self.build_pipeline()
-        )
+        class_counts = y_train.value_counts()
+        min_class_count = int(class_counts.min()) if not class_counts.empty else 0
 
-        self.model.fit(
+        if min_class_count >= 2:
+            model = self.build_pipeline(cv=min(3, min_class_count), calibrated=True)
+        else:
+            print("[WARNING] small class count; using uncalibrated model")
+            model = self.build_pipeline(calibrated=False)
+
+        model.fit(
             X_train,
             y_train,
         )
@@ -339,7 +280,7 @@ class Predictor:
         # -----------------------------------------
 
         probs = (
-            self.model
+                model
             .predict_proba(X_valid)
         )[:, 1]
 
@@ -358,7 +299,7 @@ class Predictor:
             )
         )
 
-        self.last_metrics = {
+        last_metrics = {
 
             "brier":
                 round(brier, 6),
@@ -373,11 +314,12 @@ class Predictor:
                 len(numeric_cols),
         }
 
-        self.training_rows = (
-            len(dataframe)
-        )
-
-        self.trained = True
+        with self._state_lock:
+            self.model = model
+            self.last_metrics = last_metrics
+            self.training_rows = len(dataframe)
+            self.trained = True
+            self._predict_cache.clear()
 
         # -----------------------------------------
         # survival validation
@@ -403,7 +345,15 @@ class Predictor:
 
         self.save()
 
-        return self.last_metrics
+        return last_metrics
+
+    def fit(self, X, y):
+        df = pd.DataFrame(X).copy()
+        df.columns = [f"f{i}" for i in range(df.shape[1])]
+        if "target_win" in df.columns:
+            df = df.drop(columns=["target_win"])
+        df["target_win"] = np.asarray(y).astype(int)
+        return self.train(df, target_col="target_win")
 
     # =================================================
     # Predict
@@ -428,21 +378,66 @@ class Predictor:
         """
 
         # =================================================
-        # fallback
+        # caching
         # =================================================
+        try:
+            with self._state_lock:
+                model_ref = self.model
+                trained = self.trained
+                feature_names = list(self.feature_names or [])
+            try:
+                if isinstance(self.model_path, str) and os.path.exists(self.model_path):
+                    model_version = os.path.getmtime(self.model_path)
+                else:
+                    model_version = id(model_ref)
+            except Exception:
+                model_version = id(model_ref)
 
-        if (
+            features_serial = json.dumps(features or {}, sort_keys=True, separators=(",", ":"), default=str)
+            cache_key = f"{race_id}|{selection}|{features_serial}|{model_version}"
 
-            not self.trained
+            # prune expired entries
+            now = time.time()
+            to_delete = []
+            for k, (ts, _) in list(self._predict_cache.items()):
+                if now - ts > self._predict_cache_ttl:
+                    to_delete.append(k)
+            for k in to_delete:
+                self._predict_cache.pop(k, None)
 
-            or self.model is None
+            # try cache hit
+            cached = self._predict_cache.get(cache_key)
+            if cached is not None:
+                # move to end (LRU)
+                ts, val = self._predict_cache.pop(cache_key)
+                self._predict_cache[cache_key] = (ts, val)
+                return float(val)
+        except Exception:
+            # caching must not break prediction
+            pass
 
-        ):
+        # =================================================
+        # fallback (untrained)
+        # =================================================
+        try:
+            model_ref
+        except NameError:
+            with self._state_lock:
+                model_ref = self.model
+                trained = self.trained
+                feature_names = list(self.feature_names or [])
 
-            return self.fallback_predict(
-                features,
-                odds,
-            )
+        if (not trained or model_ref is None):
+            val = self.fallback_predict(features, odds)
+            try:
+                # store in cache
+                self._predict_cache[cache_key] = (time.time(), float(val))
+                # enforce max size
+                while len(self._predict_cache) > self._predict_cache_max:
+                    self._predict_cache.popitem(last=False)
+            except Exception:
+                pass
+            return val
 
         # =================================================
         # dataframe
@@ -450,7 +445,10 @@ class Predictor:
 
         row = {}
 
-        for f in self.feature_names:
+        if pd is None:
+            return self.predict_raw(features, odds)
+
+        for f in feature_names:
 
             row[f] = features.get(
                 f,
@@ -466,7 +464,7 @@ class Predictor:
         try:
 
             prob = (
-                self.model
+                model_ref
                 .predict_proba(X)
             )[0][1]
 
@@ -480,7 +478,14 @@ class Predictor:
                 0.99,
             )
 
-            return float(prob)
+            result = float(prob)
+            try:
+                self._predict_cache[cache_key] = (time.time(), result)
+                while len(self._predict_cache) > self._predict_cache_max:
+                    self._predict_cache.popitem(last=False)
+            except Exception:
+                pass
+            return result
 
         except Exception as e:
 
@@ -494,18 +499,15 @@ class Predictor:
                 odds,
             )
 
-    def predict_raw(self, features: dict, odds=None) -> float:
-        """
-        Low-latency prediction path that avoids pandas and uses numpy arrays
-        so it can be executed in a threadpool without incurring DataFrame
-        allocation overhead on the critical path.
-        """
-        if (not self.trained) or (self.model is None):
-            return self.fallback_predict(features, odds)
+    def predict_raw(self, features: dict, odds=None, submitted_at: float = None) -> float:
+        """Low-latency prediction path using a thread-local numpy buffer."""
+        with self._state_lock:
+            model_ref = self.model
+            trained = self.trained
+            feature_names = list(self.feature_names or [])
+            n = self._n_features or len(feature_names)
 
-        # Prepare thread-local fixed-size buffer to avoid repeated allocations
-        n = self._n_features or len(self.feature_names or [])
-        if n == 0:
+        if (not trained) or model_ref is None or n == 0:
             return self.fallback_predict(features, odds)
 
         tl = self._thread_local
@@ -514,35 +516,15 @@ class Predictor:
             buf = np.empty(n, dtype=float)
             tl.predict_buf = buf
 
-        start_assemble = perf_counter()
-        # fill buffer in-order
-        for i, f in enumerate(self.feature_names):
-            v = features.get(f, None)
-            if v is None:
+        for i, f in enumerate(feature_names):
+            try:
+                buf[i] = float(features.get(f, np.nan))
+            except Exception:
                 buf[i] = np.nan
-            else:
-                try:
-                    buf[i] = float(v)
-                except Exception:
-                    buf[i] = np.nan
-        assemble_time = perf_counter() - start_assemble
-
-        X = buf.reshape(1, -1)
 
         try:
-            start_pred = perf_counter()
-            prob = self.model.predict_proba(X)[0][1]
-            predict_time = perf_counter() - start_pred
-
-            # update lightweight profiling
-            if self._enable_predict_raw_profiling:
-                s = self._predict_raw_stats
-                s["count"] += 1
-                s["assemble_time"] += assemble_time
-                s["predict_time"] += predict_time
-
-            prob = np.clip(prob, 0.01, 0.99)
-            return float(prob)
+            prob = model_ref.predict_proba(buf.reshape(1, -1))[0][1]
+            return float(np.clip(prob, 0.01, 0.99))
         except Exception:
             return self.fallback_predict(features, odds)
 
@@ -669,31 +651,21 @@ class Predictor:
         self,
     ):
 
-        if self.model is None:
-            return
+        with self._state_lock:
+            if self.model is None:
+                return
+            payload = {
+                "model": self.model,
+                "feature_names": self.feature_names,
+                "trained": self.trained,
+                "training_rows": self.training_rows,
+                "metrics": self.last_metrics,
+            }
 
         os.makedirs(
             "models",
             exist_ok=True,
         )
-
-        payload = {
-
-            "model":
-                self.model,
-
-            "feature_names":
-                self.feature_names,
-
-            "trained":
-                self.trained,
-
-            "training_rows":
-                self.training_rows,
-
-            "metrics":
-                self.last_metrics,
-        }
 
         joblib.dump(
             payload,
@@ -720,34 +692,16 @@ class Predictor:
                 self.model_path
             )
 
-            self.model = payload[
-                "model"
-            ]
-
-            self.feature_names = payload[
-                "feature_names"
-            ]
-
-            self.trained = payload[
-                "trained"
-            ]
-
-            self.training_rows = payload.get(
-                "training_rows",
-                0,
-            )
-
-            self.last_metrics = payload.get(
-                "metrics",
-                {},
-            )
-            # ensure cached metadata exists after loading
-            try:
-                self._feature_idx = {f: i for i, f in enumerate(self.feature_names)}
-                self._n_features = len(self.feature_names)
-            except Exception:
-                self._feature_idx = None
-                self._n_features = 0
+            feature_names = payload["feature_names"]
+            with self._state_lock:
+                self.model = payload["model"]
+                self.feature_names = feature_names
+                self.trained = payload["trained"]
+                self.training_rows = payload.get("training_rows", 0)
+                self.last_metrics = payload.get("metrics", {})
+                self._feature_idx = {f: i for i, f in enumerate(feature_names or [])}
+                self._n_features = len(feature_names or [])
+                self._predict_cache.clear()
 
             return True
 
@@ -785,14 +739,6 @@ class Predictor:
             "metrics":
                 self.last_metrics,
         }
-
-    def enable_predict_raw_profiling(self, enable: bool = True):
-        """Enable/disable lightweight profiling for `predict_raw`."""
-        self._enable_predict_raw_profiling = bool(enable)
-
-    def get_predict_raw_stats(self):
-        """Return aggregated predict_raw profiling stats."""
-        return dict(self._predict_raw_stats)
 
 
 # =====================================================

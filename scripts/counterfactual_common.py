@@ -132,9 +132,17 @@ def load_records(path: str | Path) -> pd.DataFrame:
                 if not line:
                     continue
                 try:
-                    rows.append(json.loads(line))
+                    record = json.loads(line)
                 except Exception:
                     continue
+                if isinstance(record, dict) and isinstance(record.get("payload"), dict):
+                    row = dict(record["payload"])
+                    row.setdefault("event", record.get("event"))
+                    row.setdefault("timestamp", record.get("timestamp"))
+                    row.setdefault("entry_hash", record.get("entry_hash"))
+                    rows.append(row)
+                else:
+                    rows.append(record)
         df = pd.DataFrame(rows)
     else:
         df = pd.read_csv(p, low_memory=False)

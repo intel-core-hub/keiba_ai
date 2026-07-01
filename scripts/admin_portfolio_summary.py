@@ -2,8 +2,8 @@
 """Offline admin portfolio summary.
 
 Usage:
-    python scripts/admin_portfolio_summary.py --bets-log logs/bets.csv
-    python scripts/admin_portfolio_summary.py --monte-carlo --bets-log logs/bets.csv
+    python scripts/admin_portfolio_summary.py --bets-log derived/bets.csv
+    python scripts/admin_portfolio_summary.py --monte-carlo --bets-log derived/bets.csv
 
 This script intentionally uses pandas/numpy and is offline-only.
 """
@@ -62,7 +62,7 @@ def monte_carlo_check(path: str) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--bets-log", default="logs/bets.csv")
+    parser.add_argument("--bets-log", default="derived/bets.csv")
     parser.add_argument("--monte-carlo", action="store_true")
     args = parser.parse_args()
     if args.monte_carlo:
@@ -95,7 +95,7 @@ except Exception as e:
     raise RuntimeError("pandas is required for admin_portfolio_summary.py") from e
 
 
-def portfolio_summary(bets_log: str = "logs/bets.csv") -> None:
+def portfolio_summary(bets_log: str = "derived/bets.csv") -> None:
     path = Path(bets_log)
     if not path.exists():
         print("bets log not found:", bets_log)
@@ -104,7 +104,7 @@ def portfolio_summary(bets_log: str = "logs/bets.csv") -> None:
     print({"bets_logged": len(df)})
 
 
-def monte_carlo_check(bets_log: str = "logs/bets.csv") -> None:
+def monte_carlo_check(bets_log: str = "derived/bets.csv") -> None:
     path = Path(bets_log)
     if not path.exists():
         print("bets log not found:", bets_log)
@@ -125,7 +125,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--summary", action="store_true")
     parser.add_argument("--monte-carlo", action="store_true")
-    parser.add_argument("--bets-log", default="logs/bets.csv")
+    parser.add_argument("--bets-log", default="derived/bets.csv")
     args = parser.parse_args()
 
     if args.summary:

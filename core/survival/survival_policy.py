@@ -5,17 +5,15 @@ import statistics
 
 from datetime import datetime
 
-from infrastructure.database import (
-    SurvivalDatabase
-)
+class _NoopSink:
+    def save_snapshot(self, *args, **kwargs):
+        return None
 
-from core.audit_logger import (
-    AuditLogger
-)
+    def log(self, *args, **kwargs):
+        return None
 
-from core.alert_manager import (
-    AlertManager
-)
+    def emit(self, *args, **kwargs):
+        return None
 
 
 class SurvivalPolicy:
@@ -34,23 +32,18 @@ class SurvivalPolicy:
 
     def __init__(
         self,
+        db=None,
+        audit=None,
+        alerts=None,
     ):
 
         # =================================================
         # infrastructure
         # =================================================
 
-        self.db = (
-            SurvivalDatabase()
-        )
-
-        self.audit = (
-            AuditLogger()
-        )
-
-        self.alerts = (
-            AlertManager()
-        )
+        self.db = db or _NoopSink()
+        self.audit = audit or _NoopSink()
+        self.alerts = alerts or _NoopSink()
 
         # =================================================
         # policy weights

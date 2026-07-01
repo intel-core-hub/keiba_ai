@@ -15,6 +15,7 @@ cryptography
 
 # Optional (development)
 pytest
+pytest-cov
 black
 matplotlib
 seaborn

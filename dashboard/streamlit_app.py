@@ -11,7 +11,7 @@ st.title("🏇 Keiba AI Dashboard")
 # ログ読み込み
 # ----------------------------------
 
-df = pd.read_csv("logs/bets.csv")
+df = pd.read_csv("derived/bets.csv")
 
 st.write("### 最新ログ")
 st.dataframe(df.tail(20))

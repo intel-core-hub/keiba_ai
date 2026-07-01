@@ -13,11 +13,7 @@ PRODUCTION_MODULES = [
     "core.portfolio_allocator",
     "core.risk_manager",
     "core.replay",
-    "dashboard",
     "execution",
-    "infrastructure",
-    "simulation",
-    "validation",
 ]
 
 PRODUCTION_CRITERIA = [

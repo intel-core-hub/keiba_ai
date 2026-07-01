@@ -10,7 +10,7 @@ from learning.performance_analyzer import PerformanceAnalyzer
 
 
 STATUS_PATH = Path("logs/scheduler_status.json")
-BETS_PATH = Path("logs/bets.csv")
+BETS_PATH = Path("derived/bets.csv")
 CALIBRATION_PATH = Path("models/calibration_model.pkl")
 
 

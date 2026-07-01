@@ -25,7 +25,7 @@ def load_decisions(path):
     return recs
 
 
-def run_replay(decision_log_path='logs/decision_log.jsonl', outdir='reports/replay'):
+def run_replay(decision_log_path='logs/decisions.jsonl', outdir='reports/replay'):
     os.makedirs(outdir, exist_ok=True)
 
     decisions = load_decisions(decision_log_path)

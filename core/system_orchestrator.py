@@ -1,592 +1,205 @@
-"""
-core/system_orchestrator.py
+"""Research-side orchestrator with explicit dependency injection.
 
-Consolidated SystemOrchestrator implementation (single definition).
+The runtime tree can import this module safely because it does not name or import
+offline implementations directly. Research-only dataset builders, simulators, and
+retraining strategies must be injected by the caller.
 """
 
-import os
+from __future__ import annotations
+
 import time
 import traceback
-import pandas as pd
-
 from datetime import datetime
+from typing import Any, Callable
 
-from scraping.netkeiba_scraper import (
-    NetkeibaScraper
-)
-
-from data.historical_dataset import (
-    HistoricalDatasetBuilder
-)
-
-from simulation.live_simulation import (
-    LiveSimulation
-)
-
-ENABLE_RESEARCH = os.getenv("KEIBA_ENABLE_RESEARCH", "0") == "1"
+from core.regime_detector import RegimeDetector
+from scraping.netkeiba_scraper import NetkeibaScraper
 
 
 class _NullAutoRetrainer:
     def recovery_cycle(self, regime_detector):
         return {
             "status": "SKIPPED",
-            "reason": "research_disabled",
+            "reason": "research_dependency_missing",
             "regime": getattr(regime_detector, "current_regime", "NORMAL"),
         }
 
 
-if ENABLE_RESEARCH:
-    try:
-        from core.auto_retrainer import _load_autoretrainer
-        AutoRetrainer = _load_autoretrainer()
-    except Exception:
-        AutoRetrainer = _NullAutoRetrainer
-else:
-    AutoRetrainer = _NullAutoRetrainer
-
-from core.regime_detector import (
-    RegimeDetector
-)
-
-
 class SystemOrchestrator:
-    """
-    Survival System Orchestrator
-
-    目的:
-    - 全体統合
-    - 自動循環
-    - self healing
-    - survival automation
-
-    最重要:
-    「止まらず生き残る」
-    """
+    """Research-side system loop kept outside the production critical path."""
 
     def __init__(
-
         self,
-
         loop_interval=3600,
+        *,
+        dataset_builder: Any = None,
+        simulator_factory: Callable[..., Any] | None = None,
+        retrainer: Any = None,
     ):
-
-        self.loop_interval = (
-            loop_interval
-        )
-
-        # =================================================
-        # systems
-        # =================================================
-
-        self.scraper = (
-            NetkeibaScraper()
-        )
-
-        self.dataset_builder = (
-            HistoricalDatasetBuilder()
-        )
-
-        self.retrainer = (
-            AutoRetrainer()
-        )
-
-        self.regime_detector = (
-            RegimeDetector()
-        )
-
-        # =================================================
-        # state
-        # =================================================
+        self.loop_interval = loop_interval
+        self.scraper = NetkeibaScraper()
+        self.regime_detector = RegimeDetector()
+        self.dataset_builder = dataset_builder
+        self.simulator_factory = simulator_factory
+        self.retrainer = retrainer or _NullAutoRetrainer()
 
         self.running = False
-
         self.cycle_count = 0
-
         self.last_cycle = None
-
         self.last_error = None
-
         self.shutdown = False
-
-        # =================================================
-        # diagnostics
-        # =================================================
-
         self.health_history = []
 
-    # =================================================
-    # Health Snapshot
-    # =================================================
+    def _require_dependency(self, value: Any, feature_name: str) -> Any:
+        if value is not None:
+            return value
+        raise RuntimeError(f"{feature_name} requires an injected research dependency.")
 
-    def health_snapshot(
-        self,
-        status="OK",
-    ):
-
+    def health_snapshot(self, status="OK"):
         snapshot = {
-
-            "timestamp":
-                datetime.utcnow()
-                .isoformat(),
-
-            "cycle":
-                self.cycle_count,
-
-            "status":
-                status,
-
-            "regime":
-                self.regime_detector
-                .current_regime,
-
-            "last_error":
-                self.last_error,
+            "timestamp": datetime.utcnow().isoformat(),
+            "cycle": self.cycle_count,
+            "status": status,
+            "regime": self.regime_detector.current_regime,
+            "last_error": self.last_error,
         }
-
-        self.health_history.append(
-            snapshot
-        )
-
+        self.health_history.append(snapshot)
         return snapshot
 
-    # =================================================
-    # Scraping Phase
-    # =================================================
-
-    def scraping_phase(
-        self,
-    ):
-
+    def scraping_phase(self):
         print("\n====================")
         print("SCRAPING PHASE")
         print("====================")
 
-        today = datetime.utcnow().strftime(
-            "%Y%m%d"
-        )
-
-        # =================================================
-        # scrape today
-        # =================================================
-
-        df = (
-            self.scraper
-            .scrape_date_range(
-
-                start_date=today,
-
-                end_date=today,
-            )
-        )
-
+        today = datetime.utcnow().strftime("%Y%m%d")
+        df = self.scraper.scrape_date_range(start_date=today, end_date=today)
         if df is None:
-
-            print(
-                "[NO DATA]"
-            )
-
+            print("[NO DATA]")
             return None
 
-        clean = (
-            self.scraper
-            .minimal_features(
-                df
-            )
-        )
-
-        path = (
-
-            f"data/raw/"
-            f"live_{today}.csv"
-        )
-
-        self.scraper.save_csv(
-
-            clean,
-
-            path,
-        )
-
+        clean = self.scraper.minimal_features(df)
+        path = f"data/raw/live_{today}.csv"
+        self.scraper.save_csv(clean, path)
         return path
 
-    # =================================================
-    # Dataset Phase
-    # =================================================
-
-    def dataset_phase(
-        self,
-    ):
-
+    def dataset_phase(self):
         print("\n====================")
         print("DATASET PHASE")
         print("====================")
 
-        dataset = (
-            self.dataset_builder
-            .build()
-        )
+        builder = self._require_dependency(self.dataset_builder, "dataset_phase")
+        return builder.build()
 
-        return dataset
-
-    # =================================================
-    # Simulation Phase
-    # =================================================
-
-    def simulation_phase(
-        self,
-        dataset,
-    ):
-
+    def simulation_phase(self, dataset):
         print("\n====================")
         print("SIMULATION PHASE")
         print("====================")
 
-        simulator = (
-            LiveSimulation(
-
-                bankroll=100000,
-
-                min_edge=0.03,
-
-                max_risk=0.02,
-            )
+        simulator_factory = self._require_dependency(self.simulator_factory, "simulation_phase")
+        simulator = simulator_factory(
+            bankroll=100000,
+            min_edge=0.03,
+            max_risk=0.02,
         )
-
-        result = simulator.run(
-            dataset
-        )
-
-        # =================================================
-        # sync regime
-        # =================================================
-
-        self.regime_detector.current_regime = (
-            simulator.current_regime
-        )
-
+        result = simulator.run(dataset)
+        self.regime_detector.current_regime = simulator.current_regime
         return result
 
-    # =================================================
-    # Recovery Phase
-    # =================================================
-
-    def recovery_phase(
-        self,
-    ):
-
+    def recovery_phase(self):
         print("\n====================")
         print("RECOVERY PHASE")
         print("====================")
+        return self.retrainer.recovery_cycle(self.regime_detector)
 
-        result = (
-            self.retrainer
-            .recovery_cycle(
-                self.regime_detector,
-            )
-        )
-
-        return result
-
-    # =================================================
-    # Survival Evaluation
-    # =================================================
-
-    def evaluate_survival(
-        self,
-        sim_result,
-    ):
-
-        survival = sim_result.get(
-            "survival_score",
-            0,
-        )
-
-        shutdown = sim_result.get(
-            "shutdown",
-            False,
-        )
-
-        # =================================================
-        # emergency
-        # =================================================
+    def evaluate_survival(self, sim_result):
+        survival = sim_result.get("survival_score", 0)
+        shutdown = sim_result.get("shutdown", False)
 
         if shutdown:
-
-            print(
-                "\n[EMERGENCY]"
-            )
-
+            print("\n[EMERGENCY]")
             self.shutdown = True
-
             return False
 
-        # =================================================
-        # low survival
-        # =================================================
-
         if survival < 0.30:
-
-            print(
-                "\n[LOW SURVIVAL]"
-            )
-
-            self.regime_detector.current_regime = (
-                "COLLAPSE"
-            )
-
+            print("\n[LOW SURVIVAL]")
+            self.regime_detector.current_regime = "COLLAPSE"
             return False
 
         return True
 
-    # =================================================
-    # Single Cycle
-    # =================================================
-
-    def run_cycle(
-        self,
-    ):
-
+    def run_cycle(self):
         print("\n\n")
         print("################################")
-        print(
-            f"CYCLE {self.cycle_count}"
-        )
+        print(f"CYCLE {self.cycle_count}")
         print("################################")
 
-        self.last_cycle = (
-            datetime.utcnow()
-            .isoformat()
-        )
+        self.last_cycle = datetime.utcnow().isoformat()
 
         try:
-
-            # =================================================
-            # health
-            # =================================================
-
-            self.health_snapshot(
-                status="STARTING"
-            )
-
-            # =================================================
-            # scraping
-            # =================================================
-
+            self.health_snapshot(status="STARTING")
             self.scraping_phase()
-
-            # =================================================
-            # dataset
-            # =================================================
-
-            dataset = (
-                self.dataset_phase()
-            )
-
-            # =================================================
-            # simulation
-            # =================================================
-
-            sim_result = (
-                self.simulation_phase(
-                    dataset
-                )
-            )
-
-            # =================================================
-            # evaluate
-            # =================================================
-
-            alive = (
-                self.evaluate_survival(
-                    sim_result
-                )
-            )
-
-            # =================================================
-            # recovery
-            # =================================================
+            dataset = self.dataset_phase()
+            sim_result = self.simulation_phase(dataset)
+            alive = self.evaluate_survival(sim_result)
 
             if not alive:
-
                 self.recovery_phase()
 
-            # =================================================
-            # health
-            # =================================================
-
-            self.health_snapshot(
-                status="OK"
-            )
-
+            self.health_snapshot(status="OK")
             self.cycle_count += 1
-
             return {
-
-                "status":
-                    "SUCCESS",
-
-                "simulation":
-                    sim_result,
+                "status": "SUCCESS",
+                "simulation": sim_result,
             }
-
-        except Exception as e:
-
-            self.last_error = str(e)
-
+        except Exception as exc:
+            self.last_error = str(exc)
             print("\n[ORCHESTRATOR ERROR]")
-
-            print(e)
-
+            print(exc)
             traceback.print_exc()
-
-            self.health_snapshot(
-                status="ERROR"
-            )
-
+            self.health_snapshot(status="ERROR")
             return {
-
-                "status":
-                    "ERROR",
-
-                "error":
-                    str(e),
+                "status": "ERROR",
+                "error": str(exc),
             }
 
-    # =================================================
-    # Main Loop
-    # =================================================
-
-    def run_forever(
-        self,
-    ):
-
+    def run_forever(self):
         print("\n====================")
         print("SURVIVAL OS START")
         print("====================")
 
         self.running = True
-
-        while (
-
-            self.running
-
-            and not self.shutdown
-        ):
-
-            result = (
-                self.run_cycle()
-            )
-
+        while self.running and not self.shutdown:
+            result = self.run_cycle()
             print("\n[CYCLE RESULT]")
-
             print(result)
-
-            # =================================================
-            # cooldown
-            # =================================================
-
-            print(
-                "\n[SLEEP]"
-            )
-
-            print(
-                self.loop_interval,
-                "seconds"
-            )
-
-            time.sleep(
-                self.loop_interval
-            )
+            print("\n[SLEEP]")
+            print(self.loop_interval, "seconds")
+            time.sleep(self.loop_interval)
 
         print("\n====================")
         print("SYSTEM STOPPED")
         print("====================")
 
-    # =================================================
-    # Manual Stop
-    # =================================================
-
-    def stop(
-        self,
-    ):
-
+    def stop(self):
         self.running = False
+        print("\n[STOP REQUESTED]")
 
-        print(
-            "\n[STOP REQUESTED]"
-        )
-
-    # =================================================
-    # Diagnostics
-    # =================================================
-
-    def diagnostics(
-        self,
-    ):
-
+    def diagnostics(self):
         return {
-
-            "running":
-                self.running,
-
-            "shutdown":
-                self.shutdown,
-
-            "cycle_count":
-                self.cycle_count,
-
-            "last_cycle":
-                self.last_cycle,
-
-            "last_error":
-                self.last_error,
-
-            "regime":
-                self.regime_detector
-                .current_regime,
-
-            "health_entries":
-                len(
-                    self.health_history
-                ),
+            "running": self.running,
+            "shutdown": self.shutdown,
+            "cycle_count": self.cycle_count,
+            "last_cycle": self.last_cycle,
+            "last_error": self.last_error,
+            "regime": self.regime_detector.current_regime,
+            "health_entries": len(self.health_history),
         }
 
 
-# =====================================================
-# Example
-# =====================================================
-
 if __name__ == "__main__":
-
-    orchestrator = (
-        SystemOrchestrator(
-
-            loop_interval=60
-        )
-    )
-
-    # =================================================
-    # single cycle
-    # =================================================
-
-    result = (
-        orchestrator.run_cycle()
-    )
-
+    orchestrator = SystemOrchestrator(loop_interval=60)
+    result = orchestrator.run_cycle()
     print("\nFINAL RESULT")
-
     print(result)
-
     print("\nDIAGNOSTICS")
-
-    print(
-        orchestrator.diagnostics()
-    )
-
-    # =================================================
-    # continuous mode
-    # =================================================
-
-    """
-    orchestrator.run_forever()
-    """
+    print(orchestrator.diagnostics())

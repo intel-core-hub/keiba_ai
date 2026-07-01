@@ -1,5 +1,0 @@
-exposure_bucket,n_events,probability_of_ruin,max_recovery_duration,stress_drawdown,recovery_speed,volatility_adjusted_survival,risk_adjusted_longevity
-"(0.999, 21.25]",21,0.0,9,1061.0699999999997,0.1111111111111111,1.0166492045184825,0.5501213748266064
-"(21.25, 41.5]",20,0.0,0,0.0,0.0,1.0,1.0
-"(41.5, 61.75]",20,0.0,0,0.0,0.0,1.0,1.0
-"(61.75, 82.0]",21,0.0,0,0.0,0.0,1.0,1.0

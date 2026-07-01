@@ -23,5 +23,20 @@ jobs:
         run: python scripts/critical_path_linter.py
       - name: Duplicate implementation detector
         run: python scripts/duplicate_impl_detector.py
+      - name: Generate CI latency artifact
+        run: python -m scripts.load_test 2 10 --mock-only --ci-output .ci_latency.json
       - name: Run tests
-        run: pytest -q
+        run: |
+          mkdir -p reports/stage4
+          pytest -q \
+            --cov=core \
+            --cov=scripts.stage4_readiness_gate \
+            --cov-branch \
+            --cov-report=json:reports/stage4/critical_path_coverage.json
+      - name: Stage 4 readiness gate when evidence artifacts are present
+        run: |
+          if [ -f logs/decisions.jsonl ] && [ -f derived/bets.csv ] && [ -f results/market_dependency/variant_summary.csv ] && [ -f results/market_dependency/odds_perturbation_summary.csv ] && [ -f reports/stage4/replay_report.json ] && [ -f reports/stage4/critical_path_coverage.json ]; then
+            python -m scripts.stage4_readiness_gate --replay-report reports/stage4/replay_report.json --require-replay-report --coverage-json reports/stage4/critical_path_coverage.json
+          else
+            echo "Skipping Stage 4 readiness gate; evidence artifacts not present."
+          fi

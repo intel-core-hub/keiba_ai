@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Compare counterfactual policies")
-    parser.add_argument("--input", default="logs/bets.csv", help="Base log CSV/JSONL")
+    parser.add_argument("--input", default="logs/decisions.jsonl", help="Canonical decision JSONL")
     parser.add_argument("--outdir", default="results/policy_comparison", help="Output directory")
     parser.add_argument("--policy", action="append", dest="policies", default=None, help="Specific policy to run; can be repeated")
     return parser.parse_args()

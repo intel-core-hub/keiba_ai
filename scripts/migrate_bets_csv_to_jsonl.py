@@ -1,9 +1,9 @@
 """
-Migrate existing logs/bets.csv into logs/bets.jsonl using the same
+Migrate existing logs/bets.csv into logs/decisions.jsonl using the same
 canonical JSON + SHA256 chaining used by BetExecutor._append_jsonl_event.
 
 Usage:
-    python scripts/migrate_bets_csv_to_jsonl.py --csv logs/bets.csv --jsonl logs/bets.jsonl
+    python scripts/migrate_bets_csv_to_jsonl.py --csv logs/bets.csv --jsonl logs/decisions.jsonl
 """
 import argparse
 import csv
@@ -48,6 +48,6 @@ def migrate(csv_path: Path, jsonl_path: Path):
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--csv", default="logs/bets.csv")
-    p.add_argument("--jsonl", default="logs/bets.jsonl")
+    p.add_argument("--jsonl", default="logs/decisions.jsonl")
     args = p.parse_args()
     migrate(Path(args.csv), Path(args.jsonl))

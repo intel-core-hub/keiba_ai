@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Simulate bankroll paths under counterfactual policies")
-    parser.add_argument("--input", default="logs/bets.csv", help="Base log CSV/JSONL")
+    parser.add_argument("--input", default="logs/decisions.jsonl", help="Canonical decision JSONL")
     parser.add_argument("--outcomes", default=None, help="Optional outcome log to merge")
     parser.add_argument("--outdir", default="results/bankroll_path", help="Output directory")
     parser.add_argument("--policy", default=None, help="Single policy name; if omitted, runs the default suite")

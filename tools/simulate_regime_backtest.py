@@ -16,7 +16,7 @@ if PROJECT_ROOT not in sys.path:
 from core.market.regime_metrics import batch_compute_metrics
 from core.market.regime_classifier import RegimeClassifier
 from core.betting.regime_risk_manager import RegimeAwareRiskManager
-from core.betting.bet_sizer import BetConfig, BetSizer
+from core.bet_sizer import BetConfig, BetSizer
 
 
 def simulate(input_csv: str, out_dir: str, top_n: int = 1, ev_threshold: float = 1.0, initial_bankroll: float = 20000.0):
@@ -30,7 +30,7 @@ def simulate(input_csv: str, out_dir: str, top_n: int = 1, ev_threshold: float =
 
     # prepare bet sizing
     bet_cfg = BetConfig()
-    sizer = BetSizer(bet_cfg)
+    sizer = BetSizer(config=bet_cfg)
     regime_mgr = RegimeAwareRiskManager(base_min_edge=bet_cfg.min_edge)
 
     bankroll = float(initial_bankroll)

@@ -227,6 +227,26 @@ class DecisionLogger:
         no_bet_reason=None,
 
         # -----------------------------------------
+        # bet type metadata
+        # -----------------------------------------
+
+        bet_type=None,
+
+        legs=None,
+
+        ordered=None,
+
+        shadow_only=None,
+
+        production_candidate=None,
+
+        max_combinations_per_race=None,
+
+        max_race_exposure_share=None,
+
+        source=None,
+
+        # -----------------------------------------
         # features
         # -----------------------------------------
 
@@ -413,6 +433,30 @@ class DecisionLogger:
 
             "no_bet_reason":
                 no_bet_reason,
+
+            "bet_type":
+                bet_type or "win",
+
+            "legs":
+                legs,
+
+            "ordered":
+                ordered if ordered is not None else False,
+
+            "shadow_only":
+                shadow_only if shadow_only is not None else False,
+
+            "production_candidate":
+                production_candidate if production_candidate is not None else True,
+
+            "max_combinations_per_race":
+                max_combinations_per_race,
+
+            "max_race_exposure_share":
+                self.safe_number(max_race_exposure_share),
+
+            "source":
+                source,
 
             # =================================================
             # features

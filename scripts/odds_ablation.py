@@ -77,6 +77,20 @@ def evaluate_variant(df: pd.DataFrame, variant: str, model_kind: str, train_rati
         values = [metrics.get(key) for metrics in fold_metrics if pd.notna(metrics.get(key))]
         if values:
             summary[key] = round(float(np.mean(values)), 6)
+            if key in {"roi_top1", "brier", "calibration_gap"} and len(values) > 1:
+                summary[f"a7_{key}_std"] = round(float(np.std(values, ddof=0)), 6)
+
+    roi_values = [metrics.get("roi_top1") for metrics in fold_metrics if pd.notna(metrics.get("roi_top1"))]
+    if roi_values:
+        summary["a2_worst_fold_roi_top1"] = round(float(np.min(roi_values)), 6)
+    ev_values = [
+        metrics.get("expected_profit_mean")
+        for metrics in fold_metrics
+        if pd.notna(metrics.get("expected_profit_mean"))
+    ]
+    if ev_values:
+        summary["a2_positive_ev_fold_rate"] = round(float(np.mean([value > 0 for value in ev_values])), 6)
+    summary["fold_count"] = float(len(fold_metrics))
 
     combined = pd.concat(fold_rows, ignore_index=True) if fold_rows else None
     if combined is not None and "pred_prob" in combined.columns:
@@ -103,6 +117,8 @@ def print_summary(frame: pd.DataFrame) -> None:
         "ece",
         "calibration_gap",
         "roi_top1",
+        "a2_worst_fold_roi_top1",
+        "a7_roi_top1_std",
         "top1_hit_rate",
         "uncertainty_mean",
         "uncertainty_high_rate",

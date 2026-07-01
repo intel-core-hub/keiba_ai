@@ -26,13 +26,27 @@ class RealIPATClient:
         self.api_key = api_key
         self.timeout = aiohttp.ClientTimeout(total=timeout)
 
+    async def _json_or_raise(self, response: Any) -> Any:
+        content_type = response.headers.get("Content-Type", "").lower()
+        if "html" in content_type:
+            body = await response.text()
+            raise RuntimeError(
+                f"IPAT returned HTML response; possible IP block or login wall: {body[:120]}"
+            )
+        if "json" not in content_type:
+            body = await response.text()
+            raise RuntimeError(
+                f"IPAT returned non-JSON response ({content_type or 'unknown'}): {body[:120]}"
+            )
+        return await response.json()
+
     async def fetch_live_odds_async(self, race_id: str) -> Any:
         url = f"{self.base_url}/odds/{race_id}"
         headers = {"Authorization": f"Bearer {self.api_key}"}
         async with aiohttp.ClientSession(timeout=self.timeout) as session:
             async with session.get(url, headers=headers) as response:
                 response.raise_for_status()
-                return await response.json(content_type=None)
+                return await self._json_or_raise(response)
 
     async def place_bet_async(self, race_id: str, allocations: Any) -> Any:
         url = f"{self.base_url}/place_bet"
@@ -41,7 +55,7 @@ class RealIPATClient:
         async with aiohttp.ClientSession(timeout=self.timeout) as session:
             async with session.post(url, headers=headers, json=payload) as response:
                 response.raise_for_status()
-                return await response.json(content_type=None)
+                return await self._json_or_raise(response)
 
 
 class MockIPATClient:

@@ -26,7 +26,7 @@ class PerformanceAnalyzer:
 
     def analyze(
         self,
-        path="logs/bets.csv",
+        path="derived/bets.csv",
     ):
 
         mtime = os.path.getmtime(path)

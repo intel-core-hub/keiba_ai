@@ -25,7 +25,14 @@ python -m scripts.integration_run_safe
 
 2) Key management and public key distribution
 --------------------------------------------
-- Use `KeyManager.rotate()` (scripted via `core.key_manager`) in a secure environment to generate new ECDSA key pairs.
+- `KeyManager` supports two backends:
+  - local development: `KEY_MANAGER_BACKEND=file`
+  - production / mounted secrets: `KEY_MANAGER_BACKEND=env`
+- `KEY_MANAGER_BACKEND=file` is blocked automatically when `KEIBA_ENV` / `ENVIRONMENT` indicates production unless `KEY_MANAGER_ALLOW_INSECURE_FILE_STORAGE=1` is set as an explicit break-glass override.
+- For the env-backed path, provide one of:
+  - `AUDIT_PRIVATE_KEY_PEM` or `AUDIT_PRIVATE_KEY_PATH`
+  - `AUDIT_PUBLIC_KEY_PEM` or `AUDIT_PUBLIC_KEY_PATH`
+- Use `KeyManager.rotate()` only in a secure development or key-ceremony environment to generate new ECDSA key pairs.
 - Export the public key for auditors and verification using:
 
 ```
@@ -55,4 +62,4 @@ Or rely on entries that embed the public key (verification will use the embedded
 
 Security note
 -------------
-- Rotate keys regularly and store private keys in a secure KMS or HSM. The `KeyManager` here is intentionally simple for demonstration and must be replaced for production.
+- Rotate keys regularly and store private keys in a secure KMS, HSM, or mounted secret workflow. Filesystem persistence is now treated as development-only and should remain disabled in production.
