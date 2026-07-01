@@ -1,0 +1,8 @@
+provider: http
+schedule_url: "http://localhost:8000/schedule"
+odds_url_template: "http://localhost:8000/odds/{race_id}"
+results_url_template: "http://localhost:8000/results/{race_id}"
+timeout_seconds: 10
+retry_limit: 2
+retry_backoff_seconds: 0.25
+user_agent: "keiba-ai-evidence-collector/0.1"

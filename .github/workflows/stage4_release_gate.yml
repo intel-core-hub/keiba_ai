@@ -1,0 +1,119 @@
+name: Stage 4 Release Gate
+
+on:
+  workflow_dispatch:
+
+jobs:
+  stage4-release-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Governance lint
+        run: |
+          python scripts/runtime_import_scanner.py
+          python scripts/critical_path_linter.py
+          python scripts/duplicate_impl_detector.py
+      - name: Critical path branch coverage
+        run: |
+          mkdir -p reports/stage4
+          pytest -q \
+            --cov=core \
+            --cov=scripts.stage4_readiness_gate \
+            --cov=scripts.bet_type_metrics_report \
+            --cov=scripts.stage4_rubric_v2_3_report \
+            --cov=scripts.degradation_mode_report \
+            --cov-branch \
+            --cov-report=json:reports/stage4/critical_path_coverage.json \
+            tests/test_replay_determinism.py \
+            tests/test_replay_engine_coverage.py \
+            tests/test_risk_clamp.py \
+            tests/test_bet_types.py \
+            tests/test_bet_type_metrics_report.py \
+            tests/test_degradation_mode.py \
+            tests/test_degradation_mode_execution_guard.py \
+            tests/test_degradation_mode_report.py \
+            tests/test_bet_executor_ev.py \
+            tests/test_critical_path_coverage_gate.py \
+            tests/test_latency_regression.py \
+            tests/test_stage4_readiness_gate.py \
+            tests/test_stage4_rubric_v2_3_bet_type_gate.py
+      - name: Regenerate derived bets report from canonical JSONL
+        run: |
+          python -m scripts.derive_bets_csv_from_decisions \
+            --jsonl logs/decisions.jsonl \
+            --csv derived/bets.csv
+      - name: Generate market dependency evidence
+        run: |
+          python -m scripts.market_dependency_report \
+            --input data/processed/historical_dataset.csv \
+            --outdir results/market_dependency
+      - name: Mandatory Stage 4 readiness gate
+        continue-on-error: true
+        run: |
+          python -m scripts.stage4_readiness_gate \
+            --decision-log logs/decisions.jsonl \
+            --latency .ci_latency.json \
+            --market-outdir results/market_dependency \
+            --derived-bets derived/bets.csv \
+            --coverage-json reports/stage4/critical_path_coverage.json \
+            --replay-report reports/stage4/replay_report.json \
+            --require-replay-report \
+            --output reports/stage4/readiness_gate.json
+      - name: Generate bet type metrics evidence
+        continue-on-error: true
+        run: |
+          python -m scripts.bet_type_metrics_report \
+            --derived-bets derived/bets.csv \
+            --decisions-jsonl logs/decisions.jsonl \
+            --readiness-gate reports/stage4/readiness_gate.json \
+            --output-json reports/stage4/bet_type_metrics.json \
+            --output-csv reports/stage4/bet_type_metrics.csv
+      - name: Generate degradation mode evidence
+        continue-on-error: true
+        run: |
+          python -m scripts.degradation_mode_report \
+            --decision-log logs/decisions.jsonl \
+            --readiness-gate reports/stage4/readiness_gate.json \
+            --bet-type-metrics reports/stage4/bet_type_metrics.json \
+            --latency .ci_latency.json \
+            --output-json reports/stage4/degradation_mode_report.json \
+            --output-csv reports/stage4/degradation_mode_report.csv
+      - name: Generate Stage 4 rubric v2.3 compliance report
+        continue-on-error: true
+        run: |
+          python -m scripts.stage4_rubric_v2_3_report \
+            --readiness reports/stage4/readiness_gate.json \
+            --bet-type-metrics reports/stage4/bet_type_metrics.json \
+            --degradation-report reports/stage4/degradation_mode_report.json \
+            --output-json reports/stage4/rubric_v2_3_compliance.json \
+            --output-md reports/stage4/rubric_v2_3_compliance.md
+      - name: Build mandatory Stage 4 evidence bundle
+        run: |
+          python -m scripts.stage4_evidence_bundle \
+            --decision-log logs/decisions.jsonl \
+            --latency .ci_latency.json \
+            --market-outdir results/market_dependency \
+            --derived-bets derived/bets.csv \
+            --coverage-json reports/stage4/critical_path_coverage.json \
+            --input-replay-report reports/stage4/replay_report.json \
+            --bet-type-metrics reports/stage4/bet_type_metrics.json \
+            --rubric-v2-3-report reports/stage4/rubric_v2_3_compliance.json \
+            --degradation-report reports/stage4/degradation_mode_report.json \
+            --output-dir reports/stage4
+      - name: Upload Stage 4 evidence artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage4-release-evidence
+          path: |
+            reports/stage4/*
+            results/market_dependency/*
+            derived/bets.csv
