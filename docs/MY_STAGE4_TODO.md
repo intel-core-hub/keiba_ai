@@ -1,8 +1,17 @@
 # Current Stage 4 TODO
 
-Updated: 2026-06-18
+Updated: 2026-07-02
 
-## Today Status
+## Today Status (2026-07-02)
+
+- Ran `scripts.check_approved_exports_ready`; approved real exports are still missing (`ready_for_import: false`).
+- Re-ran `scripts.stage4_readiness_gate`; verdict remains `EVIDENCE_BLOCKED` (shadow 2 / 30 days, `DEEP_LONGSHOT` bucket missing).
+- Refreshed `reports/stage4/evidence_blockers.md`.
+- Blocked status recorded in `reports/data_collection/real_data_blocked_status_20260702.json`.
+- No mock dry-run was run as Stage 4 progress. No canonical `data/market_snapshots` or `data/results` files were overwritten. `logs/decisions.jsonl` remains 342 lines.
+- Repository hygiene: committed and pushed the `survivability/refactor-archive-core` refactor (research modules archived out of runtime core; `__pycache__`/repomix untracked; `.gitignore` now tracked; new Stage 4 tooling, real-data pipeline, and 28 test modules committed). Full test suite passes (252 tests).
+
+## Previous Status (2026-06-18)
 
 - Revised plan is now active: `docs/STAGE4_RECOVERY_PLAN_2026-06-18.md`.
 - Checked for approved real exports under `approved_exports/`; the directory is missing.
