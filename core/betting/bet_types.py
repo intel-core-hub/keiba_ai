@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONFIG_PATH = ROOT / "config" / "bet_types.yaml"
 
 PRODUCTION_CANDIDATE_BET_TYPES = ("win", "place", "wide")
-SHADOW_ONLY_BET_TYPES = ("quinella", "trio")
+SHADOW_ONLY_BET_TYPES = ("quinella", "trio", "wakuren")
 DISABLED_BET_TYPES = ("exacta", "trifecta")
 SUPPORTED_BET_TYPES = PRODUCTION_CANDIDATE_BET_TYPES + SHADOW_ONLY_BET_TYPES + DISABLED_BET_TYPES
 
@@ -32,6 +32,9 @@ _ALIASES = {
     "trio": "trio",
     "sanrenpuku": "trio",
     "三連複": "trio",
+    "wakuren": "wakuren",
+    "bracket_quinella": "wakuren",
+    "枠連": "wakuren",
     "exacta": "exacta",
     "umatan": "exacta",
     "馬単": "exacta",
@@ -235,7 +238,13 @@ def validate_bet_candidate(candidate: BetCandidate, config: BetTypeConfig, field
     if len(candidate.legs) != config.legs:
         raise ValueError(f"{bet_type} requires {config.legs} legs")
     if len(set(candidate.legs)) != len(candidate.legs):
+        # NOTE: this also excludes same-bracket wakuren pairs (zorome);
+        # supporting those requires lifting the duplicate ban for wakuren only.
         raise ValueError("duplicate legs are not allowed")
+    if bet_type == "wakuren":
+        for leg in candidate.legs:
+            if not str(leg).isdigit() or not 1 <= int(leg) <= 8:
+                raise ValueError(f"wakuren legs must be bracket numbers 1-8: {leg}")
     if field_size and len(candidate.legs) > field_size:
         raise ValueError("legs exceed field_size")
     if float(candidate.odds) <= 0:
@@ -312,10 +321,27 @@ def apply_fraction_multiplier(stake: float, bet_type: str, registry: BetTypeRegi
     return max(0.0, float(stake) * float(config.max_fraction_multiplier))
 
 
-def evaluate_hit(bet_type: str, legs: list[str], finish_positions: dict[str, int]) -> bool:
+def evaluate_hit(
+    bet_type: str,
+    legs: list[str],
+    finish_positions: dict[str, int],
+    *,
+    brackets: Mapping[str, int] | None = None,
+) -> bool:
     normalized = normalize_bet_type(bet_type)
     normalized_legs = normalize_legs(normalized, legs)
     positions = {str(horse_id): int(position) for horse_id, position in finish_positions.items()}
+    if normalized == "wakuren":
+        # legs are bracket numbers (1-8), not horse ids; settlement needs the
+        # horse-to-bracket mapping and must fail closed without it.
+        if brackets is None:
+            raise ValueError("wakuren settlement requires a horse-to-bracket mapping")
+        bracket_of = {str(horse_id): int(bracket) for horse_id, bracket in brackets.items()}
+        top_two = [horse for horse, position in positions.items() if position in (1, 2)]
+        if len(top_two) != 2 or any(horse not in bracket_of for horse in top_two):
+            return False
+        result_pair = sorted(bracket_of[horse] for horse in top_two)
+        return result_pair == sorted(int(leg) for leg in normalized_legs)
     if not normalized_legs or any(leg not in positions for leg in normalized_legs):
         return False
     leg_positions = [positions[leg] for leg in normalized_legs]

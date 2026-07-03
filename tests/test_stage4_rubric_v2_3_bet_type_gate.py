@@ -19,11 +19,12 @@ def _metrics_payload(**overrides):
             {"bet_type": "wide", "mode": "production_candidate"},
             {"bet_type": "quinella", "mode": "shadow_only"},
             {"bet_type": "trio", "mode": "shadow_only"},
+            {"bet_type": "wakuren", "mode": "shadow_only"},
             {"bet_type": "exacta", "mode": "disabled"},
             {"bet_type": "trifecta", "mode": "disabled"},
         ],
         "production_candidate_bet_types": ["win", "place", "wide"],
-        "shadow_only_bet_types": ["quinella", "trio"],
+        "shadow_only_bet_types": ["quinella", "trio", "wakuren"],
         "disabled_bet_types": ["exacta", "trifecta"],
         "shadow_only_violation_count": 0,
         "disabled_bet_type_candidate_count": 0,
@@ -98,7 +99,7 @@ def test_expected_bet_type_sets_are_reported(tmp_path):
     )
 
     assert payload["production_candidate_bet_types"] == ["win", "place", "wide"]
-    assert payload["shadow_only_bet_types"] == ["quinella", "trio"]
+    assert payload["shadow_only_bet_types"] == ["quinella", "trio", "wakuren"]
     assert payload["disabled_bet_types"] == ["exacta", "trifecta"]
     assert payload["gates"]["evidence_gate"]["passed"] is True
     assert payload["gates"]["metric_gate"]["passed"] is True

@@ -42,6 +42,9 @@ def test_normalize_supported_bet_types_and_aliases():
     assert normalize_bet_type("trifecta") == "trifecta"
     assert normalize_bet_type("単勝") == "win"
     assert normalize_bet_type("馬連") == "quinella"
+    assert normalize_bet_type("wakuren") == "wakuren"
+    assert normalize_bet_type("枠連") == "wakuren"
+    assert normalize_bet_type("bracket_quinella") == "wakuren"
 
 
 def test_normalize_legs_honors_ordering():
@@ -86,6 +89,7 @@ def test_modes_are_classified_correctly():
     assert is_production_eligible("wide")
     assert is_shadow_only("quinella")
     assert is_shadow_only("trio")
+    assert is_shadow_only("wakuren")
     assert is_disabled_bet_type("exacta")
     assert is_disabled_bet_type("trifecta")
 
@@ -104,6 +108,42 @@ def test_hit_rules_for_supported_and_ordered_bet_types():
     assert evaluate_hit("exacta", ["H01", "H02"], finish)
     assert not evaluate_hit("exacta", ["H02", "H01"], finish)
     assert evaluate_hit("trifecta", ["H01", "H02", "H03"], finish)
+
+
+def test_wakuren_hit_requires_bracket_mapping_and_matches_top_two():
+    finish = {"H01": 1, "H02": 2, "H03": 3, "H04": 4}
+    brackets = {"H01": 3, "H02": 7, "H03": 3, "H04": 1}
+    assert evaluate_hit("wakuren", ["3", "7"], finish, brackets=brackets)
+    assert evaluate_hit("wakuren", ["7", "3"], finish, brackets=brackets)
+    assert not evaluate_hit("wakuren", ["1", "3"], finish, brackets=brackets)
+    # missing mapping must fail closed, never silently miss
+    with pytest.raises(ValueError, match="bracket"):
+        evaluate_hit("wakuren", ["3", "7"], finish)
+    # horse missing from the bracket mapping is a miss, not a crash
+    assert not evaluate_hit("wakuren", ["3", "7"], finish, brackets={"H01": 3})
+
+
+def test_wakuren_candidate_validates_bracket_leg_range():
+    candidate = BetCandidate.from_mapping(
+        {
+            "race_id": "R1",
+            "bet_type": "枠連",
+            "legs": ["7", "3"],
+            "odds": 14.2,
+            "stake": 100,
+            "field_size": 16,
+        }
+    )
+    assert candidate.bet_type == "wakuren"
+    assert candidate.legs == ("3", "7")
+    assert candidate.shadow_only is True
+
+    with pytest.raises(ValueError, match="bracket numbers"):
+        BetCandidate.from_mapping(
+            {"race_id": "R1", "bet_type": "wakuren", "legs": ["3", "9"], "odds": 14.2, "stake": 100}
+        )
+    with pytest.raises(ValueError, match="shadow_only"):
+        assert_execution_allowed("wakuren")
 
 
 def test_settle_bet_profit_and_legacy_win_conversion():
