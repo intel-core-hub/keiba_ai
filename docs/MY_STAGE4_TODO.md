@@ -1,6 +1,20 @@
 # Current Stage 4 TODO
 
-Updated: 2026-07-02
+Updated: 2026-07-04
+
+## Today Status (2026-07-04, Sat)
+
+- Ran the first full sandbox forward test on real public data (scrape_probe, 3 venues, 36 races, 464 runners).
+- Odds probe collected 36/36 win/place snapshots ~5 min before start; a rowspan parser bug (same-bracket horses dropped) was found and fixed; final odds were re-fetched post-race and used for evaluation.
+- Result probe collected all results plus official payouts for all 8 bet types.
+- Fixed a real settlement bug: SAFE_MODE clamps the executed stake to the minimum lot but settlement used the pre-clamp bet_size, overstating paper P&L about 2x (the June -950 sandbox loss was inflated by this too). Regression test added; 255 tests pass.
+- Corrected day-1 shadow eval: 10 candidates, 2 hits, paper ROI +235% (luck-dominated longshot hits; not evidence of edge).
+- Behavior finding: after 5 consecutive losses the decayed risk multiplier makes sizer proposals round below the 100 yen minimum lot, so candidate generation self-stops for the day (`risk_limits_invalid`).
+- wakuren (bracket quinella) added as shadow-only bet type with fail-closed bracket-mapping settlement.
+- Canonical `logs/decisions.jsonl` remains 342 lines; no canonical evidence paths were written.
+- Sunday plan: repeat collection for Kokura (only venue racing 2026-07-05) with the fixed parser at 5-min-before snapshots.
+
+## Previous Status (2026-07-02)
 
 ## Today Status (2026-07-02)
 
