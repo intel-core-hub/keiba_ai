@@ -38,17 +38,22 @@ VENUE_NAMES = {
 }
 
 DAY_LINK_RE = re.compile(r"doAction\('/JRADB/accessO\.html',\s*'(pw15orl00(\d{2})\d{4}\d{4}(\d{8})/[0-9A-F]{2})'\)")
+# the time cell shows "H時M分" before the race and "発走済" afterwards
 RACE_ROW_RE = re.compile(
-    r"btn_race_num(\d+)\.png.*?<td class=\"time\">\s*(\d{1,2})時(\d{1,2})分.*?"
+    r"btn_race_num(\d+)\.png.*?<td class=\"time\">\s*(?:(\d{1,2})時(\d{1,2})分|発走済).*?"
     r"class=\"tanpuku\">.*?doAction\('/JRADB/accessO\.html',\s*'(pw151ouS3[^']+)'\)",
     re.S,
 )
-ODDS_ROW_RE = re.compile(
-    r'alt="枠(\d)[^"]*"\s*/></td><td class="num">(\d+)</td>\s*'
+# bracket cells use rowspan when one bracket holds several horses, so the
+# waku <td> is absent on continuation rows; parse per <tr> and carry the
+# bracket forward.
+WAKU_RE = re.compile(r'alt="枠(\d)')
+HORSE_ROW_RE = re.compile(
+    r'<td class="num">(\d+)</td>\s*'
     r'<td class="horse"><a[^>]*>([^<]+)</a></td>\s*'
     r'<td class="odds_tan">(?:<strong[^>]*>)?([\d.]+|取消|除外)(?:</strong>)?</td>'
-    r'<td class="odds_fuku"><span class="inner"><span class="min">([\d.]*)</span>'
-    r'<span class="cap">-</span><span class="max">([\d.]*)</span>',
+    r'(?:<td class="odds_fuku"><span class="inner"><span class="min">([\d.]*)</span>'
+    r'<span class="cap">-</span><span class="max">([\d.]*)</span>)?',
     re.S,
 )
 
@@ -77,7 +82,7 @@ def discover_races(target_date: str) -> list[dict]:
         day_html = post_cname(cname)
         for race_no, hh, mm, odds_cname in RACE_ROW_RE.findall(day_html):
             start = datetime.strptime(target_date, "%Y%m%d").replace(
-                hour=int(hh), minute=int(mm), tzinfo=JST
+                hour=int(hh) if hh else 0, minute=int(mm) if mm else 0, tzinfo=JST
             )
             races.append(
                 {
@@ -93,13 +98,22 @@ def discover_races(target_date: str) -> list[dict]:
 
 
 def parse_odds_page(html: str) -> list[dict]:
-    rows = []
-    for waku, num, name, tan, fuku_min, fuku_max in ODDS_ROW_RE.findall(html):
+    body_start = html.find("<tbody")
+    rows: list[dict] = []
+    current_bracket: int | None = None
+    for tr in re.split(r"<tr[ >]", html[body_start:] if body_start >= 0 else html):
+        waku = WAKU_RE.search(tr)
+        if waku:
+            current_bracket = int(waku.group(1))
+        horse = HORSE_ROW_RE.search(tr)
+        if not horse or current_bracket is None:
+            continue
+        num, name, tan, fuku_min, fuku_max = horse.groups()
         scratched = tan in ("取消", "除外")
         rows.append(
             {
                 "horse_id": int(num),
-                "bracket": int(waku),
+                "bracket": current_bracket,
                 "horse_name": name.strip(),
                 "odds": None if scratched else float(tan),
                 "place_odds_min": float(fuku_min) if fuku_min else None,
@@ -132,6 +146,9 @@ def main() -> int:
     parser.add_argument("--minutes-before", type=float, default=5.0)
     parser.add_argument("--dry-run", action="store_true",
                         help="discover and snapshot the first race immediately, then exit")
+    parser.add_argument("--immediate", action="store_true",
+                        help="snapshot every race right now regardless of start "
+                             "time (post-race pages show final odds)")
     args = parser.parse_args()
 
     outdir = Path(args.outdir)
@@ -169,7 +186,7 @@ def main() -> int:
     for race in races if not args.dry_run else races[:1]:
         snapshot_at = race["start_at_jst"] - timedelta(minutes=args.minutes_before)
         now = datetime.now(JST)
-        if not args.dry_run:
+        if not args.dry_run and not args.immediate:
             if now >= race["start_at_jst"]:
                 log_status(status_path, {"event": "skipped_started",
                                          "race_id": race["race_id"]})

@@ -7,8 +7,12 @@ style CSVs with source label ``scrape_probe``.
 This is research tooling. It must never be imported by runtime code, and its
 output is never Stage 4 evidence (``evidence_eligible: false``). Per-horse win
 odds are NOT available for past races on the official site, so this probe
-emits results/schedule plus favorite rank only. Odds require live weekend
-collection (see jra_odds_probe plan in docs/MY_STAGE4_TODO.md).
+emits results/schedule plus favorite rank and official payouts. Odds require
+live collection on race day (see jra_odds_probe.py).
+
+The day index can be either a GET path (``/JRADB/accessS.html?CNAME=pw01sde...``,
+a race page that links its siblings) or a raw ``pw01srl...`` CNAME (the
+venue-day result list, which only answers to POST).
 """
 
 from __future__ import annotations
@@ -18,6 +22,7 @@ import csv
 import re
 import sys
 import time
+import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -41,14 +46,61 @@ META_RE = re.compile(
     re.S,
 )
 RACE_NUM_RE = re.compile(r"race_num_(\d+)\.png")
+SRL_INDEX_RE = re.compile(
+    r"pw01srl\d0(\d{2})(\d{4})(\d{2})(\d{2})(\d{8})"
+)  # venue, year, kai, day, yyyymmdd
+PAYOUT_LINE_RE = re.compile(
+    r'<div class="num">([-\d]+)</div>\s*'
+    r'<div class="yen">([\d,]+)<span class="unit">円</span></div>\s*'
+    r'<div class="pop">(\d*)',
+    re.S,
+)
+PAYOUT_TYPES = {
+    "win": "win", "place": "place", "wakuren": "wakuren", "wide": "wide",
+    "umaren": "quinella", "umatan": "exacta", "trio": "trio", "tierce": "trifecta",
+}
 
 
-def fetch(path: str) -> str:
-    req = urllib.request.Request(BASE + path, headers={"User-Agent": USER_AGENT})
+def fetch(path_or_cname: str) -> str:
+    if path_or_cname.startswith("pw"):
+        data = urllib.parse.urlencode({"cname": path_or_cname}).encode()
+        req = urllib.request.Request(
+            BASE + "/JRADB/accessS.html", data=data,
+            headers={"User-Agent": USER_AGENT},
+        )
+    else:
+        req = urllib.request.Request(
+            BASE + path_or_cname, headers={"User-Agent": USER_AGENT}
+        )
     with urllib.request.urlopen(req, timeout=30) as resp:
         body = resp.read()
     time.sleep(REQUEST_DELAY_SECONDS)
     return body.decode("shift_jis", errors="replace")
+
+
+def parse_payouts(html: str) -> list[dict]:
+    """Parse the refund_unit block: all bet-type payouts per 100 yen."""
+    start = html.find("refund_unit")
+    if start < 0:
+        return []
+    segment = html[start:start + 6000]
+    payouts = []
+    for li_class, jra_name in PAYOUT_TYPES.items():
+        li_match = re.search(
+            rf'<li class="{li_class}">\s*<dl>(.*?)</dl>', segment, re.S
+        )
+        if not li_match:
+            continue
+        for combo, yen, pop in PAYOUT_LINE_RE.findall(li_match.group(1)):
+            payouts.append(
+                {
+                    "bet_type": jra_name,
+                    "combination": combo,
+                    "payout_per_100": int(yen.replace(",", "")),
+                    "popularity": int(pop) if pop else None,
+                }
+            )
+    return payouts
 
 
 def parse_race(html: str) -> dict:
@@ -88,10 +140,16 @@ def main() -> int:
     args = parser.parse_args()
 
     index_key = CNAME_RE.search(args.day_index_cname)
-    if not index_key:
-        print("day-index-cname does not look like a pw01sde CNAME", file=sys.stderr)
-        return 1
-    venue_code, year, kai, day, _, date_str_key = index_key.groups()
+    if index_key:
+        venue4, year, kai, day, _, date_str_key = index_key.groups()
+        venue_code = venue4[-2:]
+    else:
+        srl_key = SRL_INDEX_RE.search(args.day_index_cname)
+        if not srl_key:
+            print("day-index-cname is neither a pw01sde nor pw01srl CNAME",
+                  file=sys.stderr)
+            return 1
+        venue_code, year, kai, day, date_str_key = srl_key.groups()
 
     index_html = fetch(args.day_index_cname)
     race_links: list[tuple[int, str]] = []
@@ -104,7 +162,9 @@ def main() -> int:
         if not key or href in seen:
             continue
         # keep only races of the same venue-day as the passed index page
-        if key.groups()[:4] + key.groups()[5:] != (
+        # (sde venue field is 4 digits; the venue proper is its last 2 digits)
+        link_venue4, link_year, link_kai, link_day, _, link_date = key.groups()
+        if (link_venue4[-2:], link_year, link_kai, link_day, link_date) != (
             venue_code, year, kai, day, date_str_key
         ):
             continue
@@ -119,14 +179,22 @@ def main() -> int:
 
     outdir = Path(args.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
-    schedule_rows, result_rows = [], []
+    schedule_rows, result_rows, payout_rows = [], [], []
     for race_number, href in race_links:
         page = fetch(href)
         race = parse_race(page)
+        payouts = parse_payouts(page)
         date_str = race["start_at_utc"].astimezone(JST).strftime("%Y%m%d")
         if date_str != date_str_key:
             raise ValueError(f"page date {date_str} != index date {date_str_key}")
         race_id = f"SANDBOX_{date_str}_{args.venue}_{race_number:02d}"
+        win_payout_by_horse = {
+            p["combination"]: p["payout_per_100"]
+            for p in payouts
+            if p["bet_type"] == "win"
+        }
+        for payout in payouts:
+            payout_rows.append({"race_id": race_id, **payout})
         schedule_rows.append(
             {
                 "race_id": race_id,
@@ -137,30 +205,40 @@ def main() -> int:
             }
         )
         for row in race["rows"]:
+            is_win = row["finish_position"] == 1
             result_rows.append(
                 {
                     "race_id": race_id,
                     "horse_id": row["horse_id"],
                     "finish_position": row["finish_position"],
-                    "is_win": str(row["finish_position"] == 1).lower(),
-                    "win_payout": 0,
+                    "is_win": str(is_win).lower(),
+                    "win_payout": (
+                        win_payout_by_horse.get(str(row["horse_id"]), 0)
+                        if is_win else 0
+                    ),
                     "result_time_utc": race["start_at_utc"].isoformat(),
                     "source": "scrape_probe",
                     "favorite_rank": row["favorite_rank"],
                     "horse_name": row["horse_name"],
                 }
             )
-        print(f"  {race_id}: {len(race['rows'])} finishers")
+        print(f"  {race_id}: {len(race['rows'])} finishers, "
+              f"{len(payouts)} payout lines")
 
-    for name, rows in (("schedule.csv", schedule_rows), ("results.csv", result_rows)):
+    outputs = [
+        ("schedule.csv", schedule_rows),
+        ("results.csv", result_rows),
+        ("payouts.csv", payout_rows),
+    ]
+    for name, rows in outputs:
+        if not rows:
+            continue
         path = outdir / name
         with path.open("w", newline="", encoding="utf-8") as fh:
             writer = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
             writer.writeheader()
             writer.writerows(rows)
         print(f"wrote {path} ({len(rows)} rows)")
-    print("NOTE: win_payout=0 placeholder; payouts live on the accessH page. "
-          "Per-horse odds are unavailable for past races on jra.go.jp.")
     return 0
 
 

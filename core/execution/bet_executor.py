@@ -1038,6 +1038,12 @@ class BetExecutor:
                 "reason": "production_execution_unknown_bet_type",
                 "state": "NO_BET",
             }
+        # Keep settlement consistent with execution: SAFE_MODE clamps the
+        # executed stake to the minimum lot, so the decision must settle with
+        # that same stake, not the pre-clamp proposal.
+        executed_stake = int(bet_info.get("stake") or 0)
+        if executed_stake != int(getattr(decision, "bet_size", 0) or 0):
+            decision.bet_size = executed_stake
         bet_type_block_reason = self._execution_bet_type_block_reason(bet_info)
         if bet_type_block_reason is not None:
             self._append_audit_event(
