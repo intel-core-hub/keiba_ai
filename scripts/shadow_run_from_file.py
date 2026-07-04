@@ -113,8 +113,18 @@ def _outcomes(rows: list[dict[str, Any]]) -> dict[str, dict[str, bool]]:
     return by_race
 
 
-def build_loop(decision_log_path: Path, csv_report_path: Path) -> Phase2OperationalLoop:
-    risk = RiskManager()
+def build_loop(
+    decision_log_path: Path,
+    csv_report_path: Path,
+    *,
+    bankroll: float | None = None,
+) -> Phase2OperationalLoop:
+    if bankroll is not None:
+        from core.risk_manager import RiskConfig
+
+        risk = RiskManager(RiskConfig(initial_bankroll=float(bankroll)))
+    else:
+        risk = RiskManager()
     calibrator = CalibrationRefitJob(auto_refit_enabled=False).load_calibrator(ProbabilityCalibrator())
     engine = DecisionEngine(
         predictor=Predictor(),
@@ -133,18 +143,36 @@ def build_loop(decision_log_path: Path, csv_report_path: Path) -> Phase2Operatio
     return Phase2OperationalLoop(decision_engine=engine, bet_executor=executor, bets_log_path=str(csv_report_path))
 
 
-def run_shadow_file(input_path: Path, decision_log_path: Path, csv_report_path: Path, *, settle: bool = False) -> dict[str, Any]:
+def run_shadow_file(
+    input_path: Path,
+    decision_log_path: Path,
+    csv_report_path: Path,
+    *,
+    settle: bool = False,
+    independent_races: bool = False,
+    bankroll: float | None = None,
+) -> dict[str, Any]:
+    """Run the shadow decision pipeline over a race/market input file.
+
+    ``independent_races`` rebuilds the engine (bankroll, streak, and filter
+    state) for every race. This isolates candidate-selection quality from
+    bankroll-policy effects such as the post-losing-streak stake decay that
+    can stop a sequential day early. Analysis-only: production and Stage 4
+    evidence runs must keep the default sequential state.
+    """
     rows = _load_rows(input_path)
     candidates_by_race: dict[str, list[dict[str, Any]]] = {}
     for row in rows:
         candidate = _candidate(row)
         candidates_by_race.setdefault(candidate["race_id"], []).append(candidate)
 
-    loop = build_loop(decision_log_path, csv_report_path)
+    loop = build_loop(decision_log_path, csv_report_path, bankroll=bankroll)
     outcome_by_race = _outcomes(rows)
     submitted = 0
     settled = 0
     for race_id in sorted(candidates_by_race):
+        if independent_races:
+            loop = build_loop(decision_log_path, csv_report_path, bankroll=bankroll)
         decisions = loop.decide_race(race_id, candidates_by_race[race_id])
         submitted += len(decisions)
         if settle and race_id in outcome_by_race and decisions:
@@ -159,6 +187,8 @@ def run_shadow_file(input_path: Path, decision_log_path: Path, csv_report_path: 
         "csv_report": str(csv_report_path),
         "shadow_mode": True,
         "safe_mode": True,
+        "independent_races": bool(independent_races),
+        "bankroll_override": float(bankroll) if bankroll is not None else None,
     }
 
 
@@ -168,16 +198,39 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--decision-log", default="logs/decisions.jsonl")
     parser.add_argument("--csv-report", default="derived/bets.csv")
     parser.add_argument("--settle", action="store_true", help="Also log settlement events when hit/target_win/winner is present")
+    parser.add_argument(
+        "--independent-races",
+        action="store_true",
+        help="Analysis-only: reset engine/bankroll state per race to isolate "
+             "selection quality from bankroll policy. Never use for Stage 4 evidence.",
+    )
+    parser.add_argument(
+        "--bankroll",
+        type=float,
+        default=None,
+        help="Analysis-only virtual bankroll override for sandbox runs.",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    if (args.independent_races or args.bankroll is not None) and (
+        "logs" in str(args.decision_log).replace("\\", "/").split("/")
+        or "derived" in str(args.csv_report).replace("\\", "/").split("/")
+    ):
+        print(
+            "refusing: analysis-only flags cannot target canonical logs/ or derived/ paths",
+            file=sys.stderr,
+        )
+        return 1
     report = run_shadow_file(
         Path(args.input),
         Path(args.decision_log),
         Path(args.csv_report),
         settle=args.settle,
+        independent_races=args.independent_races,
+        bankroll=args.bankroll,
     )
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
     return 0
