@@ -1,6 +1,15 @@
 # Current Stage 4 TODO
 
-Updated: 2026-07-04
+Updated: 2026-07-05
+
+## Today Status (2026-07-05, Sun)
+
+- Added analysis-only `--independent-races` and `--bankroll` flags to `scripts/shadow_run_from_file.py` (refuse canonical `logs/` and `derived/` outputs; never Stage 4 evidence). 257 tests pass.
+- Re-evaluated 2026-07-04 with independent per-race state: 91 candidates / 34 races / 9 hits / paper ROI +62.5% (vs 10 candidates in sequential mode). `exclude_deep_longshot_or_rank_9_plus` filter: 47 candidates, ROI +120.9%.
+- Recorded erratum on the 2026-06-18 sandbox eval (paper P&L overstated ~2x by the SAFE_MODE settlement bug fixed in ac8807a).
+- Day-2 odds collection launched for 2026-07-05 (Fukushima / Hakodate / Kokura, 36 races discovered; 5-min-before snapshots with the fixed rowspan parser).
+
+## Previous Status (2026-07-04, Sat)
 
 ## Today Status (2026-07-04, Sat)
 
