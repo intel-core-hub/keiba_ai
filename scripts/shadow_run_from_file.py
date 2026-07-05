@@ -151,6 +151,8 @@ def run_shadow_file(
     settle: bool = False,
     independent_races: bool = False,
     bankroll: float | None = None,
+    max_odds: float | None = None,
+    max_favorite_rank: int | None = None,
 ) -> dict[str, Any]:
     """Run the shadow decision pipeline over a race/market input file.
 
@@ -162,8 +164,19 @@ def run_shadow_file(
     """
     rows = _load_rows(input_path)
     candidates_by_race: dict[str, list[dict[str, Any]]] = {}
+    filtered_out = 0
     for row in rows:
         candidate = _candidate(row)
+        # conservative pre-filter (sandbox evidence: DEEP_LONGSHOT and low
+        # favorite-rank picks dragged ROI in June and both July forward tests)
+        if max_odds is not None and candidate["odds"] > float(max_odds):
+            filtered_out += 1
+            continue
+        if max_favorite_rank is not None:
+            rank = candidate["features"].get("favorite_rank")
+            if rank is not None and int(rank) > int(max_favorite_rank):
+                filtered_out += 1
+                continue
         candidates_by_race.setdefault(candidate["race_id"], []).append(candidate)
 
     loop = build_loop(decision_log_path, csv_report_path, bankroll=bankroll)
@@ -189,6 +202,9 @@ def run_shadow_file(
         "safe_mode": True,
         "independent_races": bool(independent_races),
         "bankroll_override": float(bankroll) if bankroll is not None else None,
+        "max_odds": float(max_odds) if max_odds is not None else None,
+        "max_favorite_rank": int(max_favorite_rank) if max_favorite_rank is not None else None,
+        "pre_filtered_rows": filtered_out,
     }
 
 
@@ -210,12 +226,32 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Analysis-only virtual bankroll override for sandbox runs.",
     )
+    parser.add_argument(
+        "--max-odds",
+        type=float,
+        default=None,
+        help="Conservative pre-filter: drop input rows with odds above this "
+             "(sandbox evidence: 26 excludes the DEEP_LONGSHOT drag).",
+    )
+    parser.add_argument(
+        "--max-favorite-rank",
+        type=int,
+        default=None,
+        help="Conservative pre-filter: drop input rows with favorite_rank "
+             "above this (sandbox evidence: 8).",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    if (args.independent_races or args.bankroll is not None) and (
+    analysis_flags = (
+        args.independent_races
+        or args.bankroll is not None
+        or args.max_odds is not None
+        or args.max_favorite_rank is not None
+    )
+    if analysis_flags and (
         "logs" in str(args.decision_log).replace("\\", "/").split("/")
         or "derived" in str(args.csv_report).replace("\\", "/").split("/")
     ):
@@ -231,6 +267,8 @@ def main() -> int:
         settle=args.settle,
         independent_races=args.independent_races,
         bankroll=args.bankroll,
+        max_odds=args.max_odds,
+        max_favorite_rank=args.max_favorite_rank,
     )
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
     return 0

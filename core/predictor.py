@@ -455,6 +455,25 @@ class Predictor:
                 np.nan,
             )
 
+        # =================================================
+        # fail closed on total feature mismatch
+        #
+        # If none of the model's feature names exist in the input, the
+        # imputer would fill every column with the training median and the
+        # model would return one constant probability for every horse.
+        # A blind model must not masquerade as a prediction; use the
+        # odds-anchored fallback heuristic instead.
+        # =================================================
+        if not any(f in (features or {}) for f in feature_names):
+            val = self.fallback_predict(features, odds)
+            try:
+                self._predict_cache[cache_key] = (time.time(), float(val))
+                while len(self._predict_cache) > self._predict_cache_max:
+                    self._predict_cache.popitem(last=False)
+            except Exception:
+                pass
+            return val
+
         X = pd.DataFrame([row])
 
         # =================================================
@@ -521,6 +540,11 @@ class Predictor:
                 buf[i] = float(features.get(f, np.nan))
             except Exception:
                 buf[i] = np.nan
+
+        # fail closed on total feature mismatch (see predict()): an all-NaN
+        # input would be median-imputed into one constant probability.
+        if not np.isfinite(buf).any():
+            return self.fallback_predict(features, odds)
 
         try:
             prob = model_ref.predict_proba(buf.reshape(1, -1))[0][1]

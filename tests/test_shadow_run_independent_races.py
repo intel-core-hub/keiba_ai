@@ -86,6 +86,43 @@ def test_independent_races_evaluates_races_sequential_mode_truncates(tmp_path):
     assert len(ind_races) == 12
 
 
+def test_conservative_prefilter_drops_rows(tmp_path):
+    input_path = tmp_path / "input.csv"
+    rows = []
+    for sel, odds, rank in (("1", "15.0", 4), ("2", "40.0", 11), ("3", "13.0", 9)):
+        rows.append(
+            {
+                "race_id": "R_FILTER",
+                "selection": sel,
+                "horse_id": sel,
+                "odds": odds,
+                "hit": "0",
+                "features": _features(rank),
+            }
+        )
+    rows[0]["features"] = _features(4)
+    rows[1]["features"] = _features(11)
+    rows[2]["features"] = _features(9)
+    with input_path.open("w", newline="", encoding="utf-8") as fh:
+        writer = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(rows)
+
+    report = run_shadow_file(
+        input_path,
+        tmp_path / "dec.jsonl",
+        tmp_path / "bets.csv",
+        settle=True,
+        independent_races=True,
+        max_odds=26.0,
+        max_favorite_rank=8,
+    )
+    # odds 40 (deep longshot) and rank 9/11 rows are pre-filtered
+    assert report["pre_filtered_rows"] == 2
+    assert report["max_odds"] == 26.0
+    assert report["max_favorite_rank"] == 8
+
+
 def test_bankroll_override_is_reported(tmp_path):
     input_path = tmp_path / "input.csv"
     _write_many_race_input(input_path, races=1)
