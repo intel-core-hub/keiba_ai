@@ -8,12 +8,14 @@ fastapi
 uvicorn
 schedule
 requests
+aiohttp
 beautifulsoup4
 PyYAML
 cryptography
 
 # Optional (development)
 pytest
+pytest-cov
 black
 matplotlib
 seaborn

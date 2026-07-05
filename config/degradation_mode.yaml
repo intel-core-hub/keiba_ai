@@ -1,0 +1,73 @@
+thresholds:
+  warning:
+    data_quality_score_lt: 0.95
+    missing_odds_rate_gte: 0.01
+    stale_odds_rate_gte: 0.02
+    missing_features_rate_gte: 0.01
+    loss_streak_gte: 5
+    drawdown_pct_gte: 0.05
+    latency_p99_ms_gte: 50
+    latency_regression_rate_gte: 0.15
+    drift_gap50_gte: 0.02
+    feature_psi_max_gte: 0.20
+    odds_distribution_psi_gte: 0.20
+  danger:
+    data_quality_score_lt: 0.90
+    missing_odds_rate_gte: 0.03
+    stale_odds_rate_gte: 0.05
+    missing_features_rate_gte: 0.03
+    loss_streak_gte: 8
+    drawdown_pct_gte: 0.10
+    latency_p99_ms_gte: 100
+    latency_regression_rate_gte: 0.30
+    drift_gap50_gte: 0.04
+    feature_psi_max_gte: 0.30
+    odds_distribution_psi_gte: 0.30
+  critical:
+    timeout_rate_gt: 0.0
+    data_quality_score_lt: 0.80
+    missing_odds_rate_gte: 0.10
+    stale_odds_rate_gte: 0.10
+    missing_features_rate_gte: 0.05
+    loss_streak_gte: 12
+    drawdown_pct_gte: 0.15
+    shadow_only_violation_count_gt: 0
+    disabled_bet_type_candidate_count_gt: 0
+
+decisions:
+  normal:
+    allowed_bet_types: [win, place, wide]
+    stake_multiplier: 1.0
+    coverage_lower_bound: 0.05
+    coverage_upper_bound: 0.30
+    max_race_exposure_multiplier: 1.0
+    force_no_bet: false
+    requires_operator_ack: false
+    fail_closed: false
+  warning:
+    allowed_bet_types: [win, place, wide]
+    stake_multiplier: 0.50
+    coverage_lower_bound: 0.03
+    coverage_upper_bound: 0.20
+    max_race_exposure_multiplier: 0.75
+    force_no_bet: false
+    requires_operator_ack: false
+    fail_closed: false
+  danger:
+    allowed_bet_types: [win, place]
+    stake_multiplier: 0.25
+    coverage_lower_bound: 0.01
+    coverage_upper_bound: 0.10
+    max_race_exposure_multiplier: 0.50
+    force_no_bet: false
+    requires_operator_ack: true
+    fail_closed: false
+  critical:
+    allowed_bet_types: []
+    stake_multiplier: 0.0
+    coverage_lower_bound: 0.0
+    coverage_upper_bound: 0.0
+    max_race_exposure_multiplier: 0.0
+    force_no_bet: true
+    requires_operator_ack: true
+    fail_closed: true

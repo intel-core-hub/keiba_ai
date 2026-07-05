@@ -5,7 +5,7 @@ profitability, and variance luck using the available betting outputs.
 
 Usage:
   python scripts/roi_analysis.py --input results/backtest_full.csv
-  python scripts/roi_analysis.py --input results/backtest_full.csv --decision-log logs/decision_log.jsonl --bets-log logs/bets.csv
+  python scripts/roi_analysis.py --input results/backtest_full.csv --decision-log logs/decisions.jsonl --bets-log derived/bets.csv
 """
 
 from __future__ import annotations
@@ -29,8 +29,8 @@ from learning.roi_analyzer import ROIAnalyzer, plot_drawdown, plot_heatmap, plot
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="ROI and profitability structure analysis")
     parser.add_argument("--input", "-i", default="results/backtest_full.csv", help="Main result CSV")
-    parser.add_argument("--decision-log", default="logs/decision_log.jsonl", help="Decision log JSONL")
-    parser.add_argument("--bets-log", default="logs/bets.csv", help="Bet log CSV")
+    parser.add_argument("--decision-log", default="logs/decisions.jsonl", help="Decision log JSONL")
+    parser.add_argument("--bets-log", default="derived/bets.csv", help="Bet log CSV")
     parser.add_argument("--outdir", "-o", default="results/roi_analysis", help="Output directory")
     return parser.parse_args()
 

@@ -5,7 +5,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 from .odds_snapshot import CLOSING_LABELS, PRE_RACE_LABELS, normalize_snapshot_label
 

@@ -18,13 +18,13 @@ class BetConfig:
 
     # --- 安全制御 ---
     max_fraction: float = 0.15       # 単一ベット上限
-    max_race_exposure: float = 0.25  # ★1R総投資上限（最重要）
+    max_race_exposure: float = 0.08  # 1R総投資上限（最重要）
     min_bet: int = 100               # 最低購入額
     round_unit: int = 100            # 馬券単位
 
     # --- AI過信防止 ---
     probability_shrink: float = 0.90
-    odds_slip: float = 0.00
+    odds_slip: float = 0.05
 
     # --- 分散制御 ---
     variance_penalty: float = 0.15

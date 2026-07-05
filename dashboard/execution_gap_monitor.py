@@ -30,7 +30,7 @@ except Exception:  # pragma: no cover - optional dependency
 DataSource = Union[str, Path, pd.DataFrame]
 
 
-def load_execution_gap_frame(data_source: DataSource = "logs/bets.csv") -> pd.DataFrame:
+def load_execution_gap_frame(data_source: DataSource = "derived/bets.csv") -> pd.DataFrame:
     if isinstance(data_source, pd.DataFrame):
         return data_source.copy()
 
@@ -283,7 +283,7 @@ def _plot_ev_and_pnl(frame: pd.DataFrame):
 
 
 def render_execution_gap_dashboard(
-    data_source: DataSource = "logs/bets.csv",
+    data_source: DataSource = "derived/bets.csv",
     *,
     slippage_threshold: float = 0.10,
     recent_window: int = 20,

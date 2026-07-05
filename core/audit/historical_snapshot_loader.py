@@ -1,5 +1,8 @@
 import os
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 from datetime import datetime
 
 

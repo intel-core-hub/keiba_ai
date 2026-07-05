@@ -13,41 +13,49 @@ import json
 from typing import Any
 
 try:
-    import requests
+    import aiohttp
 except Exception:
-    requests = None
+    aiohttp = None
 
 
 class RealIPATClient:
     def __init__(self, base_url: str, api_key: str, timeout: float = 1.0):
-        if requests is None:
-            raise RuntimeError("requests package required for RealIPATClient")
+        if aiohttp is None:
+            raise RuntimeError("aiohttp package required for RealIPATClient")
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
-        self.timeout = timeout
+        self.timeout = aiohttp.ClientTimeout(total=timeout)
+
+    async def _json_or_raise(self, response: Any) -> Any:
+        content_type = response.headers.get("Content-Type", "").lower()
+        if "html" in content_type:
+            body = await response.text()
+            raise RuntimeError(
+                f"IPAT returned HTML response; possible IP block or login wall: {body[:120]}"
+            )
+        if "json" not in content_type:
+            body = await response.text()
+            raise RuntimeError(
+                f"IPAT returned non-JSON response ({content_type or 'unknown'}): {body[:120]}"
+            )
+        return await response.json()
 
     async def fetch_live_odds_async(self, race_id: str) -> Any:
-        loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(None, self._fetch, race_id)
-
-    def _fetch(self, race_id: str):
         url = f"{self.base_url}/odds/{race_id}"
         headers = {"Authorization": f"Bearer {self.api_key}"}
-        resp = requests.get(url, headers=headers, timeout=self.timeout)
-        resp.raise_for_status()
-        return resp.json()
+        async with aiohttp.ClientSession(timeout=self.timeout) as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                return await self._json_or_raise(response)
 
     async def place_bet_async(self, race_id: str, allocations: Any) -> Any:
-        loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(None, self._place, race_id, allocations)
-
-    def _place(self, race_id: str, allocations: Any):
         url = f"{self.base_url}/place_bet"
         headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
         payload = {"race_id": race_id, "allocations": allocations}
-        resp = requests.post(url, headers=headers, json=payload, timeout=self.timeout)
-        resp.raise_for_status()
-        return resp.json()
+        async with aiohttp.ClientSession(timeout=self.timeout) as session:
+            async with session.post(url, headers=headers, json=payload) as response:
+                response.raise_for_status()
+                return await self._json_or_raise(response)
 
 
 class MockIPATClient:
@@ -64,12 +72,12 @@ def build_from_env() -> Any:
     # 1) Check environment variables
     url = os.environ.get("IPAT_API_URL")
     key = os.environ.get("IPAT_API_KEY")
-    if url and key and requests is not None:
+    if url and key:
         return RealIPATClient(url, key)
 
     # 2) Check secrets file path (JSON with {"url":..., "key":...})
     secret_path = os.environ.get("IPAT_SECRETS_FILE")
-    if secret_path and os.path.exists(secret_path) and requests is not None:
+    if secret_path and os.path.exists(secret_path):
         try:
             with open(secret_path, "r", encoding="utf-8") as f:
                 data = json.load(f)

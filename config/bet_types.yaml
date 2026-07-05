@@ -1,0 +1,86 @@
+bet_types:
+  win:
+    enabled: true
+    production_candidate: true
+    shadow_only: false
+    ordered: false
+    legs: 1
+    max_fraction_multiplier: 1.0
+    max_race_exposure_share: 0.50
+    max_combinations_per_race: 1
+
+  place:
+    enabled: true
+    production_candidate: true
+    shadow_only: false
+    ordered: false
+    legs: 1
+    max_fraction_multiplier: 0.75
+    max_race_exposure_share: 0.40
+    max_combinations_per_race: 1
+
+  wide:
+    enabled: true
+    production_candidate: true
+    shadow_only: false
+    ordered: false
+    legs: 2
+    max_fraction_multiplier: 0.50
+    max_race_exposure_share: 0.30
+    max_combinations_per_race: 3
+
+  quinella:
+    enabled: true
+    production_candidate: false
+    shadow_only: true
+    ordered: false
+    legs: 2
+    max_fraction_multiplier: 0.35
+    max_race_exposure_share: 0.20
+    max_combinations_per_race: 2
+    disable_if_roi_below: -0.05
+    disable_if_profit_factor_below: 0.95
+    disable_if_dd_contribution_above: 0.30
+
+  trio:
+    enabled: true
+    production_candidate: false
+    shadow_only: true
+    ordered: false
+    legs: 3
+    max_fraction_multiplier: 0.20
+    max_race_exposure_share: 0.10
+    max_combinations_per_race: 1
+    disable_if_roi_below: -0.05
+    disable_if_profit_factor_below: 0.95
+    disable_if_dd_contribution_above: 0.20
+
+  wakuren:
+    enabled: true
+    production_candidate: false
+    shadow_only: true
+    ordered: false
+    legs: 2
+    max_fraction_multiplier: 0.40
+    max_race_exposure_share: 0.20
+    max_combinations_per_race: 2
+    disable_if_roi_below: -0.05
+    disable_if_profit_factor_below: 0.95
+    disable_if_dd_contribution_above: 0.25
+    reason: "Bracket quinella: lower variance than quinella; shadow-only until real evidence. Same-bracket (zorome) pairs are not supported yet."
+
+  exacta:
+    enabled: false
+    production_candidate: false
+    shadow_only: false
+    ordered: true
+    legs: 2
+    reason: "Disabled during Stage 4: order-dependent and lower priority than quinella."
+
+  trifecta:
+    enabled: false
+    production_candidate: false
+    shadow_only: false
+    ordered: true
+    legs: 3
+    reason: "Disabled during Stage 4: too high variance for Survival OS gate."

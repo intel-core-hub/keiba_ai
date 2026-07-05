@@ -9,7 +9,10 @@ This is intentionally generic and file-path driven so the production system
 can wire it to its own snapshot stores.
 """
 from __future__ import annotations
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, Any

@@ -6,7 +6,10 @@ from io import StringIO
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 
 # =====================================================

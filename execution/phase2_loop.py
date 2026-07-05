@@ -1,10 +1,43 @@
-import csv
 import os
 from datetime import datetime
 from typing import Any, Optional
 
-from learning.performance_analyzer import PerformanceAnalyzer
-from learning.reliability_curve import ReliabilityCurveAnalyzer
+
+class RuntimeReliabilityAnalyzer:
+    """Small in-memory reliability tracker for runtime status only."""
+
+    def __init__(self) -> None:
+        self.records = []
+
+    def record(self, probability, hit) -> None:
+        self.records.append((float(probability), int(hit)))
+        self.records = self.records[-5000:]
+
+    def analyze(self) -> dict[str, Any]:
+        if not self.records:
+            return {"error": "no data"}
+        brier = sum((prob - hit) ** 2 for prob, hit in self.records) / len(self.records)
+        hit_rate = sum(hit for _, hit in self.records) / len(self.records)
+        return {
+            "brier": round(float(brier), 4),
+            "hit_rate": round(float(hit_rate), 4),
+            "samples": len(self.records),
+        }
+
+    def recommendation(self) -> dict[str, str]:
+        analysis = self.analyze()
+        if "error" in analysis:
+            return {"action": "NO_BET", "reason": "missing_reliability_samples"}
+        if float(analysis["brier"]) > 0.22:
+            return {"action": "NO_BET", "reason": "calibration_invalid"}
+        return {"action": "MONITOR", "reason": "runtime_reliability_ok"}
+
+
+class RuntimePerformanceAnalyzer:
+    """Runtime placeholder; detailed pandas analysis is offline-only."""
+
+    def analyze(self, path="derived/bets.csv") -> dict[str, Any]:
+        return {"status": "offline_only", "path": path}
 
 
 class Phase2OperationalLoop:
@@ -21,12 +54,12 @@ class Phase2OperationalLoop:
         performance_analyzer=None,
         bet_executor=None,
         calibration_job=None,
-        bets_log_path="logs/bets.csv",
+        bets_log_path="derived/bets.csv",
     ):
 
         self.engine = decision_engine
-        self.reliability = reliability_analyzer or ReliabilityCurveAnalyzer()
-        self.performance = performance_analyzer or PerformanceAnalyzer()
+        self.reliability = reliability_analyzer or RuntimeReliabilityAnalyzer()
+        self.performance = performance_analyzer or RuntimePerformanceAnalyzer()
         self.bet_executor = bet_executor
         self.calibration_job = calibration_job
         self.bets_log_path = bets_log_path
@@ -81,15 +114,6 @@ class Phase2OperationalLoop:
                 self.bet_executor.update_result(d, hit=hit, profit=profit)
                 if self.calibration_job is not None:
                     self.calibration_job.record_new_settlement(1)
-            else:
-                self._append_bet_log(
-                    race_id=race_id,
-                    decision=d,
-                    hit=hit,
-                    profit=profit,
-                    bankroll=float(self.engine.risk_manager.bankroll),
-                    regime=regime,
-                )
 
             outcomes.append({
                 "race_id": race_id,
@@ -122,36 +146,3 @@ class Phase2OperationalLoop:
             "performance": perf,
             "risk": self.engine.risk_manager.status(),
         }
-
-    def _append_bet_log(self, race_id, decision, hit, profit, bankroll, regime):
-
-        os.makedirs(os.path.dirname(self.bets_log_path), exist_ok=True)
-
-        file_exists = os.path.exists(self.bets_log_path)
-
-        row = {
-            "timestamp": datetime.utcnow().isoformat(),
-            "race_id": race_id,
-            "selection": decision.selection,
-            "odds": round(float(decision.odds), 4),
-            "stake": int(decision.bet_size),
-            "probability": round(float(decision.calibrated_probability), 6),
-            "raw_probability": round(float(decision.probability), 6),
-            "market_probability": round(float(decision.market_probability), 6),
-            "expected_value": round(float(decision.expected_value), 6),
-            "edge": round(float(decision.edge), 6),
-            "edge_quality": round(float(decision.edge_quality), 6),
-            "uncertainty_score": round(float(decision.uncertainty_score), 6),
-            "hit": int(bool(hit)),
-            "profit": round(float(profit), 4),
-            "bankroll": round(float(bankroll), 2),
-            "regime": regime,
-        }
-
-        fields = list(row.keys())
-
-        with open(self.bets_log_path, "a", encoding="utf-8", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=fields)
-            if not file_exists:
-                writer.writeheader()
-            writer.writerow(row)

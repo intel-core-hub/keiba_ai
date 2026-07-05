@@ -1,10 +1,12 @@
 # core/scheduler.py
 
+import json
 import time
 import traceback
 import schedule
 
 from datetime import datetime
+from pathlib import Path
 
 from core.system_orchestrator import (
     SystemOrchestrator
@@ -62,6 +64,7 @@ class SurvivalScheduler:
         self.last_tick = None
 
         self.job_history = []
+        self.status_path = Path("logs/scheduler_status.json")
 
         # =================================================
         # restore previous state
@@ -257,6 +260,21 @@ class SurvivalScheduler:
                 .regime_detector
             ),
         )
+        self.write_status_snapshot("snapshot")
+
+    def write_status_snapshot(self, source="scheduler"):
+        self.status_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "source": source,
+            "scheduler": self.diagnostics(),
+            "orchestrator": self.orchestrator.diagnostics(),
+        }
+        self.status_path.write_text(
+            json.dumps(payload, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+        return payload
 
     # =================================================
     # Diagnostics Job
@@ -274,6 +292,7 @@ class SurvivalScheduler:
         print("\n[DIAGNOSTICS]")
 
         print(diag)
+        self.write_status_snapshot("diagnostics")
 
         return diag
 

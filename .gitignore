@@ -1,0 +1,43 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local environments
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# Generated repository snapshots
+repomix-output*.xml
+
+# Ad-hoc downloaded CI artifacts
+gh_artifacts/
+gh_artifacts_run*/
+reports-gh/
+
+# Generated load-test detail artifacts.
+# Keep .ci_latency.json as the current gate artifact.
+reports/load_test_*.csv
+reports/load_test_*.json
+reports/load_test_*.png
+
+# Local editor and OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+
+# Local secrets
+keys/
+
+# Test/coverage artifacts
+.coverage
+
+# Local e2e sandbox
+.tmp_gateway_e2e/

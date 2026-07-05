@@ -10,7 +10,10 @@ accepts a `version` and returns an object with `predict_proba(X)`.
 """
 from __future__ import annotations
 from typing import Any, Dict, Callable
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 
 class DecisionReconstructor:

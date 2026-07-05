@@ -4,7 +4,10 @@ from dataclasses import dataclass
 from typing import Optional
 
 from core.betting.defensive_mode_controller import DefensiveModeController
-from core.betting.risk_manager import RiskConfig, RiskManager
+try:
+    from core.betting.risk_manager import RiskConfig, RiskManager
+except ModuleNotFoundError:
+    from core.risk_manager import RiskConfig, RiskManager
 from core.betting.uncertainty_monitor import UncertaintyMonitor
 from core.betting.uncertainty_sizing import UncertaintySizer
 

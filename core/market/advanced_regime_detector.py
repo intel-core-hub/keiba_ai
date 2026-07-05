@@ -5,7 +5,10 @@ from dataclasses import dataclass
 from typing import Any, Deque, Dict, Iterable, List, Optional, Tuple
 
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 from .regime_metrics import batch_compute_metrics
 

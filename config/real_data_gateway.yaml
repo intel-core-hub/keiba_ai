@@ -1,0 +1,9 @@
+backend: local_file
+source_label: "local_gateway"
+local_file:
+  schedule_path: "data/live_inputs/today_races.json"
+  odds_dir: "data/live_inputs/odds"
+  results_dir: "data/live_inputs/results"
+  # Optional fallback timestamps for local files that do not include them.
+  # snapshot_at_utc: "2026-06-02T02:30:00+00:00"
+  # result_time_utc: "2026-06-02T05:00:00+00:00"

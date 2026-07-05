@@ -1,3 +1,8 @@
+import hashlib
+import json
+import pickle
+from pathlib import Path
+
 import numpy as np
 
 
@@ -73,6 +78,63 @@ class ProbabilityCalibrator:
                 self.bin_factors.append(actual / predicted)
 
         self.bin_factors = np.array(self.bin_factors)
+
+    def to_state(self):
+        return {
+            "shrink": float(self.shrink),
+            "min_prob": float(self.min_prob),
+            "max_prob": float(self.max_prob),
+            "bin_edges": self.bin_edges.tolist() if self.bin_edges is not None else None,
+            "bin_factors": self.bin_factors.tolist() if self.bin_factors is not None else None,
+        }
+
+    @classmethod
+    def from_state(cls, state):
+        calibrator = cls(
+            shrink=float(state.get("shrink", 0.95)),
+            min_prob=float(state.get("min_prob", 0.01)),
+            max_prob=float(state.get("max_prob", 0.95)),
+        )
+        if state.get("bin_edges") is not None and state.get("bin_factors") is not None:
+            calibrator.bin_edges = np.array(state["bin_edges"], dtype=float)
+            calibrator.bin_factors = np.array(state["bin_factors"], dtype=float)
+        return calibrator
+
+    def save(self, path):
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = path.with_suffix(path.suffix + ".tmp")
+        payload = self.to_state()
+        with open(tmp_path, "wb") as handle:
+            pickle.dump(payload, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        tmp_path.replace(path)
+        return path
+
+    @classmethod
+    def load(cls, path):
+        path = Path(path)
+        if not path.exists() or path.stat().st_size == 0:
+            raise FileNotFoundError(str(path))
+        with open(path, "rb") as handle:
+            payload = pickle.load(handle)
+        if isinstance(payload, cls):
+            return payload
+        if isinstance(payload, dict):
+            return cls.from_state(payload)
+        raise TypeError(f"Unsupported calibration payload: {type(payload)!r}")
+
+    @classmethod
+    def load_json_state(cls, path):
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+        return cls.from_state(payload)
+
+    def state_hash(self, path=None):
+        if path is not None:
+            path = Path(path)
+            if path.exists() and path.stat().st_size > 0:
+                return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
+        payload = json.dumps(self.to_state(), sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
 
     # -----------------------------
     # Brier Score

@@ -1,3 +1,4 @@
 initial_bankroll: 20000
 dd_warning: 0.15
 dd_stop: 0.25
+max_race_exposure: 0.08

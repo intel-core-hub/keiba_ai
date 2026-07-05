@@ -1,7 +1,10 @@
 import math
 from typing import Dict
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 
 def _shannon_entropy(probs: np.ndarray) -> float:

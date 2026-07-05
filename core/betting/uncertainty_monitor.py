@@ -5,7 +5,10 @@ from dataclasses import dataclass
 from typing import Deque, Dict, Iterable, List, Optional
 
 import numpy as np
-import pandas as pd
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 
 @dataclass
