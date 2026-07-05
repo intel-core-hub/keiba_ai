@@ -2,7 +2,15 @@
 
 Updated: 2026-07-05
 
-## Today Status (2026-07-05, Sun)
+## Today Status (2026-07-05, Sun, evening)
+
+- Day-2 forward test complete: 36 races / 475 runners collected with true 5-min-before snapshots; results and all payouts parsed (471 finishers, 4 scratches).
+- Day-2 eval: sequential 0/8 (-100%); independent 2/90 (-50.1%, 61 consecutive losses).
+- Combined 2-day independent eval: 181 candidates / 69 races / 11 hits / ROI +6.5%. DEEP_LONGSHOT -17.3% vs LONGSHOT +28.1%; exclude-DL-or-rank9+ filter: 91 candidates, +33.7%.
+- Interpretation recorded in `reports/data_collection/pre_contract_sandbox_20260705/day2_status.json`: variance dominates, no evidence of edge; DEEP_LONGSHOT drag consistent across June and both July days.
+- Canonical `logs/decisions.jsonl` remains 342 lines.
+
+## Earlier Today (2026-07-05, Sun)
 
 - Added analysis-only `--independent-races` and `--bankroll` flags to `scripts/shadow_run_from_file.py` (refuse canonical `logs/` and `derived/` outputs; never Stage 4 evidence). 257 tests pass.
 - Re-evaluated 2026-07-04 with independent per-race state: 91 candidates / 34 races / 9 hits / paper ROI +62.5% (vs 10 candidates in sequential mode). `exclude_deep_longshot_or_rank_9_plus` filter: 47 candidates, ROI +120.9%.
