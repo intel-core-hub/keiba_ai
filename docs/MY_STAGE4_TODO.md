@@ -2,7 +2,15 @@
 
 Updated: 2026-07-05
 
-## Today Status (2026-07-05, Sun, evening)
+## Today Status (2026-07-05, Sun, night)
+
+- CRITICAL model finding via research/pre_contract_probe/edge_band_diagnostic.py: models/predictor.pkl was trained on placeholder feature names (f0..f3); real features matched nothing, every horse was median-imputed to a constant probability (0.1876), and candidate selection was a pure odds-band rule. This also explains why no candidate below 12x ever appeared.
+- Fixed fail-closed guard in core/predictor.py (predict/predict_raw fall back to the odds-anchored heuristic on total feature mismatch). 260 tests pass (faffc31).
+- Weekend re-evaluation with the real heuristic model: 210 candidates / 72 races / ROI -13.9%; with the formalized conservative pre-filter (--max-odds 20, --max-favorite-rank 8): 203 candidates / -13.6%. The earlier +6.5% combined figure was an artifact of the blind constant model.
+- Conservative pre-filter flags added to scripts/shadow_run_from_file.py, aligned to the project DEEP_LONGSHOT boundary (>20x).
+- Implication for JV-Link decision: the current model artifact has never produced a real prediction; a genuine model must be trained on real historical features before any profitability judgement. Sandbox ROI so far measures the fallback heuristic only.
+
+## Earlier Status (2026-07-05, Sun, evening)
 
 - Day-2 forward test complete: 36 races / 475 runners collected with true 5-min-before snapshots; results and all payouts parsed (471 finishers, 4 scratches).
 - Day-2 eval: sequential 0/8 (-100%); independent 2/90 (-50.1%, 61 consecutive losses).
